@@ -36,9 +36,10 @@ public class Score {
    int numerator;
    int denominator; //>>> group these two?
    float tempo=120;
-   int[] strengthPattern= {100, 80, 80};
+   
    public static final int STRONG=100;
    public static final int WEAK=80;
+   int[] strengthPattern= {STRONG, WEAK, WEAK};
    
    private java.util.List<ScoreChangeListener> scoreListeners
       =new ArrayList<ScoreChangeListener>();
