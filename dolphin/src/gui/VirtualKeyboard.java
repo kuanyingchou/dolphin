@@ -96,6 +96,8 @@ public class VirtualKeyboard extends JComponent implements Receiver {
          }
       });
       
+      /*
+      //tablet feature
       MainFrame.tabletManager.addTabletListener(new TabletListener() {
          int lastIndex=-1;
          private boolean isValidIndex(int i) {
@@ -143,7 +145,9 @@ public class VirtualKeyboard extends JComponent implements Receiver {
          }
          
       });
+      */
    }
+   
    
    @Override
    public void close() {

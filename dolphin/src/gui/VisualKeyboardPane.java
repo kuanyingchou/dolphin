@@ -64,10 +64,13 @@ public class VisualKeyboardPane extends JPanel {
          }
       });
       
+      
       final JToggleButton tabletButton=
          new JToggleButton("Enable Tablet");
       tabletButton.addActionListener(new ActionListener() {
          public void actionPerformed(ActionEvent e) {
+            /*
+            //tablet feature
             if(tabletButton.isSelected()) {
                MainFrame.tabletManager.open();
                visualKeyboard.isMouseEnabled=false;
@@ -75,8 +78,10 @@ public class VisualKeyboardPane extends JPanel {
                MainFrame.tabletManager.close();
                visualKeyboard.isMouseEnabled=true;
             }
+            */
          }
       });
+      
       
       final JComboBox instList=new JComboBox(Instrument.all.toArray());
       instList.setSelectedItem(visualKeyboard.getInstrument());

@@ -1,6 +1,5 @@
 package gui;
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -131,33 +130,12 @@ public class MainFrame extends JFrame {
    public static final List<Note> clipBoard=new ArrayList<Note>();
    public static final String APP_NAME="Dolphin";//"Dolphin Music Editor";
 
-   static class Desktop extends JTabbedPane {
-      MainFrame mainFrame;
-      public Desktop(MainFrame mf) {
-         mainFrame=mf;
-         setTabPlacement(JTabbedPane.TOP);
-         setTabLayoutPolicy(JTabbedPane.WRAP_TAB_LAYOUT);
-         //setBackground(Color.gray);
-         setPreferredSize(new Dimension(320, 320));
-         
-//         addChangeListener(new ChangeListener() {
-//            public void stateChanged(ChangeEvent e) {
-//               final Desktop d=(Desktop)e.getSource();
-//               final ViewPane vf=((ViewPane)d.getSelectedComponent());
-//               if(vf==null) return;
-//               final ScoreView scoreView=vf.scoreView;
-//               mainFrame.partPane.setModel(scoreView.score);
-//            }
-//            
-//         });
-      }
-   }
    public final JTabbedPane desktop=new Desktop(this); 
    //final java.util.List<ScoreView> scoreViews=new ArrayList<ScoreView>();
    //final IntensityMeter meter=new IntensityMeter();
    final IntensityHistory intensityHistory=new IntensityHistory();
    
-   public static final TabletManager tabletManager=new TabletManager();
+   //public static final TabletManager tabletManager=new TabletManager();
    
    /*public static class KeyInputStatus extends JLabel { //>>>
       final StringBuilder sb=new StringBuilder();
@@ -499,7 +477,7 @@ public class MainFrame extends JFrame {
       return getScoreView().score;
    }
    
-   public static Score createScore(MainFrame mf) {
+   public static Score createScore() {
       final Score score=new Score();
       final Part part=new Part();
       //part.add(new Note(60, 32));
@@ -534,75 +512,7 @@ public class MainFrame extends JFrame {
       }
       return 0;
    }
-   /*
-   public void doNew() { doAction(newAction); }
-   public void doUndo() { doAction(undoAction); }
-   public void doRedo() { doAction(redoAction); }
    
-   final Action importAction=new ImportAction(this);
-   final Action exportAction=new ExportAction(this);
-   
-   final Action undoAction=new UndoAction(this);
-   final Action redoAction=new RedoAction(this);
-   final Action undoAllAction=new UndoAllAction(this);
-   final Action redoAllAction=new RedoAllAction(this);
-   
-   final Action zoomInAction=new ZoomInAction(this);
-   final Action zoomOutAction=new ZoomOutAction(this);
-   final Action zoomNormalAction=new ZoomNormalAction(this);
-   //final Action playAction=new PlayAction(this);
-   final Action startSoundInputAction=new StartSoundInputAction(this);
-   final Action stopSoundInputAction=new StopSoundInputAction(this);
-   final Action removeAction=new RemoveAction(this);
-   final Action cutAction=new CutAction(this);
-   final Action copyAction=new CopyAction(this);
-   final Action pasteAction=new PasteAction(this);
-   
-   final Action showScorePropertyAction=new ShowScorePropertyAction(this);
-   final Action showPitchProfileAction=new ShowPitchProfileAction(this); //>>> should be here?
-   final Action noteHigherAction=new NoteHigherAction(this);
-   final Action noteLowerAction=new NoteLowerAction(this);
-   final Action noteMuchHigherAction=new NoteMuchHigherAction(this);
-   final Action noteMuchLowerAction=new NoteMuchLowerAction(this);
-   final Action noteLongerAction=new NoteLongerAction(this);
-   final Action noteShorterAction=new NoteShorterAction(this);
-   final Action noteAddDotAction=new NoteAddDotAction(this);
-   final Action noteRemoveDotAction=new NoteRemoveDotAction(this);
-   final Action noteTieAction=new NoteTieAction(this);
-   final Action noteTripletAction=new NoteTripletAction(this);
-   final Action showSoundToNoteDialogAction=new ShowSoundToNoteDialogAction(this);
-   final Action addPartAction=new AddPartAction(this);
-   final Action removePartAction=new RemovePartAction(this);
-   final Action showPartDialogAction=new ShowPartDialogAction(this);
-   final Action newTabAction=new NewViewAction(this);
-   final Action newWindowAction=new NewWindowAction(this);
-   final Action toStaffPartViewAction=new ToStaffPartViewAction(this);
-   final Action toNumPartViewAction=new ToNumPartViewAction(this);
-   final Action toGridPartViewAction=new ToMessagePartViewAction(this);
-   final Action showAboutDialogAction=new ShowAboutDialogAction(this);
-   //final Action showInputDeviceDialogAction=new ShowInputDeviceDialogAction(this);
-   //final Action stopRecordAction=new StopMIDIRecordAction(this);
-   final Action toggleInputDeviceRecordAction=new ToggleInputDeviceRecordAction(this);
-   final Action toggleInputDeviceEnableAction=new ToggleInputDeviceEnableAction(this);
-   
-   final Action toggleBasicToolBarAction=new ToggleBasicToolBarAction(this);
-   final Action toggleModifyToolBarAction=new ToggleModifyToolBarAction(this);
-//   final Action toggleScoreToolBarAction=new ToggleScoreToolBarAction(this);
-//   final Action togglePartToolBarAction=new TogglePartToolBarAction(this);
-//   final Action toggleNoteToolBarAction=new ToggleNoteToolBarAction(this);
-   final Action togglePlayToolBarAction=new TogglePlayToolBarAction(this);
-   final Action toggleOutputDeviceToolBarAction=new ToggleOutputDeviceToolBarAction(this);
-   final Action toggleKeyboardToolBarAction=new ToggleKeyboardToolBarAction(this);
-   final Action toggleInputDeviceToolBarAction=new ToggleInputDeviceToolBarAction(this);
-   final Action toggleSoundInputToolBarAction=new ToggleSoundInputToolBarAction(this);
-   
-   public final static Action insertAction=new InsertAction();
-   //final Action selectAction=new SelectAction(this);
-   
-   final Action exitAction=new ExitAction(this); //>>> close in multi-window?
-   final Action showScriptEditorAction=new ShowScriptEditorAction(this);
-   final Action showStereoFieldEditorAction=new ShowStereoFieldEditorAction(this);
-   */
    //============================================================
    public static void main(String[] args) {
       Util.setLookAndFeel(); //>>>
@@ -627,7 +537,7 @@ public class MainFrame extends JFrame {
                s.addStaff(createStaff(Clef.G, 1, -i));
             }
             jf.addSheet(s);*/
-            mf.addSheet(createScore(mf));
+            mf.addSheet(createScore());
             
             mf.setVisible(true);
          }
@@ -636,49 +546,6 @@ public class MainFrame extends JFrame {
    }
 
 }
-
-
-/*class TabBar extends JComponent implements InternalFrameListener {
-//private final java.util.List<JButton> tabs=new ArrayList<JButton>();
-static class Tab extends JButton {
-   ViewFrame vf;
-}
-public TabBar() {
-   //setLayout(new FlowLayout());
-}
-//[ implements interface
-public void internalFrameActivated(InternalFrameEvent e) {
-   
-}
-
-public void internalFrameClosed(InternalFrameEvent e) {
-   
-}
-
-public void internalFrameClosing(InternalFrameEvent e) {
-   
-}
-
-public void internalFrameDeactivated(InternalFrameEvent e) {
-   
-}
-
-public void internalFrameDeiconified(InternalFrameEvent e) {
-   
-}
-
-public void internalFrameIconified(InternalFrameEvent e) {
-   
-}
-
-public void internalFrameOpened(InternalFrameEvent e) {
-   final JInternalFrame f=(JInternalFrame)e.getSource();
-   //add(new JButton(f.getTitle()));
-   addTab(f.getTitle(), new JLabel(""));
-   
-}
-
-}*/
 
 
 class BasicToolBar extends JToolBar {
