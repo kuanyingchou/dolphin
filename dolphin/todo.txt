@@ -1,0 +1,58 @@
+bug:
+	<view> change time sig. return to staff view
+	<view> scrollRectToVisible not function in StaffPartView
+	<dialog> pitchProfileDialog's background color
+	<audio> why create new SoundAnalyzer every time?
+fixed:
+    <model> score name undo
+    <model> time sig. change undo
+    <view> xor painting extremely slow -> it's a jdk1.6u10+ bug
+	<view> grid view rest width
+	<midi> change output device while recording midi input 
+	<view> empty playback
+	<view> keyboard input broken
+	<view> higher rests
+	<model> fromScore doesn't recognize rests
+	<view> adjust twice+ in pitch profile
+	<view> cursor/selection unpredictable while undo/redo
+	<audio> sound-to-note unstoppable after error
+todo:
+	<api> play update
+	<model> lyrics
+	<view> chord drawing/editing
+	<view> metronome
+	<view> print
+	<experiment> music clip library
+	<view> make getNoteWidth return integer
+	<view> improve triplet, tie drawing
+	<view> keyboard input status
+	<view> combine staff notes
+	<view> more keyboard inputs
+	<view> reexamine multi-window
+	<view> improve num view
+	 
+	<model, view> adjust volume/tempo in notes
+	<model> improve fromSequence, toSequence
+	<fun> draw score title, tempo in sheet
+	<fun> history pane
+	<fun> more visual effects while playing
+	<view> status bar, cursor info etc
+	<audio> improve sound-to-note
+	<audio> improve profile gui
+	<view> play selection
+	<audio> import/export profile 
+done:
+	<model> build api module
+	<view> instrument in visual keyboard
+	<audio> combine pitchProfileDialog to Sound-to-Note preferences
+	<model> tie, triplets
+	<model> instruments--
+	<view> basic grid view
+	<view> part properties dialog
+	<model> add pan to part
+	<view> acci
+	<view> selection should be relative to staticCursor
+	<audio> profile gui
+	<audio> add listener to audio-note converter
+	<view> num view
+	<view> keyboard input method
