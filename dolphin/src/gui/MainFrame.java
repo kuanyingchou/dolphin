@@ -1,9 +1,5 @@
 package gui;
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -12,31 +8,24 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiSystem;
-import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Sequence;
-import javax.sound.midi.MidiDevice.Info;
 import javax.swing.AbstractButton;
 import javax.swing.Action;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
-import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
-import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
@@ -47,7 +36,6 @@ import tablet.TabletManager;
 import view.ScoreView;
 import api.audio.PitchProfile;
 import api.audio.SoundAnalyzer;
-import api.midi.InDeviceManager;
 import api.midi.OutDeviceManager;
 import api.model.Note;
 import api.model.Part;
@@ -413,36 +401,7 @@ public class MainFrame extends JFrame {
 //      }
    }
    
-   /*private static Staff createStaff(Clef clef, int cLine, int k) {
-      final Staff s=new Staff(clef, cLine, k);
-      int count=0;
-      int[] advance= { 2, 2, 1, 2, 2, 2, 1 };
-      int pitch=60;
-      int advanceIndex=0;
-      for(int i=0; i < 8; i++) {
-         //s.addNote(new Note(-1, (int) (Math.pow(2, 7 - count))));
-         s.addNote(new Note(pitch, (int)(Math.pow(2, 7-count))));
-         pitch+=advance[advanceIndex++ % advance.length];
-         count++;
-         count%=8;
-      }
-      return s;
-   }
-   private static Staff createStaff2(Clef clef, int cLine, int k) {
-      final Staff s=new Staff(clef, cLine, k);
-      int count=0;
-      int[] advance= { 2, 2, 1, 2, 2, 2, 1 };
-      int pitch=60;
-      int advanceIndex=0;
-      for(int i=0; i < 8; i++) {
-         s.addNote(new Note(-1, (int) (Math.pow(2, 7 - count))));
-         //s.addNote(new Note(pitch, (int)(Math.pow(2, 7-count))));
-         pitch+=advance[advanceIndex++ % advance.length];
-         count++;
-         count%=8;
-      }
-      return s;
-   }*/
+   
    public void importMidi() {
       final JFileChooser jfc=new JFileChooser(Util.curDir);
       jfc.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -514,6 +473,7 @@ public class MainFrame extends JFrame {
    }
    
    //============================================================
+   //[ users should call Run.main() instead 
    public static void main(String[] args) {
       Util.setLookAndFeel(); //>>>
       SwingUtilities.invokeLater(new Runnable() {
@@ -547,79 +507,6 @@ public class MainFrame extends JFrame {
 
 }
 
-
-class BasicToolBar extends JToolBar {
-   private final MainFrame mainFrame;
-   public BasicToolBar(MainFrame mf) {
-      mainFrame=mf;
-      setName("Basic Tools");
-      add(mainFrame.newAction);
-      add(mainFrame.importAction);
-      add(mainFrame.exportAction);
-      addSeparator();
-      //add(mainFrame.undoAllAction);
-      add(mainFrame.undoAction);
-      add(mainFrame.redoAction);
-      //add(mainFrame.redoAllAction);
-      addSeparator();
-      //add(mainFrame.removeAction);
-      add(mainFrame.cutAction);
-      add(mainFrame.copyAction);
-      add(mainFrame.pasteAction);
-
-      addSeparator();
-      add(mainFrame.zoomInAction);
-      add(mainFrame.zoomOutAction);
-      addSeparator();
-      //add(mainFrame.playAction);
-      final JToggleButton insert=new JToggleButton(mainFrame.insertAction);
-      //final Dimension dim=new Dimension(32, 32);
-      //insert.setPreferredSize(dim);
-      //insert.setMinimumSize(dim);
-      //insert.setMaximumSize(dim);
-      //final AbstractButton select=new JToggleButton(mainFrame.selectAction);
-      //final ButtonGroup group=new ButtonGroup();
-      //group.add(insert);
-      //group.add(select);
-      add(insert);
-      //add(select);
-      
-      addSeparator();
-      add(mainFrame.showStereoFieldEditorAction);
-      add(mainFrame.showScriptEditorAction);
-      
-   }
-}
-
-class ModifyToolBar extends JToolBar {
-   private final MainFrame mainFrame;
-   public ModifyToolBar(MainFrame mf) {
-      mainFrame=mf;
-      setName("Modify Tools");
-      add(mainFrame.showScorePropertyAction);
-      addSeparator();
-      add(mainFrame.addPartAction);
-      add(mainFrame.removePartAction);
-      addSeparator();
-      add(mainFrame.showPartDialogAction);
-      addSeparator();
-      add(mainFrame.noteHigherAction);
-      add(mainFrame.noteLowerAction);
-      addSeparator();
-      add(mainFrame.noteMuchHigherAction);
-      add(mainFrame.noteMuchLowerAction);
-      addSeparator();
-      add(mainFrame.noteShorterAction);
-      add(mainFrame.noteLongerAction);
-      addSeparator();
-      add(mainFrame.noteRemoveDotAction);
-      add(mainFrame.noteAddDotAction);
-      addSeparator();
-      add(mainFrame.noteTieAction);
-      add(mainFrame.noteTripletAction);
-   }
-   
-}
 //class ScoreToolBar extends JToolBar {
 //   private final MainFrame mainFrame;
 //   public ScoreToolBar(MainFrame mf) {
@@ -669,164 +556,37 @@ class ModifyToolBar extends JToolBar {
 //      add(mainFrame.toMessagePartViewAction);
 //   }
 //}
-class SoundInputToolBar extends JToolBar {
-   private final MainFrame mainFrame;
-   public SoundInputToolBar(MainFrame mf) {
-      setName("Sound Input");
-      mainFrame=mf;
-      
-      //add(mainFrame.showPitchProfileAction); //>>> ?
-      add(mainFrame.showSoundToNoteDialogAction);
-      add(mainFrame.startSoundInputAction);
-      add(mainFrame.stopSoundInputAction);
-      addSeparator();
-      //add(new JLabel("Volume: "));
-      //add(mainFrame.meter);
-      add(mainFrame.intensityHistory);
-   }
+
+
+//[ unkown comments
+
+/*private static Staff createStaff(Clef clef, int cLine, int k) {
+final Staff s=new Staff(clef, cLine, k);
+int count=0;
+int[] advance= { 2, 2, 1, 2, 2, 2, 1 };
+int pitch=60;
+int advanceIndex=0;
+for(int i=0; i < 8; i++) {
+   //s.addNote(new Note(-1, (int) (Math.pow(2, 7 - count))));
+   s.addNote(new Note(pitch, (int)(Math.pow(2, 7-count))));
+   pitch+=advance[advanceIndex++ % advance.length];
+   count++;
+   count%=8;
 }
-class OutputDeviceToolBar extends JToolBar {
-   private final MainFrame mainFrame;
-   public OutputDeviceToolBar(MainFrame mf) {
-      setName("Output Device");
-      mainFrame=mf;
-      
-      //[ visual effect
-      final VisualEffect visualEffect=new VisualEffect();
-      OutDeviceManager.instance.addReceiver(visualEffect);
-      
-      //[ device list
-      Vector<Info> outInfos=null;
-      try {
-         outInfos=OutDeviceManager.getOutDeviceInfos();
-      } catch(MidiUnavailableException e2) {
-         e2.printStackTrace();
-      }
-      final JComboBox deviceList=new JComboBox(outInfos);
-      deviceList.setSelectedItem(OutDeviceManager.instance.getOutDeviceInfo());  
-      deviceList.addItemListener(new ItemListener() {
-         public void itemStateChanged(ItemEvent e) {
-            if(e.getStateChange()!=ItemEvent.SELECTED) return;
-            try {
-               OutDeviceManager.instance.setOutDeviceByInfo((Info)deviceList.getSelectedItem());
-            } catch(MidiUnavailableException e1) {
-               //System.err.println(outDevice.getDeviceInfo());
-               JOptionPane.showMessageDialog(mainFrame, "Can't use this device");
-               deviceList.setSelectedItem(OutDeviceManager.instance.getOutDeviceInfo());
-               return;
-            }
-         }
-      });
-      final JButton refreshButton=new JButton(Util.getImageIcon("images/refresh.png"));
-      //refreshButton.setText("Refresh");
-      refreshButton.addActionListener(new ActionListener() {
-         public void actionPerformed(ActionEvent e) {
-            deviceList.removeAllItems();
-            Vector<Info> outInfos=null;
-            try {
-               outInfos=OutDeviceManager.getOutDeviceInfos();
-            } catch(MidiUnavailableException e2) {
-               e2.printStackTrace();
-            }
-            for(Info info: outInfos) {
-               deviceList.addItem(info);   
-            }
-            //if(MainFrame.deviceManager.outDevice!=null)
-            //   deviceList.setSelectedItem(MainFrame.deviceManager.outDevice.getDeviceInfo());
-            try {
-               OutDeviceManager.instance.setOutDevice(MidiSystem.getSynthesizer());
-            } catch(MidiUnavailableException e1) {
-               e1.printStackTrace();
-            }
-            deviceList.setSelectedItem(OutDeviceManager.instance.getOutDeviceInfo());
-            repaint();
-         }
-      });
-      //this.addSeparator();
-      this.add(new JLabel("Output Device: "));
-      this.add(deviceList);
-      this.add(refreshButton);
-      this.addSeparator();
-      //visualEffect.setBorder(BorderFactory.createLoweredBevelBorder());
-      this.add(visualEffect);
-   }
+return s;
 }
-class InputDeviceToolBar extends JToolBar {
-   private final MainFrame mainFrame;
-   public InputDeviceToolBar(MainFrame mf) {
-      setName("Input Device");
-      mainFrame=mf;
-      
-      final JToggleButton enableButton=new JToggleButton(mainFrame.toggleInputDeviceEnableAction);
-      final JToggleButton recordButton=new JToggleButton(mainFrame.toggleInputDeviceRecordAction);
-      
-      Vector<Info> inInfos=null;
-      try {
-         inInfos=InDeviceManager.getInDeviceInfos();
-      } catch(MidiUnavailableException e2) {
-         e2.printStackTrace();
-      }
-      final JComboBox deviceList=new JComboBox(inInfos);
-      deviceList.addItemListener(new ItemListener() {
-         public void itemStateChanged(ItemEvent e) {
-            //if(e.getStateChange()!=ItemEvent.SELECTED) return;
-            enableButton.setSelected(false);
-            recordButton.setSelected(false);
-            if(deviceList.getSelectedItem()==null) return;
-            try {
-               InDeviceManager.instance.setDeviceByInfo((Info)deviceList.getSelectedItem());
-            } catch(MidiUnavailableException e1) {
-               //System.err.println(outDevice.getDeviceInfo());
-               JOptionPane.showMessageDialog(mainFrame, "Can't use this device");
-               deviceList.setSelectedItem(InDeviceManager.instance.getDeviceInfo());
-               return;
-            }
-         }
-      });
-      deviceList.setSelectedItem(null);
-//      if(!inInfos.isEmpty()) {
-//         deviceList.setSelectedItem(inInfos.get(0));   
-//      }
-      
-      final JButton refreshButton=new JButton("Refresh");
-      
-      refreshButton.addActionListener(new ActionListener() {
-         public void actionPerformed(ActionEvent e) {
-            deviceList.removeAllItems();
-            Vector<Info> inInfos=null;
-            try {
-               inInfos=InDeviceManager.getInDeviceInfos();
-            } catch(MidiUnavailableException e2) {
-               e2.printStackTrace();
-            }
-            for(Info info: inInfos) {
-               deviceList.addItem(info);   
-            }
-            //if(MainFrame.deviceManager.outDevice!=null)
-            //   deviceList.setSelectedItem(MainFrame.deviceManager.outDevice.getDeviceInfo());
-            if(!inInfos.isEmpty()) {
-               deviceList.setSelectedItem(inInfos.get(0));
-            }
-//            try {
-//               MainFrame.inDeviceManager.setDevice(null);
-//            } catch(MidiUnavailableException e1) {
-//               e1.printStackTrace();
-//            }
-//            deviceList.setSelectedItem(MainFrame.inDeviceManager.getDeviceInfo());
-            enableButton.setSelected(false);
-            recordButton.setSelected(false);
-            repaint();
-         }
-      });
-      
-      
-      //add(mainFrame.showInputDeviceDialogAction);
-      add(new JLabel("Input Device: "));
-      add(deviceList);
-      add(refreshButton);
-      add(enableButton);
-      add(recordButton);
-      //add(mainFrame.stopRecordAction);
-   }
-   
+private static Staff createStaff2(Clef clef, int cLine, int k) {
+final Staff s=new Staff(clef, cLine, k);
+int count=0;
+int[] advance= { 2, 2, 1, 2, 2, 2, 1 };
+int pitch=60;
+int advanceIndex=0;
+for(int i=0; i < 8; i++) {
+   s.addNote(new Note(-1, (int) (Math.pow(2, 7 - count))));
+   //s.addNote(new Note(pitch, (int)(Math.pow(2, 7-count))));
+   pitch+=advance[advanceIndex++ % advance.length];
+   count++;
+   count%=8;
 }
+return s;
+}*/
