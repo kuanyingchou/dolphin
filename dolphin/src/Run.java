@@ -11,7 +11,7 @@ public class Run {
 
       final MainFrame mf = new MainFrame();
 
-      mf.addSheet(MainFrame.createScore());
+      mf.addScore(MainFrame.createScore());
 
       mf.setVisible(true);
       

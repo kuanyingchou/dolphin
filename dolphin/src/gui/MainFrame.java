@@ -20,7 +20,6 @@ import javax.swing.ButtonGroup;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
@@ -40,9 +39,6 @@ import api.midi.OutDeviceManager;
 import api.model.Note;
 import api.model.Part;
 import api.model.Score;
-import api.model.ScoreChange;
-import api.model.ScoreChangeListener;
-import api.model.TitleChange;
 import api.util.Util;
 
 public class MainFrame extends JFrame {
@@ -118,7 +114,7 @@ public class MainFrame extends JFrame {
    public static final List<Note> clipBoard=new ArrayList<Note>();
    public static final String APP_NAME="Dolphin";//"Dolphin Music Editor";
 
-   public final JTabbedPane desktop=new Desktop(this); 
+   public final ScoresTabbedPane desktop=new ScoresTabbedPane(this); 
    //final java.util.List<ScoreView> scoreViews=new ArrayList<ScoreView>();
    //final IntensityMeter meter=new IntensityMeter();
    final IntensityHistory intensityHistory=new IntensityHistory();
@@ -208,7 +204,7 @@ public class MainFrame extends JFrame {
       
       //[ bottoms
       playToolBar.setAlignmentX(LEFT_ALIGNMENT);
-      playToolBar.setVisible(false);
+      playToolBar.setVisible(true);
       
       outputDeviceToolBar.setAlignmentX(LEFT_ALIGNMENT);
       outputDeviceToolBar.setVisible(false);
@@ -351,54 +347,11 @@ public class MainFrame extends JFrame {
       //setSize(800, 600);
    }
    
-   static class SheetTab extends JLabel implements ScoreChangeListener {
-      public void scoreChanged(ScoreChange e) {
-         if(e instanceof TitleChange) {
-            setText(e.getScore().getTitle());
-         }
-      }     
-   }
-   public void addSheet(Score score) {
+   public void addScore(Score score) {
       //scoreViews.add(s);
-      final ScoreView view=new ScoreView(score);
-      final ViewPane vf=new ViewPane(view, this);
-      //desktop.add(vf, 0);
-      final int index=desktop.getTabCount();
-      desktop.addTab(view.score.getTitle(), vf); //>>> should be file name
-      final SheetTab tabComponent=new SheetTab();
-      tabComponent.setText(view.score.getTitle());
-      view.score.addScoreChangeListener(tabComponent);
-      desktop.setTabComponentAt(index, tabComponent);
+      desktop.addScore(score);
       
-//desktop.setTitleAt(0, "aaa");      
-      desktop.getTabComponentAt(index).addMouseListener(new MouseAdapter() {
-         @Override
-         public void mousePressed(MouseEvent e) {
-            final int tabIndex=desktop.indexOfTabComponent(tabComponent);
-            //] can't be 'index', because tabIndex may change at runtime.
-            if(tabIndex<0 || tabIndex >=desktop.getTabCount()) return;
-            if(e.getClickCount()==1) {
-               desktop.setSelectedIndex(tabIndex);
-               vf.scoreView.requestFocusInWindow();
-               vf.scoreView.setFocusCycleRoot(true);
-            } else if(e.getClickCount()>=2) {
-               desktop.removeTabAt(tabIndex);
-            }
-         }
-      });
-      desktop.setSelectedComponent(vf);
       
-      vf.scoreView.requestFocusInWindow();
-      vf.scoreView.setFocusCycleRoot(true);
-//      vf.setVisible(true);
-      //System.err.println(desktop.selectFrame(true));
-      
-//      try {
-//         vf.setMaximum(true);
-//         vf.setSelected(true); //>>> no use???
-//      } catch(PropertyVetoException e) {
-//         e.printStackTrace();
-//      }
    }
    
    
@@ -422,7 +375,7 @@ public class MainFrame extends JFrame {
          e1.printStackTrace();
       }
       //DumpSequence.dump(seq);
-      this.addSheet(Score.fromSequence(seq));
+      this.addScore(Score.fromSequence(seq));
    }
    
    public ScoreView getScoreView() {
@@ -497,7 +450,7 @@ public class MainFrame extends JFrame {
                s.addStaff(createStaff(Clef.G, 1, -i));
             }
             jf.addSheet(s);*/
-            mf.addSheet(createScore());
+            mf.addScore(createScore());
             
             mf.setVisible(true);
          }

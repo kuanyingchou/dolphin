@@ -96,7 +96,7 @@ class NewAction extends AbstractAction {
       final Score score=new Score();
       score.add(new Part());
       score.setLogging(true);
-      mainFrame.addSheet(score);
+      mainFrame.addScore(score);
    }
 }
 
@@ -116,7 +116,7 @@ class NewViewAction extends AbstractAction{
       if(vf==null) return;
       final ScoreView scoreView=vf.scoreView;
       
-      mainFrame.addSheet(scoreView.score);
+      mainFrame.addScore(scoreView.score);
    }
    
 }
@@ -994,7 +994,7 @@ class NewWindowAction extends AbstractAction {
       final MainFrame nmf=new MainFrame();
       nmf.setLocation(mainFrame.getX()+50, mainFrame.getY()+50);
       nmf.setVisible(true);
-      nmf.addSheet(scoreView.score);
+      nmf.addScore(scoreView.score);
    }
 }
 class ShowAboutDialogAction extends AbstractAction {
