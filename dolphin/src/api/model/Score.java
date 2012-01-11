@@ -154,7 +154,7 @@ public class Score {
       return title;
    }
    public String toString() {
-      return Util.getProperties(this);
+      return Util.getObjectInfo(this);
    }
    
    public void submitChange(ScoreChange change) { //: for Part

@@ -23,6 +23,6 @@ public class Path {
       this.index=that.index;
    }
    public String toString() {
-      return Util.getProperties(this);
+      return Util.getObjectInfo(this);
    }
 }

@@ -77,7 +77,7 @@ public class Note {
    }
    
    public String toString() {
-      return Util.getProperties(this);
+      return Util.getObjectInfo(this);
    }
    public boolean isRest() {
       return pitch<0 || pitch>=128;

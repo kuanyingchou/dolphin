@@ -20,6 +20,9 @@ import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import api.model.Part;
+import api.model.Score;
+
 
 public class Util {
    public static final String curDir=System.getProperty("user.dir");
@@ -40,10 +43,20 @@ public class Util {
    /*public static double pitchToFrequency(int pitch) { //>>>
       return Math.pow(10, (pitch-69)*LOG_2_BASE_10/12.0)*440.0;
    }*/
-   public static String getProperties(Object object) {
+   
+   public static String getObjectInfo(Object target) {
       final StringBuilder sb=new StringBuilder();
-      final Class<?> cls=object.getClass();
+      final Class<?> cls=target.getClass();
+      appendClassType(sb, cls);
+      appendClassFields(target, sb, cls);
+      return sb.toString();
+   }
+   private static void appendClassType(final StringBuilder sb,
+         final Class<?> cls) {
       sb.append("\n").append(cls.getSimpleName()).append(" {").append("\n");
+   }
+   private static void appendClassFields(Object target, final StringBuilder sb,
+         final Class<?> cls) {
       final Field[] fields=cls.getDeclaredFields();
       try {
          for(int i=0; i < fields.length; i++) {
@@ -55,7 +68,7 @@ public class Util {
             sb.append(i).append(". ");
             sb.append(fields[i].getName());
             sb.append("=");
-            final Object o=fields[i].get(object);
+            final Object o=fields[i].get(target);
 //System.err.println(object);
             if(o==null) {
                //continue; //>>> why null?
@@ -83,8 +96,8 @@ public class Util {
       } catch(IllegalAccessException e) {
          e.printStackTrace();
       }
-      return sb.toString();
    }
+   
    public static final Color[] colors=new Color[] {
       new Color(0x7C99F9)
       /*
@@ -150,10 +163,7 @@ public class Util {
       return majorKeys[pitch%12];
    }
    
-   public static void main(String[] args) {
-      System.err.println(frequencyToPitch(13, 263, 60));
-      //System.err.println(frequencyToPitch(pitchToFrequency(67)));
-   }
+  
    public static Vector<Info> getDeviceInfos() throws MidiUnavailableException {
       final Vector<Info> infos=new Vector<Info>();
       final Info[] deviceInfos=MidiSystem.getMidiDeviceInfo();
@@ -169,10 +179,17 @@ public class Util {
       new Color(255, 221, 157),
       new Color(201, 146, 68)
    };
-   public static void setLookAndFeel() {
+   
+   public static void setCrossPlatformLookAndFeel() {
+      setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+   }
+   public static void setSystemLookAndFeel() {
+      setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+   }
+   
+   public static void setLookAndFeel(String className) {
       try {
-         // Set System L&F
-         UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+         UIManager.setLookAndFeel(className);
          //UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
          
          //[ jtattoo
@@ -202,6 +219,23 @@ public class Util {
       
       JFrame.setDefaultLookAndFeelDecorated(true);
       JDialog.setDefaultLookAndFeelDecorated(true);
+   }
+   
+   
+   /////////////////////////////// Test /////////////////////////////////
+   
+   public static void testFrequencyToPitch() {
+      System.err.println(frequencyToPitch(13, 263, 60));
+      //System.err.println(frequencyToPitch(pitchToFrequency(67)));
+   }
+   public static void testGetObjectInfo() {
+      Score score=new Score();
+      Part part=new Part();
+      score.add(part);
+      System.out.println(score);
+   }
+   public static void main(String[] args) {
+      testGetObjectInfo();
    }
    
 }

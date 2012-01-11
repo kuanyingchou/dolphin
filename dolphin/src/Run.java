@@ -7,7 +7,7 @@ import api.util.Util;
 
 public class Run {
    public static void main(String[] args) {
-      Util.setLookAndFeel(); // >>>
+      Util.setCrossPlatformLookAndFeel(); 
 
       final MainFrame mf = new MainFrame();
 

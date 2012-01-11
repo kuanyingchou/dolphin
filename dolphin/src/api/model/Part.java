@@ -76,7 +76,7 @@ public class Part {
    public Score getScore() { return score; }
    
    public String toString() {
-      return Util.getProperties(this);
+      return Util.getObjectInfo(this);
    }
 
    public void setInstrument(Instrument instrument) {

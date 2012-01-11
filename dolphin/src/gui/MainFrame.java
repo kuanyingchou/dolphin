@@ -345,7 +345,7 @@ public class MainFrame extends JFrame {
    //============================================================
    //[ This main() is reserved for tests, users should call Run.main() instead 
    public static void main(String[] args) {
-      Util.setLookAndFeel(); //>>>
+      Util.setCrossPlatformLookAndFeel(); //>>>
       SwingUtilities.invokeLater(new Runnable() {
          public void run() {
             final MainFrame mf=new MainFrame();

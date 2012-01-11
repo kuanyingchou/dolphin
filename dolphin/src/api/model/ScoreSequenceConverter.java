@@ -28,7 +28,7 @@ public class ScoreSequenceConverter {
          length=l;
       }
       public String toString() {
-         return Util.getProperties(this);
+         return Util.getObjectInfo(this);
       }
    }
    
