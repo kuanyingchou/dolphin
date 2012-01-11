@@ -69,6 +69,7 @@ public class Part {
    
    public int noteCount() { return notes.size(); }
    public Note get(int i) { return notes.get(i); }
+   public Note getNote(int i) { return notes.get(i); }
    
    void setScore(Score s) {
       score=s;

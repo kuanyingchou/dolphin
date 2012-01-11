@@ -8,7 +8,8 @@ import api.util.Util;
 public class Note {
    public static final int MAX_DOT=1;
    public static final int WHOLE_LENGTH=128*2*2*2*3; //: (int)(128*Math.pow(2, MAX_DOT));
-   //] *2*2*2 is for dots, *3 is for triplets
+   //] *2*2*2 is for dots(up to three when reading from sequence), 
+   //  *3 is for triplets
    
    public int pitch; //0~127, -1: rest
    public int length; //relative to WHOLE_LENGTH
