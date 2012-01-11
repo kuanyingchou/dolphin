@@ -24,6 +24,8 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import api.midi.NoteOffMessage;
+import api.midi.NoteOnMessage;
 import api.midi.OutDeviceManager;
 import api.midi.ScorePlayer;
 import api.model.Instrument;
@@ -216,12 +218,8 @@ public class VirtualKeyboard extends JComponent implements Receiver {
          
          
          //[ note on
-         final ShortMessage sm=new ShortMessage();
-         try {
-            sm.setMessage(0x90, channel, pitch, velocity);
-         } catch(InvalidMidiDataException e) {
-            e.printStackTrace();
-         }
+         final ShortMessage sm=new NoteOnMessage(channel, pitch, velocity);
+         
          //outDeviceReceiver.send(sm, 0);
          final ViewPane vf=((ViewPane)mainFrame.desktop.getSelectedComponent());
          if(vf==null) return;
@@ -239,12 +237,8 @@ public class VirtualKeyboard extends JComponent implements Receiver {
          keyPressed[pitch]=false;
          //System.err.println("release "+Util.getPitchName(pitch)+"("+pitch+")");
          
-         final ShortMessage sm=new ShortMessage();
-         try {
-            sm.setMessage(0x80, channel, pitch, velocity);
-         } catch(InvalidMidiDataException e) {
-            e.printStackTrace();
-         }
+         final ShortMessage sm=new NoteOffMessage(channel, pitch, velocity);
+         
          //outDeviceReceiver.send(sm, 0);
          final ViewPane vf=((ViewPane)mainFrame.desktop.getSelectedComponent());
          if(vf==null) return;
