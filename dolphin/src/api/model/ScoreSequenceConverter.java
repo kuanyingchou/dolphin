@@ -312,7 +312,7 @@ NEXT_EVENT:
             final int d=lengthCount/beatLength;
             final int r=lengthCount%beatLength;
             if(r==0) {
-               strength=score.getStrength(d);
+               strength=score.getBeatStrength(d);
             }
             if(lengthCount%barLength==0) { //first beat boost
                strength+=10;

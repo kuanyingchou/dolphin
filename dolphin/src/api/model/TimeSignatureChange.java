@@ -21,12 +21,12 @@ public class TimeSignatureChange extends ScoreChange {
       
       //>>> one time sig. may have many patterns
       switch(score.numerator) {
-      case 2: score.strengthPattern=new int[] {Score.STRONG, Score.WEAK}; break;
-      case 3: score.strengthPattern=new int[] {Score.STRONG, Score.WEAK, Score.WEAK}; break;
-      case 4: score.strengthPattern=new int[] {Score.STRONG, Score.WEAK, Score.STRONG, Score.WEAK}; break;
-      case 5: score.strengthPattern=new int[] {Score.STRONG, Score.WEAK, Score.STRONG, Score.WEAK, Score.WEAK}; break;
-      case 6: score.strengthPattern=new int[] {Score.STRONG, Score.WEAK, Score.WEAK, Score.STRONG, Score.WEAK, Score.WEAK}; break;
-      default:score.strengthPattern=new int[] {Score.STRONG, Score.WEAK}; break;
+      case 2: score.beatPattern=new int[] {Score.STRONG, Score.WEAK}; break;
+      case 3: score.beatPattern=new int[] {Score.STRONG, Score.WEAK, Score.WEAK}; break;
+      case 4: score.beatPattern=new int[] {Score.STRONG, Score.WEAK, Score.STRONG, Score.WEAK}; break;
+      case 5: score.beatPattern=new int[] {Score.STRONG, Score.WEAK, Score.STRONG, Score.WEAK, Score.WEAK}; break;
+      case 6: score.beatPattern=new int[] {Score.STRONG, Score.WEAK, Score.WEAK, Score.STRONG, Score.WEAK, Score.WEAK}; break;
+      default:score.beatPattern=new int[] {Score.STRONG, Score.WEAK}; break;
       }
    }
 

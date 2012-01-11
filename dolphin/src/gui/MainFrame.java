@@ -42,84 +42,19 @@ import api.model.Score;
 import api.util.Util;
 
 public class MainFrame extends JFrame {
-   
-   public final Action newAction=new NewAction(this);
-   public final Action importAction=new ImportAction(this);
-   public final Action exportAction=new ExportAction(this);
-   
-   public final Action undoAction=new UndoAction(this);
-   public final Action redoAction=new RedoAction(this);
-   public final Action undoAllAction=new UndoAllAction(this);
-   public final Action redoAllAction=new RedoAllAction(this);
-   
-   public final Action zoomInAction=new ZoomInAction(this);
-   public final Action zoomOutAction=new ZoomOutAction(this);
-   public final Action zoomNormalAction=new ZoomNormalAction(this);
-   //final Action playAction=new PlayAction(this);
-   public final Action startSoundInputAction=new StartSoundInputAction(this);
-   public final Action stopSoundInputAction=new StopSoundInputAction(this);
-   public final Action removeAction=new RemoveAction(this);
-   public final Action cutAction=new CutAction(this);
-   public final Action copyAction=new CopyAction(this);
-   public final Action pasteAction=new PasteAction(this);
-   
-   public final Action showScorePropertyAction=new ShowScorePropertyAction(this);
-   public final Action showPitchProfileAction=new ShowPitchProfileAction(this); //>>> should be here?
-   public final Action noteHigherAction=new NoteHigherAction(this);
-   public final Action noteLowerAction=new NoteLowerAction(this);
-   public final Action noteMuchHigherAction=new NoteMuchHigherAction(this);
-   public final Action noteMuchLowerAction=new NoteMuchLowerAction(this);
-   public final Action noteLongerAction=new NoteLongerAction(this);
-   public final Action noteShorterAction=new NoteShorterAction(this);
-   public final Action noteAddDotAction=new NoteAddDotAction(this);
-   public final Action noteRemoveDotAction=new NoteRemoveDotAction(this);
-   public final Action noteTieAction=new NoteTieAction(this);
-   public final Action noteTripletAction=new NoteTripletAction(this);
-   public final Action showSoundToNoteDialogAction=new ShowSoundToNoteDialogAction(this);
-   public final Action addPartAction=new AddPartAction(this);
-   public final Action removePartAction=new RemovePartAction(this);
-   public final Action showPartDialogAction=new ShowPartDialogAction(this);
-   public final Action newTabAction=new NewViewAction(this);
-   public final Action newWindowAction=new NewWindowAction(this);
-   public final Action toStaffPartViewAction=new ToStaffPartViewAction(this);
-   public final Action toNumPartViewAction=new ToNumPartViewAction(this);
-   public final Action toGridPartViewAction=new ToMessagePartViewAction(this);
-   public final Action showAboutDialogAction=new ShowAboutDialogAction(this);
-   //final Action showInputDeviceDialogAction=new ShowInputDeviceDialogAction(this);
-   //final Action stopRecordAction=new StopMIDIRecordAction(this);
-   public final Action toggleInputDeviceRecordAction=new ToggleInputDeviceRecordAction(this);
-   public final Action toggleInputDeviceEnableAction=new ToggleInputDeviceEnableAction(this);
-   
-   public final Action toggleBasicToolBarAction=new ToggleBasicToolBarAction(this);
-   public final Action toggleModifyToolBarAction=new ToggleModifyToolBarAction(this);
-//   final Action toggleScoreToolBarAction=new ToggleScoreToolBarAction(this);
-//   final Action togglePartToolBarAction=new TogglePartToolBarAction(this);
-//   final Action toggleNoteToolBarAction=new ToggleNoteToolBarAction(this);
-   public final Action togglePlayToolBarAction=new TogglePlayToolBarAction(this);
-   public final Action toggleOutputDeviceToolBarAction=new ToggleOutputDeviceToolBarAction(this);
-   public final Action toggleKeyboardToolBarAction=new ToggleKeyboardToolBarAction(this);
-   public final Action toggleInputDeviceToolBarAction=new ToggleInputDeviceToolBarAction(this);
-   public final Action toggleSoundInputToolBarAction=new ToggleSoundInputToolBarAction(this);
-   
-   public final static Action insertAction=new InsertAction();
-   //final Action selectAction=new SelectAction(this);
-   
-   public final Action exitAction=new ExitAction(this); //>>> close in multi-window?
-   public final Action showScriptEditorAction=new ShowScriptEditorAction(this);
-   public final Action showStereoFieldEditorAction=new ShowStereoFieldEditorAction(this);
-   
-   
-   public static PitchProfile pitchProfile=PitchProfile.loadDefault();
-   public static SoundAnalyzer soundAnalyzer;
-   public static final List<Note> clipBoard=new ArrayList<Note>();
+      
    public static final String APP_NAME="Dolphin";//"Dolphin Music Editor";
-
+   
+   public static PitchProfile pitchProfile=PitchProfile.loadDefault();  
+   public static SoundAnalyzer soundAnalyzer;
+   
+   //[ static because it is shared among multiple MainFrames
+   public static final List<Note> clipBoard=new ArrayList<Note>();
+   
    public final ScoresTabbedPane desktop=new ScoresTabbedPane(this); 
-   //final java.util.List<ScoreView> scoreViews=new ArrayList<ScoreView>();
-   //final IntensityMeter meter=new IntensityMeter();
+   
    final IntensityHistory intensityHistory=new IntensityHistory();
    
-   //public static final TabletManager tabletManager=new TabletManager();
    
    /*public static class KeyInputStatus extends JLabel { //>>>
       final StringBuilder sb=new StringBuilder();
@@ -138,17 +73,7 @@ public class MainFrame extends JFrame {
    
    private static int frameCount=0; 
    
-   //[ tool bars
-   final BasicToolBar basicToolBar=new BasicToolBar(this);
-   final ModifyToolBar modifyToolBar=new ModifyToolBar(this);
-//   final ScoreToolBar scoreToolBar=new ScoreToolBar(this);
-//   final PartToolBar partToolBar=new PartToolBar(this);
-//   final NoteToolBar noteToolBar=new NoteToolBar(this);
-   final PlayToolBar playToolBar=new PlayToolBar(this);
-   final OutputDeviceToolBar outputDeviceToolBar=new OutputDeviceToolBar(this);
-   final JToolBar keyboardToolBar=new JToolBar("Virtual Keyboard");
-   final JToolBar inputDeviceToolBar=new InputDeviceToolBar(this);
-   final SoundInputToolBar soundInputToolBar=new SoundInputToolBar(this);
+   
    
    //final PartPane partPane=new PartPane(this);
    
@@ -358,24 +283,16 @@ public class MainFrame extends JFrame {
    public void importMidi() {
       final JFileChooser jfc=new JFileChooser(Util.curDir);
       jfc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-      jfc.setFileFilter(
-            new FileNameExtensionFilter("midi files", "mid"));
+      jfc.setFileFilter(new FileNameExtensionFilter("midi files", "mid"));
+      
       final int ret=jfc.showOpenDialog(this);
+      
       if(ret==JFileChooser.APPROVE_OPTION) {
-         importMidiFromFile(jfc.getSelectedFile());
+         this.addScore(Score.fromFile(jfc.getSelectedFile()));
       }
    }
    public void importMidiFromFile(File file) {
-      Sequence seq=null;
-      try {
-         seq=MidiSystem.getSequence(file);
-      } catch(InvalidMidiDataException e1) {
-         e1.printStackTrace();
-      } catch(IOException e1) {
-         e1.printStackTrace();
-      }
-      //DumpSequence.dump(seq);
-      this.addScore(Score.fromSequence(seq));
+      this.addScore(Score.fromFile(file));
    }
    
    public ScoreView getScoreView() {
@@ -426,7 +343,7 @@ public class MainFrame extends JFrame {
    }
    
    //============================================================
-   //[ users should call Run.main() instead 
+   //[ This main() is reserved for tests, users should call Run.main() instead 
    public static void main(String[] args) {
       Util.setLookAndFeel(); //>>>
       SwingUtilities.invokeLater(new Runnable() {
@@ -458,6 +375,84 @@ public class MainFrame extends JFrame {
       
    }
 
+   
+   //[ actions
+   public final Action newAction=new NewAction(this);
+   public final Action importAction=new ImportAction(this);
+   public final Action exportAction=new ExportAction(this);
+   
+   public final Action undoAction=new UndoAction(this);
+   public final Action redoAction=new RedoAction(this);
+   public final Action undoAllAction=new UndoAllAction(this);
+   public final Action redoAllAction=new RedoAllAction(this);
+   
+   public final Action zoomInAction=new ZoomInAction(this);
+   public final Action zoomOutAction=new ZoomOutAction(this);
+   public final Action zoomNormalAction=new ZoomNormalAction(this);
+   //final Action playAction=new PlayAction(this);
+   public final Action startSoundInputAction=new StartSoundInputAction(this);
+   public final Action stopSoundInputAction=new StopSoundInputAction(this);
+   public final Action removeAction=new RemoveAction(this);
+   public final Action cutAction=new CutAction(this);
+   public final Action copyAction=new CopyAction(this);
+   public final Action pasteAction=new PasteAction(this);
+   
+   public final Action showScorePropertyAction=new ShowScorePropertyAction(this);
+   public final Action showPitchProfileAction=new ShowPitchProfileAction(this); //>>> should be here?
+   public final Action noteHigherAction=new NoteHigherAction(this);
+   public final Action noteLowerAction=new NoteLowerAction(this);
+   public final Action noteMuchHigherAction=new NoteMuchHigherAction(this);
+   public final Action noteMuchLowerAction=new NoteMuchLowerAction(this);
+   public final Action noteLongerAction=new NoteLongerAction(this);
+   public final Action noteShorterAction=new NoteShorterAction(this);
+   public final Action noteAddDotAction=new NoteAddDotAction(this);
+   public final Action noteRemoveDotAction=new NoteRemoveDotAction(this);
+   public final Action noteTieAction=new NoteTieAction(this);
+   public final Action noteTripletAction=new NoteTripletAction(this);
+   public final Action showSoundToNoteDialogAction=new ShowSoundToNoteDialogAction(this);
+   public final Action addPartAction=new AddPartAction(this);
+   public final Action removePartAction=new RemovePartAction(this);
+   public final Action showPartDialogAction=new ShowPartDialogAction(this);
+   public final Action newTabAction=new NewViewAction(this);
+   public final Action newWindowAction=new NewWindowAction(this);
+   public final Action toStaffPartViewAction=new ToStaffPartViewAction(this);
+   public final Action toNumPartViewAction=new ToNumPartViewAction(this);
+   public final Action toGridPartViewAction=new ToMessagePartViewAction(this);
+   public final Action showAboutDialogAction=new ShowAboutDialogAction(this);
+   //final Action showInputDeviceDialogAction=new ShowInputDeviceDialogAction(this);
+   //final Action stopRecordAction=new StopMIDIRecordAction(this);
+   public final Action toggleInputDeviceRecordAction=new ToggleInputDeviceRecordAction(this);
+   public final Action toggleInputDeviceEnableAction=new ToggleInputDeviceEnableAction(this);
+   
+   public final Action toggleBasicToolBarAction=new ToggleBasicToolBarAction(this);
+   public final Action toggleModifyToolBarAction=new ToggleModifyToolBarAction(this);
+//   final Action toggleScoreToolBarAction=new ToggleScoreToolBarAction(this);
+//   final Action togglePartToolBarAction=new TogglePartToolBarAction(this);
+//   final Action toggleNoteToolBarAction=new ToggleNoteToolBarAction(this);
+   public final Action togglePlayToolBarAction=new TogglePlayToolBarAction(this);
+   public final Action toggleOutputDeviceToolBarAction=new ToggleOutputDeviceToolBarAction(this);
+   public final Action toggleKeyboardToolBarAction=new ToggleKeyboardToolBarAction(this);
+   public final Action toggleInputDeviceToolBarAction=new ToggleInputDeviceToolBarAction(this);
+   public final Action toggleSoundInputToolBarAction=new ToggleSoundInputToolBarAction(this);
+   
+   public final static Action insertAction=new InsertAction();
+   //final Action selectAction=new SelectAction(this);
+   
+   public final Action exitAction=new ExitAction(this); //>>> close in multi-window?
+   public final Action showScriptEditorAction=new ShowScriptEditorAction(this);
+   public final Action showStereoFieldEditorAction=new ShowStereoFieldEditorAction(this);
+   
+ //[ tool bars
+   final BasicToolBar basicToolBar=new BasicToolBar(this);
+   final ModifyToolBar modifyToolBar=new ModifyToolBar(this);
+//   final ScoreToolBar scoreToolBar=new ScoreToolBar(this);
+//   final PartToolBar partToolBar=new PartToolBar(this);
+//   final NoteToolBar noteToolBar=new NoteToolBar(this);
+   final PlayToolBar playToolBar=new PlayToolBar(this);
+   final OutputDeviceToolBar outputDeviceToolBar=new OutputDeviceToolBar(this);
+   final JToolBar keyboardToolBar=new JToolBar("Virtual Keyboard");
+   final JToolBar inputDeviceToolBar=new InputDeviceToolBar(this);
+   final SoundInputToolBar soundInputToolBar=new SoundInputToolBar(this);
 }
 
 //class ScoreToolBar extends JToolBar {

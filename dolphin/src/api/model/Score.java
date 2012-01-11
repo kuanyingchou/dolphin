@@ -1,6 +1,7 @@
 package api.model;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.annotation.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,7 +40,7 @@ public class Score {
    
    public static final int STRONG=100;
    public static final int WEAK=80;
-   int[] strengthPattern= {STRONG, WEAK, WEAK};
+   int[] beatPattern= {STRONG, WEAK, WEAK};
    
    private java.util.List<ScoreChangeListener> scoreListeners
       =new ArrayList<ScoreChangeListener>();
@@ -59,8 +60,8 @@ public class Score {
    }
    
    //[ model
-   public int getStrength(int beat) {
-      return strengthPattern[beat%strengthPattern.length];
+   public int getBeatStrength(int beat) {
+      return beatPattern[beat%beatPattern.length];
    }
    public void add(Part p) {
       if(p==null) throw new IllegalArgumentException();
@@ -261,6 +262,18 @@ public class Score {
    }
    public Sequence toSequence() throws InvalidMidiDataException  {
       return ssConverter.toSequence(this);
+   }
+   public static Score fromFile(File file) {
+      Sequence seq=null;
+      try {
+         seq=MidiSystem.getSequence(file);
+      } catch(InvalidMidiDataException e1) {
+         e1.printStackTrace();
+      } catch(IOException e1) {
+         e1.printStackTrace();
+      }
+      //DumpSequence.dump(seq);
+      return Score.fromSequence(seq);
    }
    
    
