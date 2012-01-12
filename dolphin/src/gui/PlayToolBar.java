@@ -221,9 +221,7 @@ public class PlayToolBar extends JToolBar {
                      }
                   });
                }
-               try {
-                  Thread.sleep(100);
-               } catch(InterruptedException e) {}
+               Util.sleep(100);
             }
             SwingUtilities.invokeLater(new Runnable() {
                public void run() {

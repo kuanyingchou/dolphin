@@ -154,7 +154,7 @@ public class RealTimeScorePlayer {
 
       @Override
       public void run() {
-         Util.wait(500); //: eliminate glitch
+         Util.sleep(500); //: eliminate glitch
          System.err.println("start playing...");
          //[ the loop treats notes like multiple lines of customers, and 
          //  exits when all customers are done
@@ -174,9 +174,9 @@ public class RealTimeScorePlayer {
             interval=System.currentTimeMillis()-now;
             progress+=interval;
             now+=interval;
-            Util.wait(1);
+            Util.sleep(1);
          }
-         Util.wait(500);
+         Util.sleep(500);
          System.err.println("stop playing");
       }
       
@@ -191,10 +191,10 @@ public class RealTimeScorePlayer {
       //[ try to eliminate glitch
       final ShortMessage on = new NoteOnMessage(1, 60, 10);
       OutDeviceManager.instance.send(on, -1);
-      Util.wait(500);
+      Util.sleep(500);
       final ShortMessage off = new NoteOffMessage(1, 60, 10);
       OutDeviceManager.instance.send(off, -1);
-      Util.wait(500);
+      Util.sleep(500);
       //] try to eliminate glitch
       
       final Thread playThread=new Thread(new PlayThread());

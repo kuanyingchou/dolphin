@@ -3,6 +3,8 @@ package tablet;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 
+import api.util.Util;
+
 import cello.tablet.*; //: needs jtablet-sdk-v0.9.5
 
 public class TabletManager {
@@ -70,7 +72,7 @@ public class TabletManager {
 
                try {
                   Thread.yield();
-                  Thread.sleep(10);
+                  Util.sleep(10);
                } catch(Exception e) {}
             }      
          }

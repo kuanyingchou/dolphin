@@ -221,7 +221,7 @@ public class Util {
       JDialog.setDefaultLookAndFeelDecorated(true);
    }
    
-   public static void wait(int millis) {
+   public static void sleep(long millis) {
       try {
          Thread.sleep(millis);
       } catch (InterruptedException e) {

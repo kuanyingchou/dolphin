@@ -45,9 +45,7 @@ public class VisualEffect extends JComponent implements Receiver {
                      repaint();
                   }
                });
-               try {
-                  Thread.sleep(100);
-               } catch(InterruptedException e) {}
+               Util.sleep(100);
             }
             
          }

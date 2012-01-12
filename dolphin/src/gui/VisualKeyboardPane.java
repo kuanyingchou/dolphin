@@ -54,9 +54,7 @@ public class VisualKeyboardPane extends JPanel {
                      //System.err.println("beat");
                      recordButton.setIcon(
                            recordButton.getIcon()==grayIcon?recordIcon:grayIcon);
-                     try {
-                        Thread.sleep(interval);
-                     } catch(InterruptedException e) {}
+                     Util.sleep(interval);
                   }
                   recordButton.setIcon(grayIcon);
                }
