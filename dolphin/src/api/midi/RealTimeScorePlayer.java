@@ -4,6 +4,8 @@ package api.midi;
 import java.io.File;
 import java.util.concurrent.ThreadFactory;
 
+import javax.sound.midi.MetaMessage;
+import javax.sound.midi.MidiEvent;
 import javax.sound.midi.ShortMessage;
 import javax.swing.SwingWorker;
 
@@ -18,17 +20,114 @@ public class RealTimeScorePlayer {
    
    private Score score;
    
-   enum State {
-      STOP,
+   enum PlayerState {
+      STOPPED,
       PLAYING,
-      PAUSE
+      PAUSED
    }
-   private State state=State.STOP;
+   private PlayerState state=PlayerState.STOPPED;
    
    PartPlayer[] partPlayers;
    
-   private long progress=0;
    
+   
+   PlayThread playThread;
+   
+   //[ playback methods
+   public void play() {
+      if(score==null) throw new IllegalStateException();
+      if (state == PlayerState.STOPPED) {
+         state = PlayerState.PLAYING;
+
+         // [ try to eliminate glitch
+         final ShortMessage on = new NoteOnMessage(1, 60, 10);
+         OutDeviceManager.instance.send(on, -1);
+         Util.sleep(500);
+         final ShortMessage off = new NoteOffMessage(1, 60, 10);
+         OutDeviceManager.instance.send(off, -1);
+         Util.sleep(500);
+         // ] try to eliminate glitch
+
+         playThread = new PlayThread();
+
+         playThread.start();
+      } else if(state==PlayerState.PAUSED) {
+         playThread.resumePlaying();
+      }
+      
+   }
+  
+   public void play(Path startPath) {
+      if(score==null) throw new IllegalStateException();
+      state=PlayerState.PLAYING;
+      throw new RuntimeException();  
+   }
+   
+   public void pause() {
+      if(score==null) throw new IllegalStateException();
+      if(playThread==null) throw new IllegalStateException();
+      playThread.pausePlaying();
+      state=PlayerState.PAUSED;
+   }
+   public void stop() {
+      if(score==null) throw new IllegalStateException();
+      if(playThread==null) throw new IllegalStateException();
+      playThread.stopPlaying();
+      state=PlayerState.STOPPED;
+   }
+   
+   //[ getters & setters
+   
+   public void setScore(Score s) {
+      score=s;
+      final int partCount=score.partCount();
+      //[ there's only 15 normal channels available, ignore the rest
+      partPlayers=new PartPlayer[
+             partCount>ChannelManager.NORMAL_CHANNEL_SIZE?
+             ChannelManager.NORMAL_CHANNEL_SIZE:
+             partCount];
+      for(int i=0; i<partPlayers.length; i++) {
+         partPlayers[i]=new PartPlayer(
+               s.getPart(i), ChannelManager.getNormalChannel(i));
+      }
+   }
+   
+   public Score getScore() {
+      return score;
+   }
+   
+   public boolean isPlaying() { 
+      return state==PlayerState.PLAYING;
+   }
+   public boolean isStopped() { 
+      return state==PlayerState.STOPPED;
+   }
+   
+   public long getTickPosition() {
+      throw new RuntimeException();
+   }
+   public long getMicrosecondPosition() {
+      if(playThread==null) throw new RuntimeException();
+      return playThread.progress;
+   } 
+   public void setTickPosition(long pos) {
+      throw new RuntimeException();
+   }
+   public long getTickLength() {
+      throw new RuntimeException();
+   }
+   public long getMicrosecondLength() {
+      long max=0;
+      for (int i = 0; i < partPlayers.length; i++) {
+         final long len=partPlayers[i].getMicrosecondLength();
+         if(len>max) max=len;
+      }
+      return max;
+   }
+   public void setTempoFactor(float tf) {
+      throw new RuntimeException();
+   }
+
    static class ChannelManager {
       public static int CHANNEL_SIZE=16;
       public static int NORMAL_CHANNEL_SIZE=CHANNEL_SIZE-1;
@@ -48,6 +147,7 @@ public class RealTimeScorePlayer {
       int noteIndex=-1;
       long elapsedTime=0;
       long noteLengthInMillis=0;
+      int openNoteCount=0;
       
       Part part;
       final long beatLengthInMillis;
@@ -67,6 +167,13 @@ public class RealTimeScorePlayer {
          beatLengthInMillis=(long)(1000.0f*60/part.getScore().getTempo());
          wholeLengthInMillis=part.getScore().getDenominator()*beatLengthInMillis;
       }
+      public long getMicrosecondLength() {
+         long sum=0;
+         for (int i = 0; i < part.noteCount(); i++) {
+            sum+=getNoteLengthInMillis(part.get(i));
+         }
+         return sum;
+      }
       public boolean isDone() { return noteIndex>=part.noteCount(); }
       
       public void play(long increment) {
@@ -75,21 +182,21 @@ public class RealTimeScorePlayer {
             throw new RuntimeException();
          }
          if (noteIndex == -1 && part.noteCount()>0) { //: first note
-            setInstrument();
-            setPan();
-            setVolume();
+            sendInstrument();
+            sendPan();
+            sendVolume();
             noteIndex++;
-            openNote();
+            sendNoteOn();
          } 
 
          if (elapsedTime >= noteLengthInMillis) {
-            if(openNoteCount>0) closeNote();
+            if(openNoteCount>0) sendNoteOff();
             noteIndex++;
             
             
             elapsedTime -= noteLengthInMillis;
             if(noteIndex<part.noteCount()) {
-               openNote();
+               sendNoteOn();
             }
             //System.err.println("err: "+elapsedTime);
          } else {
@@ -97,22 +204,41 @@ public class RealTimeScorePlayer {
          }
          
       }
-      private void setVolume() {
+      
+      public void stop() {
+         if(openNoteCount>0) {
+            sendNoteOff();
+         }
+         noteIndex=-1;
+         elapsedTime=0;
+         noteLengthInMillis=0;
+         openNoteCount=0;
+      }
+      
+      public void pause() {
+         if(openNoteCount>0) {
+            sendNoteOff();
+         }
+         //if a note is paused while playing, turn off the note,
+         //skip to next note after playback is resumed
+      }
+      
+      private void sendVolume() {
          final ShortMessage m = new VolumeMessage(
                channel, part.getVolume());
          OutDeviceManager.instance.send(m, -1);
       }
-      private void setPan() {
+      private void sendPan() {
          final ShortMessage m = new PanMessage(
                channel, part.getPan());
          OutDeviceManager.instance.send(m, -1);
       }
-      private void setInstrument() {
+      private void sendInstrument() {
          final ShortMessage m = new InstrumentMessage(
                channel, part.getInstrument().getValue());
          OutDeviceManager.instance.send(m, -1);
       }
-      private void closeNote() {
+      private void sendNoteOff() {
          //System.err.println("0 "+progress);
          //System.err.print("\\");
          final Note note = part.getNote(noteIndex);
@@ -121,8 +247,8 @@ public class RealTimeScorePlayer {
          openNoteCount--;
          //System.err.println("close note("+note.pitch+")");
       }
-      int openNoteCount=0;
-      private void openNote() {
+     
+      private void sendNoteOn() {
          //System.err.println("1 "+progress);
          
          final Note note = part.getNote(noteIndex);
@@ -150,123 +276,85 @@ public class RealTimeScorePlayer {
       }
    }
    
-   class PlayThread implements Runnable {
+   class PlayThread extends Thread {
+      private long progress=0;
+      
+      public PlayThread() {
+         final int nearMaxPriority = Thread.NORM_PRIORITY
+               + ((Thread.MAX_PRIORITY - Thread.NORM_PRIORITY) * 3) / 4;
+         //: the priority is copied from java api
 
+         setPriority(nearMaxPriority);
+         setDaemon(false); //>>> should be a daemon in gui
+      }
+      
       @Override
       public void run() {
+         play();
+      }
+      
+      public void play() {
+         if(state!=PlayerState.STOPPED) throw new IllegalStateException();
+         state=PlayerState.PLAYING;
+         
          Util.sleep(500); //: eliminate glitch
          System.err.println("start playing...");
          //[ the loop treats notes like multiple lines of customers, and 
          //  exits when all customers are done
          long now=System.currentTimeMillis();
          long interval=0;
-         boolean done;
+         boolean allPlayerDone;
          
          while(true) {
-            done=true;
-            for(int i=0; i<partPlayers.length; i++) {
-               if(partPlayers[i].isDone() || score.get(i).isMute()) continue;
-               done=false;
-               partPlayers[i].play(interval);
-               //System.err.println(increments);
+            
+            if (state == PlayerState.PLAYING) {
+               allPlayerDone = true;
+               for (int i = 0; i < partPlayers.length; i++) {
+                  if (partPlayers[i].isDone() || score.get(i).isMute())
+                     continue;
+                  allPlayerDone = false;
+                  partPlayers[i].play(interval);
+                  // System.err.println(increments);
+               }
+               if (allPlayerDone)
+                  break;
+               interval = System.currentTimeMillis() - now;
+               progress += interval;
+               now += interval;
+            } else if(state==PlayerState.STOPPED) {
+               for (int i = 0; i < partPlayers.length; i++) {
+                  partPlayers[i].stop();
+               }
+               break;
+            } else if(state==PlayerState.PAUSED) {
+               for (int i = 0; i < partPlayers.length; i++) {
+                  partPlayers[i].pause();
+               }
             }
-            if(done) break;
-            interval=System.currentTimeMillis()-now;
-            progress+=interval;
-            now+=interval;
             Util.sleep(1);
          }
-         Util.sleep(500);
+         //Util.sleep(500);
          System.err.println("stop playing");
       }
       
-   }
-   
-   //[ playback methods
-   public void play() {
-      if(score==null) throw new IllegalStateException();
       
-      state=State.PLAYING;
-      
-      //[ try to eliminate glitch
-      final ShortMessage on = new NoteOnMessage(1, 60, 10);
-      OutDeviceManager.instance.send(on, -1);
-      Util.sleep(500);
-      final ShortMessage off = new NoteOffMessage(1, 60, 10);
-      OutDeviceManager.instance.send(off, -1);
-      Util.sleep(500);
-      //] try to eliminate glitch
-      
-      final Thread playThread=new Thread(new PlayThread());
-      final int nearMaxPriority = Thread.NORM_PRIORITY
-             + ((Thread.MAX_PRIORITY - Thread.NORM_PRIORITY) * 3) / 4;
-      //: the priority is copied from java api
-
-      playThread.setPriority(nearMaxPriority);
-      playThread.setDaemon(false); //>>> should be a daemon in gui
-      playThread.start();
-      
-      
-   }
-  
-   public void play(Path startPath) {
-      if(score==null) throw new IllegalStateException();
-      state=State.PLAYING;
-   }
-   
-   public void pause() {
-      if(score==null) throw new IllegalStateException();
-      state=State.PAUSE;
-   }
-   public void stop() {
-      if(score==null) throw new IllegalStateException();
-      state=State.STOP;
-   }
-   
-   //[ getters & setters
-   
-   public void setScore(Score s) {
-      score=s;
-      final int partCount=score.partCount();
-      //[ there's only 15 normal channels available, ignore the rest
-      partPlayers=new PartPlayer[
-             partCount>ChannelManager.NORMAL_CHANNEL_SIZE?
-             ChannelManager.NORMAL_CHANNEL_SIZE:
-             partCount];
-      for(int i=0; i<partPlayers.length; i++) {
-         partPlayers[i]=new PartPlayer(
-               s.getPart(i), ChannelManager.getNormalChannel(i));
+      PlayerState state=PlayerState.STOPPED; //>>>thread safe?
+      public void pausePlaying() {
+         if(state!=PlayerState.PLAYING) throw new IllegalStateException();
+         state=PlayerState.PAUSED;
       }
+      public void resumePlaying() {
+         if(state!=PlayerState.PAUSED) throw new IllegalStateException();
+         state=PlayerState.PLAYING;
+      }
+      
+      public void stopPlaying() {
+         if(state==PlayerState.STOPPED) throw new IllegalStateException();
+         state=PlayerState.STOPPED;
+      }
+      
    }
    
-   public Score getScore() {
-      return score;
-   }
-   
-   public boolean isPlaying() { 
-      return state==State.PLAYING;
-   }
-   public boolean isStopped() { 
-      return state==State.STOP;
-   }
-   
-   public long getTickPosition() {
-      throw new RuntimeException();
-   }
-   public long getMicrosecondPosition() {
-      return progress;
-   } 
-   public void setTickPosition(long pos) {
-      throw new RuntimeException();
-   }
-   public long getTickLength() {
-      throw new RuntimeException();
-   }
- 
-   public void setTempoFactor(float tf) {
-      throw new RuntimeException();
-   }
-
    
    ////////////////////////////// Test ///////////////////////////////////
    public static void test_multipart() {
@@ -386,8 +474,30 @@ public class RealTimeScorePlayer {
       player.play();
       //Util.wait(2000);
    }
+   public static void test_pause_stop() {
+      Score score=new Score();
+      Part part=new Part();
+      //part.setInstrument(Instrument.getInstance(128));
+//      part.setInstrument(Instrument.getInstance(8));
+      part.setVolume(100);
+      for (int i = 0; i < 100; i++) {
+         part.add(new Note(60, Note.WHOLE_LENGTH/16));
+      }
+      part.add(new Note(70, Note.WHOLE_LENGTH/16));
+      
+      score.add(part);
+      RealTimeScorePlayer player=new RealTimeScorePlayer();
+      player.setScore(score);
+      
+      player.play();
+      Util.sleep(3000);
+      player.pause();
+      Util.sleep(3000);
+      player.play();
+   }
    public static void main(String[] args) {
-      test_volume();
+      test_pause_stop();
+      //test_volume();
       //test_pan();
       //test_instrument();
       //test_multipart();
