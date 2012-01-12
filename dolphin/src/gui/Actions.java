@@ -485,7 +485,7 @@ class NoteHigherAction extends AbstractAction {
       //System.err.println(scoreView.cursor);
       if(scoreView.getAbsSelectionLength()>0) {
          final int oldSelection=scoreView.selection;
-         final int oldIndex=scoreView.staticCursor.index;
+         final int oldIndex=scoreView.staticCursor.noteIndex;
          score.setComboMode(true);
          final int left=scoreView.getSelectionStartIndex();
          for(int i=scoreView.getAbsSelectionLength()-1; i>=0; i--) {
@@ -500,7 +500,7 @@ class NoteHigherAction extends AbstractAction {
          }
          score.setComboMode(false);
          //scoreView.staticCursor.index=scoreView.getSelectionStartIndex();
-         scoreView.staticCursor.index=oldIndex;
+         scoreView.staticCursor.noteIndex=oldIndex;
          scoreView.selection=oldSelection;
          
       }
@@ -525,7 +525,7 @@ class NoteMuchHigherAction extends AbstractAction {
       //System.err.println(scoreView.cursor);
       if(scoreView.getAbsSelectionLength()>0) {
          final int oldSelection=scoreView.selection;
-         final int oldIndex=scoreView.staticCursor.index;
+         final int oldIndex=scoreView.staticCursor.noteIndex;
          score.setComboMode(true);
          final int left=scoreView.getSelectionStartIndex();
          for(int i=scoreView.getAbsSelectionLength()-1; i>=0; i--) {
@@ -540,7 +540,7 @@ class NoteMuchHigherAction extends AbstractAction {
          }
          score.setComboMode(false);
          //scoreView.staticCursor.index=scoreView.getSelectionStartIndex();
-         scoreView.staticCursor.index=oldIndex;
+         scoreView.staticCursor.noteIndex=oldIndex;
          scoreView.selection=oldSelection;
          
       }
@@ -565,7 +565,7 @@ class NoteMuchLowerAction extends AbstractAction {
       //System.err.println(scoreView.cursor);
       if(scoreView.getAbsSelectionLength()>0) {
          final int oldSelection=scoreView.selection;
-         final int oldIndex=scoreView.staticCursor.index;
+         final int oldIndex=scoreView.staticCursor.noteIndex;
          score.setComboMode(true);
          final int left=scoreView.getSelectionStartIndex();
          for(int i=scoreView.getAbsSelectionLength()-1; i>=0; i--) {
@@ -580,7 +580,7 @@ class NoteMuchLowerAction extends AbstractAction {
          }
          score.setComboMode(false);
          //scoreView.staticCursor.index=scoreView.getSelectionStartIndex();
-         scoreView.staticCursor.index=oldIndex;
+         scoreView.staticCursor.noteIndex=oldIndex;
          scoreView.selection=oldSelection;
          
       }
@@ -605,7 +605,7 @@ class NoteLowerAction extends AbstractAction {
       //System.err.println(scoreView.cursor);
       if(scoreView.getAbsSelectionLength()>0) {
          final int oldSelection=scoreView.selection;
-         final int oldIndex=scoreView.staticCursor.index;
+         final int oldIndex=scoreView.staticCursor.noteIndex;
          
          score.setComboMode(true);
          final int left=scoreView.getSelectionStartIndex();
@@ -621,7 +621,7 @@ class NoteLowerAction extends AbstractAction {
          }
          score.setComboMode(false);
          //scoreView.staticCursor.index=scoreView.getSelectionStartIndex();
-         scoreView.staticCursor.index=oldIndex;
+         scoreView.staticCursor.noteIndex=oldIndex;
          scoreView.selection=oldSelection;
       }
    }
@@ -645,7 +645,7 @@ class NoteLongerAction extends AbstractAction {
       //System.err.println(scoreView.cursor);
       if(scoreView.getAbsSelectionLength()>0) {
          final int oldSelection=scoreView.selection;
-         final int oldIndex=scoreView.staticCursor.index;
+         final int oldIndex=scoreView.staticCursor.noteIndex;
          score.setComboMode(true);
          final int left=scoreView.getSelectionStartIndex();
          for(int i=scoreView.getAbsSelectionLength()-1; i>=0; i--) {
@@ -658,7 +658,7 @@ class NoteLongerAction extends AbstractAction {
          }
          score.setComboMode(false);
          //scoreView.staticCursor.index=scoreView.getSelectionStartIndex();
-         scoreView.staticCursor.index=oldIndex;
+         scoreView.staticCursor.noteIndex=oldIndex;
          scoreView.selection=oldSelection;
       }
    }
@@ -682,7 +682,7 @@ class NoteShorterAction extends AbstractAction {
       //System.err.println(scoreView.cursor);
       if(scoreView.getAbsSelectionLength()>0) {
          final int oldSelection=scoreView.selection;
-         final int oldIndex=scoreView.staticCursor.index;
+         final int oldIndex=scoreView.staticCursor.noteIndex;
          score.setComboMode(true);
          final int left=scoreView.getSelectionStartIndex();
          for(int i=scoreView.getAbsSelectionLength()-1; i>=0; i--) {
@@ -696,7 +696,7 @@ class NoteShorterAction extends AbstractAction {
          }
          score.setComboMode(false);
          //scoreView.staticCursor.index=scoreView.getSelectionStartIndex();
-         scoreView.staticCursor.index=oldIndex;
+         scoreView.staticCursor.noteIndex=oldIndex;
          scoreView.selection=oldSelection;
       }
    }
@@ -720,7 +720,7 @@ class NoteAddDotAction extends AbstractAction {
       //System.err.println(scoreView.cursor);
       if(scoreView.getAbsSelectionLength()>0) {
          final int oldSelection=scoreView.selection;
-         final int oldIndex=scoreView.staticCursor.index;
+         final int oldIndex=scoreView.staticCursor.noteIndex;
          score.setComboMode(true);
          final int left=scoreView.getSelectionStartIndex();
          for(int i=scoreView.getAbsSelectionLength()-1; i>=0; i--) {
@@ -734,7 +734,7 @@ class NoteAddDotAction extends AbstractAction {
          }
          score.setComboMode(false);
          //scoreView.staticCursor.index=scoreView.getSelectionStartIndex();
-         scoreView.staticCursor.index=oldIndex;
+         scoreView.staticCursor.noteIndex=oldIndex;
          scoreView.selection=oldSelection;
       }
    }
@@ -758,7 +758,7 @@ class NoteRemoveDotAction extends AbstractAction {
       //System.err.println(scoreView.cursor);
       if(scoreView.getAbsSelectionLength()>0) {
          final int oldSelection=scoreView.selection;
-         final int oldIndex=scoreView.staticCursor.index;
+         final int oldIndex=scoreView.staticCursor.noteIndex;
          score.setComboMode(true);
          final int left=scoreView.getSelectionStartIndex();
          for(int i=scoreView.getAbsSelectionLength()-1; i>=0; i--) {
@@ -772,7 +772,7 @@ class NoteRemoveDotAction extends AbstractAction {
          }
          score.setComboMode(false);
          //scoreView.staticCursor.index=scoreView.getSelectionStartIndex();
-         scoreView.staticCursor.index=oldIndex;
+         scoreView.staticCursor.noteIndex=oldIndex;
          scoreView.selection=oldSelection;
       }
    }
@@ -796,7 +796,7 @@ class NoteTieAction extends AbstractAction {
       //System.err.println(scoreView.cursor);
       if(scoreView.getAbsSelectionLength()>1) {
          final int oldSelection=scoreView.selection;
-         final int oldIndex=scoreView.staticCursor.index;
+         final int oldIndex=scoreView.staticCursor.noteIndex;
          score.setComboMode(true);
          final int left=scoreView.getSelectionStartIndex();
          final int firstPitch=score.get(scoreView.staticCursor.partIndex).get(left).pitch;
@@ -812,7 +812,7 @@ class NoteTieAction extends AbstractAction {
          }
          score.setComboMode(false);
          //scoreView.staticCursor.index=scoreView.getSelectionStartIndex();
-         scoreView.staticCursor.index=oldIndex;
+         scoreView.staticCursor.noteIndex=oldIndex;
          scoreView.selection=oldSelection;
       }
    }
@@ -836,7 +836,7 @@ class NoteTripletAction extends AbstractAction {
       //System.err.println(scoreView.cursor);
       if(scoreView.getAbsSelectionLength()==3) { //>>> only 3 ?
          final int oldSelection=scoreView.selection;
-         final int oldIndex=scoreView.staticCursor.index;
+         final int oldIndex=scoreView.staticCursor.noteIndex;
          score.setComboMode(true);
          final int left=scoreView.getSelectionStartIndex();
          for(int i=scoreView.getAbsSelectionLength()-1; i>=0; i--) {
@@ -848,7 +848,7 @@ class NoteTripletAction extends AbstractAction {
          }
          score.setComboMode(false);
          //scoreView.staticCursor.index=scoreView.getSelectionStartIndex();
-         scoreView.staticCursor.index=oldIndex;
+         scoreView.staticCursor.noteIndex=oldIndex;
          scoreView.selection=oldSelection;
       }
    }

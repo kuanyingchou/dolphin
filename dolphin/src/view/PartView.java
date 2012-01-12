@@ -109,7 +109,7 @@ public abstract class PartView extends AbstractCpn {
             
             //[ draw static cursor
             if(scoreView.indexOf(this) == scoreView.staticCursor.partIndex &&
-                  noteIndex==scoreView.staticCursor.index) {
+                  noteIndex==scoreView.staticCursor.noteIndex) {
                //g.setXORMode(Color.green);
                g.setColor(Color.blue);
                g.drawLine((int)currentX, 0, (int)currentX, h());
@@ -149,7 +149,7 @@ public abstract class PartView extends AbstractCpn {
       
       //[ draw static cursor at end
       if(scoreView.indexOf(this) == scoreView.staticCursor.partIndex &&
-            getPart().noteCount() == scoreView.staticCursor.index) {
+            getPart().noteCount() == scoreView.staticCursor.noteIndex) {
          //g.setXORMode(Color.blue);
          g.setColor(Color.blue);
          g.drawLine((int)currentX, 0, (int)currentX, h());

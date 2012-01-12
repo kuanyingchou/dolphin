@@ -145,7 +145,7 @@ public class ScoreView extends JComponent implements
    }
    
    public int getSelectionStartIndex() {
-      return selection<0?staticCursor.index+selection:staticCursor.index;
+      return selection<0?staticCursor.noteIndex+selection:staticCursor.noteIndex;
    }
    public int getAbsSelectionLength() { //positive
       return selection<0? -selection: selection;
@@ -162,7 +162,7 @@ public class ScoreView extends JComponent implements
       }
       final PartView pv=partViews.get(staticCursor.partIndex);
       float x=leftBorder;
-      for(int i=0; i<staticCursor.index; i++) {
+      for(int i=0; i<staticCursor.noteIndex; i++) {
          x+=pv.getNoteWidth(score.get(staticCursor.partIndex).get(i))+pv.getNoteGap(); //>>>header
       }
       //System.err.println(x);
@@ -350,8 +350,8 @@ public class ScoreView extends JComponent implements
       if(lenDot[0]==0) return;
       score.get(staticCursor.partIndex).add(
             //new Note((int) finalPitch, lenDot[0], lenDot[1]), staticCursor.index);
-            new Note((int) finalPitch, Note.WHOLE_LENGTH/4), staticCursor.index);
-      staticCursor.index++;   
+            new Note((int) finalPitch, Note.WHOLE_LENGTH/4), staticCursor.noteIndex);
+      staticCursor.noteIndex++;   
    }
    private int msToLength(double ms) {
       //System.err.println(ms*score.tempo/60000.0);
@@ -406,8 +406,8 @@ public class ScoreView extends JComponent implements
       } else if(e instanceof AddNoteChange) {
          final AddNoteChange ane=(AddNoteChange)e;
          if(ane.part==score.get(staticCursor.partIndex) && 
-               ane.index < staticCursor.index) {
-            staticCursor.index++;
+               ane.index < staticCursor.noteIndex) {
+            staticCursor.noteIndex++;
             /*if(selection<0 ) {
                selection--;
             }*/ //>>>
@@ -415,8 +415,8 @@ public class ScoreView extends JComponent implements
       } else if(e instanceof RemoveNoteChange) {
          final RemoveNoteChange rne=(RemoveNoteChange)e;
          if(rne.part==score.get(staticCursor.partIndex) && 
-               rne.index < staticCursor.index) {
-            staticCursor.index--;
+               rne.index < staticCursor.noteIndex) {
+            staticCursor.noteIndex--;
             /*if(selection<0) {
                selection++;
             } else if(selection>0) {
@@ -481,7 +481,7 @@ public class ScoreView extends JComponent implements
             MainFrame.clipBoard.add(new Note(score.get(this.staticCursor.partIndex).get(left+i)));
          }
          score.get(this.staticCursor.partIndex).remove(left, this.getAbsSelectionLength());
-         this.staticCursor.index=left;
+         this.staticCursor.noteIndex=left;
          this.selection=0;
       }
    }
@@ -500,8 +500,8 @@ public class ScoreView extends JComponent implements
       for(int i=0; i<MainFrame.clipBoard.size(); i++) {
          copy[i]=new Note(MainFrame.clipBoard.get(i));
       }
-      score.get(this.staticCursor.partIndex).add(copy, this.staticCursor.index);
-      this.staticCursor.index+=copy.length;
+      score.get(this.staticCursor.partIndex).add(copy, this.staticCursor.noteIndex);
+      this.staticCursor.noteIndex+=copy.length;
       this.selection=0; //>>> remove selection while pasting
    }
    public void export(String path) {
@@ -519,7 +519,7 @@ public class ScoreView extends JComponent implements
       if(this.getAbsSelectionLength()>0) {
          final int left=this.getSelectionStartIndex();
          score.get(this.staticCursor.partIndex).remove(left, this.getAbsSelectionLength());
-         this.staticCursor.index=left;
+         this.staticCursor.noteIndex=left;
          this.selection=0;
       }
    }
@@ -663,10 +663,10 @@ public class ScoreView extends JComponent implements
                if(diff>=0 && diff<noteW+s.getNoteGap()) {
                   //inside a note
                   if(diff<step/2.0) { //left
-                     path.index=j;
+                     path.noteIndex=j;
                      cursorX=(int)currentX;
                   } else {            //right
-                     path.index=j+1;
+                     path.noteIndex=j+1;
                      cursorX=(int)(currentX+step);
                   }
                   break;
@@ -675,11 +675,11 @@ public class ScoreView extends JComponent implements
             }
             if(cursorX==-1) {
                cursorX=(int)currentX;
-               path.index=s.getPart().noteCount();
+               path.noteIndex=s.getPart().noteCount();
             }
          } else {
             cursorX=(int)currentX;
-            path.index=0;
+            path.noteIndex=0;
          }
          return new Pair<Path, Integer>(path, cursorX);
       }
@@ -776,10 +776,10 @@ System.err.println("1/"+(double)Note.WHOLE_LENGTH/dummyNote.length+"+ "+dummyNot
                   if(dummyNote.pitch>=0) {
                      score.get(i).add(
                         new Note(s.positions.get(pos)+s.sharpFlats[pos], 
-                                 dummyNote.length, dummyNote.dot), s.scoreView.staticCursor.index);
+                                 dummyNote.length, dummyNote.dot), s.scoreView.staticCursor.noteIndex);
                   } else {
                      score.get(i).add(
-                           new Note(-1, dummyNote.length, dummyNote.dot), s.scoreView.staticCursor.index);
+                           new Note(-1, dummyNote.length, dummyNote.dot), s.scoreView.staticCursor.noteIndex);
                   }
                   selection=0;
                   break;
@@ -814,11 +814,11 @@ System.err.println("1/"+(double)Note.WHOLE_LENGTH/dummyNote.length+"+ "+dummyNot
          final Pair<Path, Integer> p=getPath(e.getX(), e.getY());
          if(p==null) return;  
          if(!score.isValidInsertPath(p.getLeft())) {
-            System.err.println(p.getLeft().partIndex+" - "+p.getLeft().index);
+            System.err.println(p.getLeft().partIndex+" - "+p.getLeft().noteIndex);
             return; //>>> check this later
          }
 //System.err.println(p.getLeft().partIndex);            
-         cursor.setBy(p.getLeft().partIndex, p.getLeft().index);
+         cursor.setBy(p.getLeft().partIndex, p.getLeft().noteIndex);
          
          //[ find x
          int newX=p.getRight();
@@ -901,7 +901,7 @@ System.err.println("1/"+(double)Note.WHOLE_LENGTH/dummyNote.length+"+ "+dummyNot
          //final int pathX=r.getRight();
 
          if(buttonPressed) { 
-            selection=cursor.index-path.index;
+            selection=cursor.noteIndex-path.noteIndex;
             staticCursor.setBy(r.getLeft());
          } else {
             //if(getAbsSelectionLength()<=0) {
@@ -964,8 +964,8 @@ System.err.println("1/"+(double)Note.WHOLE_LENGTH/dummyNote.length+"+ "+dummyNot
                return;
             }
             //>>> modify note
-            if(staticCursor.index>0) {
-               staticCursor.index--;
+            if(staticCursor.noteIndex>0) {
+               staticCursor.noteIndex--;
                if(e.isShiftDown()) {
                   selection++;
                } else {
@@ -984,8 +984,8 @@ System.err.println("1/"+(double)Note.WHOLE_LENGTH/dummyNote.length+"+ "+dummyNot
                }
                return;
             }
-            if(staticCursor.index<score.get(staticCursor.partIndex).noteCount()) {
-               staticCursor.index++;
+            if(staticCursor.noteIndex<score.get(staticCursor.partIndex).noteCount()) {
+               staticCursor.noteIndex++;
                if(e.isShiftDown()) {
                   selection--;
                } else {
@@ -1006,8 +1006,8 @@ System.err.println("1/"+(double)Note.WHOLE_LENGTH/dummyNote.length+"+ "+dummyNot
             }
             if(staticCursor.partIndex>0) {
                staticCursor.partIndex--;
-               if(staticCursor.index>score.get(staticCursor.partIndex).noteCount()) {
-                  staticCursor.index=score.get(staticCursor.partIndex).noteCount();
+               if(staticCursor.noteIndex>score.get(staticCursor.partIndex).noteCount()) {
+                  staticCursor.noteIndex=score.get(staticCursor.partIndex).noteCount();
                }
                selection=0;
             }
@@ -1025,29 +1025,29 @@ System.err.println("1/"+(double)Note.WHOLE_LENGTH/dummyNote.length+"+ "+dummyNot
             }
             if(staticCursor.partIndex<score.partCount()-1) {
                staticCursor.partIndex++;
-               if(staticCursor.index>score.get(staticCursor.partIndex).noteCount()) {
-                  staticCursor.index=score.get(staticCursor.partIndex).noteCount();
+               if(staticCursor.noteIndex>score.get(staticCursor.partIndex).noteCount()) {
+                  staticCursor.noteIndex=score.get(staticCursor.partIndex).noteCount();
                }
                selection=0;
             }
          } else if(e.getKeyCode()==KeyEvent.VK_HOME) {
-            if(staticCursor.index>0) {
+            if(staticCursor.noteIndex>0) {
                if(e.isShiftDown()) {
-                  selection+=staticCursor.index;
+                  selection+=staticCursor.noteIndex;
                } else {
                   selection=0;
                }
-               staticCursor.index=0;
+               staticCursor.noteIndex=0;
                System.err.println("jump to start");
             }
          } else if(e.getKeyCode()==KeyEvent.VK_END) {
-            if(staticCursor.index<score.get(staticCursor.partIndex).noteCount()) {
+            if(staticCursor.noteIndex<score.get(staticCursor.partIndex).noteCount()) {
                if(e.isShiftDown()) {
-                  selection-=score.get(staticCursor.partIndex).noteCount()-staticCursor.index;
+                  selection-=score.get(staticCursor.partIndex).noteCount()-staticCursor.noteIndex;
                } else {
                   selection=0;
                }
-               staticCursor.index=score.get(staticCursor.partIndex).noteCount();
+               staticCursor.noteIndex=score.get(staticCursor.partIndex).noteCount();
                System.err.println("jump to end");
             }
          } else if(Character.isDigit(e.getKeyChar())) { //[ start input
@@ -1065,8 +1065,8 @@ System.err.println("1/"+(double)Note.WHOLE_LENGTH/dummyNote.length+"+ "+dummyNot
             if(getAbsSelectionLength()>0) {
                removeSelection();
             } else {
-               if(staticCursor.index>0) {
-                  score.get(staticCursor.partIndex).remove(staticCursor.index-1);
+               if(staticCursor.noteIndex>0) {
+                  score.get(staticCursor.partIndex).remove(staticCursor.noteIndex-1);
                }
             }
          } else if(e.getKeyCode()==KeyEvent.VK_ESCAPE) {
@@ -1075,8 +1075,8 @@ System.err.println("1/"+(double)Note.WHOLE_LENGTH/dummyNote.length+"+ "+dummyNot
             if(getAbsSelectionLength()>0) {
                removeSelection();
             } else {
-               if(staticCursor.index<score.get(staticCursor.partIndex).noteCount()) {
-                  score.get(staticCursor.partIndex).remove(staticCursor.index);
+               if(staticCursor.noteIndex<score.get(staticCursor.partIndex).noteCount()) {
+                  score.get(staticCursor.partIndex).remove(staticCursor.noteIndex);
                }   
             }
          } else if(e.getKeyCode()==KeyEvent.VK_Z && e.isControlDown()) {
@@ -1097,9 +1097,9 @@ System.err.println("1/"+(double)Note.WHOLE_LENGTH/dummyNote.length+"+ "+dummyNot
             paste();
          } else if(e.getKeyCode()==KeyEvent.VK_ENTER || e.getKeyCode()==KeyEvent.VK_SPACE) {
             if(!inputMode) return;
-            score.get(staticCursor.partIndex).add(new Note(dummyNote), staticCursor.index);
+            score.get(staticCursor.partIndex).add(new Note(dummyNote), staticCursor.noteIndex);
             selection=0;
-            staticCursor.index++; //>>> no need to save old index?
+            staticCursor.noteIndex++; //>>> no need to save old index?
             inputMode=false;
             dummyNote=new Note(60, Note.WHOLE_LENGTH/4);
          } 
@@ -1186,8 +1186,8 @@ System.err.println("1/"+(double)Note.WHOLE_LENGTH/dummyNote.length+"+ "+dummyNot
                for(TimeNote tn: buffer) {
                   score.get(staticCursor.partIndex).add(
                         tn.note,
-                        staticCursor.index);
-                  staticCursor.index++;
+                        staticCursor.noteIndex);
+                  staticCursor.noteIndex++;
                }
                buffer.clear();
                
@@ -1195,8 +1195,8 @@ System.err.println("1/"+(double)Note.WHOLE_LENGTH/dummyNote.length+"+ "+dummyNot
                if(lenDot[0]>0) {
                   score.get(staticCursor.partIndex).add(
                         note,
-                        staticCursor.index);
-                  staticCursor.index++;
+                        staticCursor.noteIndex);
+                  staticCursor.noteIndex++;
                }
             }
             

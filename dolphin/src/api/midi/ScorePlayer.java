@@ -72,7 +72,7 @@ public class ScorePlayer implements Receiver, MetaEventListener {
             try {
                final Sequence sequence = score.toSequence();
 //DumpSequence.dump(sequence);
-               final long startTick=score.get(startPath.partIndex).get(startPath.index).getTick();
+               final long startTick=score.get(startPath.partIndex).get(startPath.noteIndex).getTick();
                sequencer = MidiSystem.getSequencer(false);
                sequencer.setSequence(sequence);
                //sequencer.getTransmitter().setReceiver(DeviceManager.outDevice.getReceiver());

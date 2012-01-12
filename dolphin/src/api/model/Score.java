@@ -281,7 +281,7 @@ public class Score {
    public boolean isValidSelectPath(Path path) {
       if(path.partIndex<0 || path.partIndex>=this.partCount()) return false;
       final Part part=this.get(path.partIndex);
-      if(path.index<0 || path.index>=part.noteCount()) return false;
+      if(path.noteIndex<0 || path.noteIndex>=part.noteCount()) return false;
       /*final int start=getSelectionStartIndex();
       if(start<0 || start>=part.size()) return false;
       final int last=start+getAbsSelectionLength();
@@ -291,7 +291,7 @@ public class Score {
    public boolean isValidInsertPath(Path path) {
       if(path.partIndex<0 || path.partIndex>=this.partCount()) return false;
       final Part part=this.get(path.partIndex);
-      if(path.index<0 || path.index>part.noteCount()) return false;
+      if(path.noteIndex<0 || path.noteIndex>part.noteCount()) return false;
       /*final int start=getSelectionStartIndex();
       if(start<0 || start>part.size()) return false;
       final int last=start+getAbsSelectionLength();

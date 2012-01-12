@@ -4,7 +4,7 @@ import api.util.Util;
 
 public class Path {
    public int partIndex=0;
-   public int index=0;
+   public int noteIndex=0;
    //public int length=0;    
    public Path() {}
    public Path(int p, int i) {
@@ -15,12 +15,12 @@ public class Path {
    }
    public void setBy(int p, int n/*, int len*/) {
       partIndex=p;
-      index=n;
+      noteIndex=n;
       //length=len;
    }
    public void setBy(Path that) {
       this.partIndex=that.partIndex;
-      this.index=that.index;
+      this.noteIndex=that.noteIndex;
    }
    public String toString() {
       return Util.getObjectInfo(this);
