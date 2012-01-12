@@ -14,6 +14,10 @@ import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Track;
 
 import api.midi.DumpSequence;
+import api.midi.InstrumentMessage;
+import api.midi.NoteOnMessage;
+import api.midi.PanMessage;
+import api.midi.VolumeMessage;
 import api.util.Util;
 
 public class ScoreSequenceConverter {
@@ -273,19 +277,16 @@ NEXT_EVENT:
          
          //[ instrument
          if(channel!=9) {
-            final ShortMessage pc=new ShortMessage();
-            pc.setMessage(0xC0, channel, part.getInstrument().getValue(), 0);
+            final ShortMessage pc=new InstrumentMessage(channel, part.getInstrument().getValue());
             track.add(new MidiEvent(pc, 0));
          }
          
          //[ volume
-         final ShortMessage cc=new ShortMessage();
-         cc.setMessage(0xb0, channel, 0x07, part.getVolume());
+         final ShortMessage cc=new VolumeMessage(channel, part.getVolume());
          track.add(new MidiEvent(cc, 0));
          
          //[ pan
-         final ShortMessage cv=new ShortMessage();
-         cv.setMessage(0xb0, channel, 0x0A, part.getPan());
+         final ShortMessage cv=new PanMessage(channel, part.getPan());
          track.add(new MidiEvent(cv, 0));
          
          //[ for beat strength
@@ -324,15 +325,13 @@ NEXT_EVENT:
                Note runner=firstNote;
                boolean firstFlag=true;
                while(true) {
-                  final ShortMessage noteOnMsg=new ShortMessage();
+                  final ShortMessage noteOnMsg=new NoteOnMessage(channel, runner.pitch, strength);
                   //System.err.println(strength);
-                  noteOnMsg.setMessage(0x90, channel, runner.pitch, strength);
                   runner.binding=noteOnMsg;
                   final long t=currentTick+lengthToTick(runner.delay, RESOLUTION);
                   runner.setTick(t);
                   track.add(new MidiEvent(noteOnMsg, t));
-                  final ShortMessage noteOffMsg=new ShortMessage();
-                  noteOffMsg.setMessage(0x90, channel, runner.pitch, 0);
+                  final ShortMessage noteOffMsg=new NoteOnMessage(channel, runner.pitch, 0);
                   //currentTick+=lengthToTick(runner.length, RESOLUTION);
                   track.add(new MidiEvent(noteOffMsg, 
                         t+lengthToTick(firstFlag?firstLength:runner.length, RESOLUTION)));
