@@ -7,7 +7,7 @@ public class NoteOffMessage extends ShortMessage {
 
    public NoteOffMessage(int channel, int pitch, int velocity) {
       try {
-         setMessage(0x80, channel, pitch, velocity);
+         setMessage(ShortMessage.NOTE_OFF, channel, pitch, velocity);
       } catch (InvalidMidiDataException e) {
          e.printStackTrace();
       }
