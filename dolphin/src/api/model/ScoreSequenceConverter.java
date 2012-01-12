@@ -14,6 +14,7 @@ import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Track;
 
 import api.midi.DumpSequence;
+import api.midi.EndOfTrackMessage;
 import api.midi.InstrumentMessage;
 import api.midi.NoteOnMessage;
 import api.midi.PanMessage;
@@ -347,8 +348,7 @@ NEXT_EVENT:
             currentTick+=lengthToTick(firstLength, RESOLUTION);
          }
          
-         final MetaMessage eotMsg=new MetaMessage();
-         eotMsg.setMessage(0x2F, new byte[0], 0);
+         final MetaMessage eotMsg=new EndOfTrackMessage();
          infoTrack.add(new MidiEvent(eotMsg, track.get(track.size()-1).getTick()+500));
       }
       
