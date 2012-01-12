@@ -15,6 +15,8 @@ public class Instrument {
    public String toString() { return name+" ("+(value+1)+")"; }
    
    //[ factories
+   
+   //[ value: zero-based
    public static Instrument getInstance(int value) {
       if(value<0 || value>=all.size()) throw new IllegalArgumentException();
       return all.get(value);
@@ -167,183 +169,58 @@ public class Instrument {
       all.add(new Instrument( "Gunshot", 128));
       
       all.add(new Instrument( "Percussions", 1, true));
-      //[ this is wrong
-      //[ percussions
-//      all.add(new Instrument( "Bass Drum 2      "    ,35, true)); 
-//      all.add(new Instrument( "Bass Drum 1      "    ,36, true));
-//      all.add(new Instrument( "Side Stick       "    ,37, true));
-//      all.add(new Instrument( "Snare Drum 1     "    ,38, true));
-//      all.add(new Instrument( "Hand Clap        "    ,39, true));
-//      all.add(new Instrument( "Snare Drum 2     "    ,40, true));
-//      all.add(new Instrument( "Low Tom 2        "    ,41, true));
-//      all.add(new Instrument( "Closed Hi-hat    "    ,42, true));
-//      all.add(new Instrument( "Low Tom 1        "    ,43, true));
-//      all.add(new Instrument( "Pedal Hi-hat     "    ,44, true));
-//      all.add(new Instrument( "Mid Tom 2        "    ,45, true));
-//      all.add(new Instrument( "Open Hi-hat      "    ,46, true));
-//      all.add(new Instrument( "Mid Tom 1        "    ,47, true));
-//      all.add(new Instrument( "High Tom 2       "    ,48, true));
-//      all.add(new Instrument( "Crash Cymbal 1   "    ,49, true));
-//      all.add(new Instrument( "High Tom 1       "    ,50, true));
-//      all.add(new Instrument( "Ride Cymbal 1    "    ,51, true));
-//      all.add(new Instrument( "Chinese Cymbal   "    ,52, true));
-//      all.add(new Instrument( "Ride Bell        "    ,53, true));
-//      all.add(new Instrument( "Tambourine       "    ,54, true));
-//      all.add(new Instrument( "Splash Cymbal    "    ,55, true));
-//      all.add(new Instrument( "Cowbell          "    ,56, true));
-//      all.add(new Instrument( "Crash Cymbal 2   "    ,57, true));
-//      all.add(new Instrument( "Vibra Slap       "    ,58, true));
-//      all.add(new Instrument( "Ride Cymbal 2    "    ,59, true));
-//      all.add(new Instrument( "High Bongo       "    ,60, true));
-//      all.add(new Instrument( "Low Bongo        "    ,61, true));
-//      all.add(new Instrument( "Mute High Conga  "    ,62, true));
-//      all.add(new Instrument( "Open High Conga  "    ,63, true));
-//      all.add(new Instrument( "Low Conga        "    ,64, true));
-//      all.add(new Instrument( "High Timbale     "    ,65, true));
-//      all.add(new Instrument( "Low Timbale      "    ,66, true));
-//      all.add(new Instrument( "High Agogo       "    ,67, true));
-//      all.add(new Instrument( "Low Agogo        "    ,68, true));
-//      all.add(new Instrument( "Cabasa           "    ,69, true));
-//      all.add(new Instrument( "Maracas          "    ,70, true));
-//      all.add(new Instrument( "Short Whistle    "    ,71, true));
-//      all.add(new Instrument( "Long Whistle     "    ,72, true));
-//      all.add(new Instrument( "Short Guiro      "    ,73, true));
-//      all.add(new Instrument( "Long Guiro       "    ,74, true));
-//      all.add(new Instrument( "Claves           "    ,75, true));
-//      all.add(new Instrument( "High Wood Block  "    ,76, true));
-//      all.add(new Instrument( "Low Wood Block   "    ,77, true));
-//      all.add(new Instrument( "Mute Cuica       "    ,78, true));
-//      all.add(new Instrument( "Open Cuica       "    ,79, true));
-//      all.add(new Instrument( "Mute Triangle    "    ,80, true));
-//      all.add(new Instrument( "Open Triangle    "    ,81, true));
+      //]  key range of percussions is 27 to 95 when using Java Sound Synthesizer,
+      //   35 to 81 in General Midi)
+      
+////// percussion keys //////
+// Bass Drum 2      35 
+// Bass Drum 1      36
+// Side Stick       37
+// Snare Drum 1     38
+// Hand Clap        39
+// Snare Drum 2     40
+// Low Tom 2        41
+// Closed Hi-hat    42
+// Low Tom 1        43
+// Pedal Hi-hat     44
+// Mid Tom 2        45
+// Open Hi-hat      46
+// Mid Tom 1        47
+// High Tom 2       48
+// Crash Cymbal 1   49
+// High Tom 1       50
+// Ride Cymbal 1    51
+// Chinese Cymbal   52
+// Ride Bell        53
+// Tambourine       54
+// Splash Cymbal    55
+// Cowbell          56
+// Crash Cymbal 2   57
+// Vibra Slap       58
+// Ride Cymbal 2    59
+// High Bongo       60
+// Low Bongo        61
+// Mute High Conga  62
+// Open High Conga  63
+// Low Conga        64
+// High Timbale     65
+// Low Timbale      66
+// High Agogo       67
+// Low Agogo        68
+// Cabasa           69
+// Maracas          70
+// Short Whistle    71
+// Long Whistle     72
+// Short Guiro      73
+// Long Guiro       74
+// Claves           75
+// High Wood Block  76
+// Low Wood Block   77
+// Mute Cuica       78
+// Open Cuica       79
+// Mute Triangle    80
+// Open Triangle    81
 
    }
-    /*public static final int Acounstic_Grand_Piano   =1; 
-    public static final int Bright_Acoustic_Piano   =2;
-    public static final int Electric_Grand_Piano    =3;
-    public static final int Honkey_Tonk_Piano       =4;
-    public static final int Electric_Piano_1        =5;
-    public static final int Electric_Piano_2        =6;
-    public static final int Harpsichord             =7;
-    public static final int Clav                    =8;
-    public static final int Celesta                 =9;
-    public static final int Glockenspiel            =10;
-    public static final int Music_Box               =11;
-    public static final int Vibraphone              =12;
-    public static final int Marimba                 =13;
-    public static final int Xylophone               =14;
-    public static final int Tubular_Bells           =15;
-    public static final int Dulcimer                =16;
-    public static final int Drawbar_Organ           =17;
-    public static final int Percussive_Organ        =18;
-    public static final int Rock_Organ              =19;
-    public static final int Church_Organ            =20;
-    public static final int Reed_Organ              =21;
-    public static final int Accordion               =22;
-    public static final int Harmonica               =23;
-    public static final int Tango_Accordion         =24;
-    public static final int Acoustic_Guitar_Nylon   =25;
-    public static final int Acoustic_Guitar_Steel   =26;
-    public static final int Electric_Guitar_Jazz    =27;
-    public static final int Electric_Guitarc_Clean  =28; 
-    public static final int Electric_Guitar_Muted   =29;
-    public static final int Overdriven_Guitar       =30;
-    public static final int Distortion_Guitar       =31;
-    public static final int Guitar_Harmonics        =32;
-    public static final int Acoustic_Bass           =33;
-    public static final int ElectricBass_finger     =34;
-    public static final int ElectricBass_Pick       =35;
-    public static final int Fretless_Bass           =36;
-    public static final int Slap_Bass_1             =37;
-    public static final int Slap_Bass_2             =38;
-    public static final int Synth_Bass_1            =39;
-    public static final int Synth_Bass_2            =40;
-    public static final int Violin                  =41;
-    public static final int Viola                   =42;
-    public static final int Cello                   =43;
-    public static final int Contrabass              =44;
-    public static final int Tremolo_Strings         =45;
-    public static final int Pizzicato_Strings       =46;
-    public static final int Orchestral_Harp         =47;
-    public static final int Timpani                 =48;
-    public static final int String_Ensemble_1       =49;
-    public static final int String_Ensemble_2       =50;
-    public static final int Synth_Strings_1         =51;
-    public static final int Synth_Strings_2         =52;
-    public static final int Choir_Aahs              =53;
-    public static final int Voice_Oohs              =54;
-    public static final int Synth_Voice             =55;
-    public static final int Orchestra_Hit           =56;
-    public static final int Trumpet                 =57;
-    public static final int Trombone                =58;
-    public static final int Tuba                    =59;
-    public static final int Muted_Trumpet           =60;
-    public static final int French_Horn             =61;
-    public static final int Brass_Section           =62;
-    public static final int Synth_Brass_1           =63;
-    public static final int Synth_Brass_2           =64;
-    public static final int Soprano_Sax             =65;
-    public static final int Alto_Sax                =66;
-    public static final int Tenor_Sax               =67;
-    public static final int Baritone_Sax            =68;
-    public static final int Oboe                    =69;
-    public static final int English_Horn            =70;
-    public static final int Bassoon                 =71;
-    public static final int Clarinet                =72;
-    public static final int Piccolo                 =73;
-    public static final int Flute                   =74;
-    public static final int Recorder                =75;
-    public static final int Pan_Flute               =76;
-    public static final int Blown_Bottle            =77;
-    public static final int Shakuhachi              =78;
-    public static final int Whistle                 =79;
-    public static final int Ocarina                 =80;
-    public static final int Lead_1_Square           =81;
-    public static final int Lead_2_Sawtooth         =82;
-    public static final int Lead_3_Calliope         =83;
-    public static final int Lead_4_Chiff            =84;
-    public static final int Lead_5_Charang          =85;
-    public static final int Lead_6_Voice            =86;
-    public static final int Lead_7_Fifths           =87;
-    public static final int Lead_8_Bass_Lead        =88;
-    public static final int Pad_1_New_Age           =89;
-    public static final int Pad_1_Warm              =90;
-    public static final int Pad_1_Polysynth         =91;
-    public static final int Pad_1_Choir             =92;
-    public static final int Pad_1_Bowed             =93;
-    public static final int Pad_1_Metallic          =94;
-    public static final int Pad_1_Halo              =95;
-    public static final int Pad_1_Sweep             =96;
-    public static final int FX_1_Rain               =97;
-    public static final int FX_2_Soundtrack         =98;
-    public static final int FX_3_Crystal            =99;
-    public static final int FX_4_Atmosphere         =100;
-    public static final int FX_5_Brightness         =101;
-    public static final int FX_6_Goblins            =102;
-    public static final int FX_7_Echoes             =103;
-    public static final int FX_8_Sci_Fi             =104;
-    public static final int Sitar                   =105;
-    public static final int Banjo                   =106;
-    public static final int Shamisen                =107;
-    public static final int Koto                    =108;
-    public static final int Kalimba                 =109;
-    public static final int Bagpipe                 =110;
-    public static final int Fiddle                  =111;
-    public static final int Shanai                  =112;
-    public static final int Tinkle_Bell             =113;
-    public static final int Agogo                   =114;
-    public static final int Steel_Drums             =115;
-    public static final int Woodblock               =116;
-    public static final int Taiko_Drum              =117;
-    public static final int Melodic_Drum            =118;
-    public static final int Synth_Drum              =119;
-    public static final int Reverse_Cymbal          =120;
-    public static final int Guitar_Fret_Noise       =121;
-    public static final int Breath_Noise            =122;
-    public static final int Seashore                =123;
-    public static final int Bird_Tweet              =124;
-    public static final int Telephone_Ring          =125;
-    public static final int Helicopter              =126;
-    public static final int Applause                =127;
-    public static final int Gunshot                 =128;*/
+   
 }
