@@ -1,6 +1,8 @@
 package api.midi;
 
 
+import java.io.File;
+
 import javax.sound.midi.ShortMessage;
 
 import api.model.Note;
@@ -52,43 +54,59 @@ public class RealTimeScorePlayer {
             noteIndex++;
             if(noteIndex<part.noteCount()) {
                openNote();
-               //System.err.print("/");
             }
          } 
 
          if (elapsedTime >= noteLengthInMillis) {
-            closeNote();
-            //System.err.print("\\");
+            if(openNoteCount>0) closeNote();
             noteIndex++;
             
+            
+            elapsedTime -= noteLengthInMillis;
             if(noteIndex<part.noteCount()) {
                openNote();
-               //System.err.print("/");
             }
-            elapsedTime -= noteLengthInMillis;
             //System.err.println("err: "+elapsedTime);
          } else {
-            //System.err.print("/");
+            //System.err.print(".");
          }
          
       }
       private void closeNote() {
          //System.err.println("0 "+progress);
+         System.err.print("\\");
          final Note note = part.getNote(noteIndex);
          final ShortMessage off = new NoteOffMessage(1, note.pitch, 127);
          OutDeviceManager.instance.send(off, 0);
+         openNoteCount--;
          //System.err.println("close note("+note.pitch+")");
       }
+      int openNoteCount=0;
       private void openNote() {
          //System.err.println("1 "+progress);
+         
          final Note note = part.getNote(noteIndex);
          noteLengthInMillis=getNoteLengthInMillis(note);
+         if(note.isRest()) return;
+         
+         if(note.isTieStart()) {
+            noteIndex++;
+            while(noteIndex<part.noteCount()) {
+               final Note n=part.getNote(noteIndex);
+               noteLengthInMillis+=getNoteLengthInMillis(n);
+               if(n.isTieEnd()) break;
+               noteIndex++;
+            }
+         }
+         
          final ShortMessage on = new NoteOnMessage(1, note.pitch, 127);
          OutDeviceManager.instance.send(on, 0);
-         //System.err.println("open note("+note.pitch+") with length="+noteLengthInMillis);
+         openNoteCount++;
+         System.err.print("/");
+         //System.err.println("open note("+note.pitch+") with length="+noteLengthInMillis+"");
       }
       private long getNoteLengthInMillis(Note n) {
-         return wholeLengthInMillis * n.length / Note.WHOLE_LENGTH;
+         return (long)((float)wholeLengthInMillis * n.getActualLength() / Note.WHOLE_LENGTH);
       }
    }
    Track[] tracks;
@@ -100,6 +118,7 @@ public class RealTimeScorePlayer {
       if(score==null) throw new IllegalStateException();
       
       System.err.println("start playing...");
+      state=State.PLAYING;
       
       //[ the loop treats notes like multiple lines of customers, and 
       //  exits when all customers are done
@@ -153,7 +172,7 @@ public class RealTimeScorePlayer {
          }
       };
       */
-      state=State.PLAYING;
+      
       System.err.println("stop playing");
    }
   
@@ -209,7 +228,9 @@ public class RealTimeScorePlayer {
       throw new RuntimeException();
    }
 
-   public static void main(String[] args) {
+   
+   ////////////////////////////// Test ///////////////////////////////////
+   public static void test_basic() {
       Score score=new Score();
       Part part=new Part();
       for (int i = 0; i < 20; i++) {
@@ -244,6 +265,41 @@ public class RealTimeScorePlayer {
       //Util.wait(2000);
       player.play();
       Util.wait(2000);
+   }
+   public static void test_tie() {
+      Score score=new Score();
+      Part part=new Part();
+      Note one=new Note(60);
+      one.tie=1;
+      Note two=new Note(60);
+      two.tie=-1;
+      Note three=new Note(60);
+      three.tie=0;
+      part.add(one);
+      part.add(two);
+      part.add(three);
+      part.add(new Note(60));
+      score.add(part);
+      
+      RealTimeScorePlayer player=new RealTimeScorePlayer();
+      player.setScore(score);
+      player.play();
+      Util.wait(2000);
+   }
+   public static void test_small_file() {
+      Score score=Score.fromFile(new File("/home/ken/Desktop/Willie Nelson - Crazy"));
+      //System.err.println(score);
+      
+      RealTimeScorePlayer player=new RealTimeScorePlayer();
+      player.setScore(score);
+      
+      player.play();
+      Util.wait(2000);
+      
+   }
+   public static void main(String[] args) {
+     test_small_file();
+      //test_tie();
    }
   
 }
