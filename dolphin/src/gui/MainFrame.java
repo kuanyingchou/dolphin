@@ -31,7 +31,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import tablet.TabletManager;
+//import tablet.TabletManager;
 import view.ScoreView;
 import api.audio.PitchProfile;
 import api.audio.SoundAnalyzer;
