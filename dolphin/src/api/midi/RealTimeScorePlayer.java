@@ -34,6 +34,9 @@ public class RealTimeScorePlayer implements Runnable {
    PlayThread playThread;
    
    private PlayerState playLoopState=PlayerState.STOPPED; //>>>thread safe?
+   // There are two threads involved in this class, one is 
+   // the Event-Dispatching Thread or the main Thread, the other is
+   // PlayThread. 
    
    //[ playback methods
    public void play() {
@@ -53,7 +56,9 @@ public class RealTimeScorePlayer implements Runnable {
          startPlayLoop();
          
       } else if(state==PlayerState.PAUSED) {
-         resumePlayLoop();
+         if(playLoopState!=PlayerState.PAUSED) throw new IllegalStateException();
+         now=System.currentTimeMillis();
+         playLoopState=PlayerState.PLAYING;
       }
       
    }
@@ -67,13 +72,15 @@ public class RealTimeScorePlayer implements Runnable {
    public void pause() {
       if(score==null) throw new IllegalStateException();
       if(playThread==null) throw new IllegalStateException();
-      pausePlayLoop();
+      if(playLoopState!=PlayerState.PLAYING) throw new IllegalStateException();
+      playLoopState=PlayerState.PAUSED;
       state=PlayerState.PAUSED;
    }
    public void stop() {
       if(score==null) throw new IllegalStateException();
       if(playThread==null) throw new IllegalStateException();
-      stopPlayLoop();
+      if(playLoopState==PlayerState.STOPPED) throw new IllegalStateException();
+      playLoopState=PlayerState.STOPPED;
       state=PlayerState.STOPPED;
    }
    
@@ -111,6 +118,9 @@ public class RealTimeScorePlayer implements Runnable {
       if(playThread==null) throw new RuntimeException();
       return progress;
    } 
+   public void setMicrosecondPosition(long pos) {
+      
+   }
    public void setTickPosition(long pos) {
       throw new RuntimeException();
    }
@@ -125,163 +135,20 @@ public class RealTimeScorePlayer implements Runnable {
       }
       return max;
    }
+   float tempoFactor=1.0f;
    public void setTempoFactor(float tf) {
-      throw new RuntimeException();
+      if(tf<0.1) tf=0.1f;
+      if(tf>10) tf=10;
+      tempoFactor=tf;
    }
 
-   static class ChannelManager {
-      public static int CHANNEL_SIZE=16;
-      public static int NORMAL_CHANNEL_SIZE=CHANNEL_SIZE-1;
-      public static int PERCUSSION_CHANNEL=9;
-      public static int getNormalChannel(int num) {
-         final int res=num>=9?num+1:num;
-         if(res>=CHANNEL_SIZE) throw new RuntimeException();
-         return res;
-      }
-      public static int getPercussionChannel() {
-         return PERCUSSION_CHANNEL;
-      }
-   } 
-   
-   class PartPlayer {
-      
-      int noteIndex=-1;
-      long elapsedTime=0;
-      long noteLengthInMillis=0;
-      int openNoteCount=0;
-      
-      Part part;
-      final long beatLengthInMillis;
-      final long wholeLengthInMillis;
-      int channel;
-      
-      //states: sleeping, started, ended
-      public PartPlayer(Part p, int ch) {
-         if(p==null || p.getScore()==null) throw new IllegalArgumentException();
-         //] >>> if score is absent, use a default value
-         part=p;
-         if(part.getInstrument().isPercussion()) {
-            channel=ChannelManager.PERCUSSION_CHANNEL;
-         } else {
-            channel=ch;
-         }
-         beatLengthInMillis=(long)(1000.0f*60/part.getScore().getTempo());
-         wholeLengthInMillis=part.getScore().getDenominator()*beatLengthInMillis;
-      }
-      public long getMicrosecondLength() {
-         long sum=0;
-         for (int i = 0; i < part.noteCount(); i++) {
-            sum+=getNoteLengthInMillis(part.get(i));
-         }
-         return sum;
-      }
-      public boolean isDone() { return noteIndex>=part.noteCount(); }
-      
-      public void play(long increment) {
-         elapsedTime+=increment;
-         if(noteIndex>=part.noteCount()) {
-            throw new RuntimeException();
-         }
-         if (noteIndex == -1 && part.noteCount()>0) { //: first note
-            sendInstrument();
-            sendPan();
-            sendVolume();
-            noteIndex++;
-            sendNoteOn();
-         } 
-
-         if (elapsedTime >= noteLengthInMillis) {
-            if(openNoteCount>0) sendNoteOff();
-            noteIndex++;
-            
-            
-            elapsedTime -= noteLengthInMillis;
-            if(noteIndex<part.noteCount()) {
-               sendNoteOn();
-            }
-            //System.err.println("err: "+elapsedTime);
-         } else {
-            //System.err.print(".");
-         }
-         
-      }
-      
-      public void stop() {
-         if(openNoteCount>0) {
-            sendNoteOff();
-         }
-         noteIndex=-1;
-         elapsedTime=0;
-         noteLengthInMillis=0;
-         openNoteCount=0;
-      }
-      
-      public void pause() {
-         if(openNoteCount>0) {
-            sendNoteOff();
-         }
-         //if a note is paused while playing, turn off the note,
-         //skip to next note after playback is resumed
-      }
-      
-      private void sendVolume() {
-         final ShortMessage m = new VolumeMessage(
-               channel, part.getVolume());
-         OutDeviceManager.instance.send(m, -1);
-      }
-      private void sendPan() {
-         final ShortMessage m = new PanMessage(
-               channel, part.getPan());
-         OutDeviceManager.instance.send(m, -1);
-      }
-      private void sendInstrument() {
-         final ShortMessage m = new InstrumentMessage(
-               channel, part.getInstrument().getValue());
-         OutDeviceManager.instance.send(m, -1);
-      }
-      private void sendNoteOff() {
-         //System.err.println("0 "+progress);
-         //System.err.print("\\");
-         final Note note = part.getNote(noteIndex);
-         final ShortMessage off = new NoteOffMessage(channel, note.pitch, 127);
-         OutDeviceManager.instance.send(off, -1);
-         openNoteCount--;
-         //System.err.println("close note("+note.pitch+")");
-      }
-     
-      private void sendNoteOn() {
-         //System.err.println("1 "+progress);
-         
-         final Note note = part.getNote(noteIndex);
-         noteLengthInMillis=getNoteLengthInMillis(note);
-         if(note.isRest()) return;
-         
-         if(note.isTieStart()) {
-            noteIndex++;
-            while(noteIndex<part.noteCount()) {
-               final Note n=part.getNote(noteIndex);
-               noteLengthInMillis+=getNoteLengthInMillis(n);
-               if(n.isTieEnd()) break;
-               noteIndex++;
-            }
-         }
-         
-         final ShortMessage on = new NoteOnMessage(channel, note.pitch, 127);
-         OutDeviceManager.instance.send(on, -1);
-         openNoteCount++;
-         System.err.print("♪");
-         //System.err.println("open note("+note.pitch+") with length="+noteLengthInMillis+"");
-      }
-      private long getNoteLengthInMillis(Note n) {
-         return (long)((float)wholeLengthInMillis * n.getActualLength() / Note.WHOLE_LENGTH);
-      }
-   }
-   
    private void startPlayLoop() {
       playThread = new PlayThread(this);
       playThread.start();      
    }
-   
+
+   long now;
+
    @Override
    public void run() {
       if(playLoopState!=PlayerState.STOPPED) throw new IllegalStateException();
@@ -291,12 +158,11 @@ public class RealTimeScorePlayer implements Runnable {
       System.err.println("start playing...");
       //[ the loop treats notes like multiple lines of customers, and 
       //  exits when all customers are done
-      long now=System.currentTimeMillis();
+      now=System.currentTimeMillis();
       long interval=0;
       boolean allPlayerDone;
       
       while(true) {
-         
          if (playLoopState == PlayerState.PLAYING) {
             allPlayerDone = true;
             for (int i = 0; i < partPlayers.length; i++) {
@@ -324,23 +190,180 @@ public class RealTimeScorePlayer implements Runnable {
          Util.sleep(1);
       }
       //Util.sleep(500);
+      //OutDeviceManager.instance.closeOutDevice(); //>>>>>>>
       System.err.println("stop playing");
    }
-    
+
+   static class ChannelManager {
+      public static int CHANNEL_SIZE=16;
+      public static int NORMAL_CHANNEL_SIZE=CHANNEL_SIZE-1;
+      public static int PERCUSSION_CHANNEL=9;
+      public static int getNormalChannel(int num) {
+         final int res=num>=9?num+1:num;
+         if(res>=CHANNEL_SIZE) throw new RuntimeException();
+         return res;
+      }
+      public static int getPercussionChannel() {
+         return PERCUSSION_CHANNEL;
+      }
+   } 
    
-   public void pausePlayLoop() {
-      if(playLoopState!=PlayerState.PLAYING) throw new IllegalStateException();
-      playLoopState=PlayerState.PAUSED;
-   }
-   public void resumePlayLoop() {
-      if(playLoopState!=PlayerState.PAUSED) throw new IllegalStateException();
-      playLoopState=PlayerState.PLAYING;
+   class PartPlayer {
+      int currentNoteIndex=-1;
+      long currentNoteLengthInMillis=0;
+      long elapsedTime=0;
+      boolean[] keys=new boolean[128];
+      
+      Part part;
+      final long beatLengthInMillis;
+      final long wholeLengthInMillis;
+      int channel;
+      
+      //states: sleeping, started, ended
+      public PartPlayer(Part p, int ch) {
+         if(p==null || p.getScore()==null) throw new IllegalArgumentException();
+         //] >>> if score is absent, use a default value
+         part=p;
+         if(part.getInstrument().isPercussion()) {
+            channel=ChannelManager.PERCUSSION_CHANNEL;
+         } else {
+            channel=ch;
+         }
+         beatLengthInMillis=(long)(1000.0f*60/part.getScore().getTempo());
+         wholeLengthInMillis=part.getScore().getDenominator()*beatLengthInMillis;
+      }
+      public long getMicrosecondLength() {
+         long sum=0;
+         for (int i = 0; i < part.noteCount(); i++) {
+            sum+=getNoteLengthInMillis(part.get(i));
+         }
+         return sum;
+      }
+      public boolean isDone() { return currentNoteIndex>=part.noteCount(); }
+      
+      private void closeUnclosedKeys() {
+         for (int i = 0; i < keys.length; i++) {
+            if(keys[i]) {
+               sendNoteOff(i);
+            }
+         }
+         System.err.println("close unclosed keys");
+      }
+      
+      //usage: isDone() should be checked before calling play()
+      //example:
+      //|___A___|___B___| ... the part contains notes A and B
+      //|=>|              ... t1: start, play note A
+      //|=========>|      ... t2: elapsedTime >= noteLength, stop note A
+      //        |=>|      ... t2(continued): elapsedTime -= noteLength, play note B 
+      //        |=======>|... t3: end, stop note B
+      //>>> TODO: what if interval is greater than the length of a note
+      public void play(long interval) {
+         if(part.noteCount()<=0) { return; }
+         if(isDone()) { throw new IllegalStateException(); }
+         
+         elapsedTime+=interval;
+         
+         if (currentNoteIndex == -1) { //: start
+            //[ prepare channel
+            sendInstrument();
+            sendPan();
+            sendVolume();
+            //] prepare channel
+         } 
+
+         if (elapsedTime >= currentNoteLengthInMillis) {
+            if(currentNoteIndex>=0) sendNoteOff(getCurrentNote().pitch);
+            elapsedTime -= currentNoteLengthInMillis;
+
+            currentNoteIndex++;
+            if(currentNoteIndex<part.noteCount()) {
+               //[ get note length
+               final Note note = part.getNote(currentNoteIndex);
+               currentNoteLengthInMillis=getNoteLengthInMillis(note);
+               
+               //[ handle tie
+               if(note.isTieStart()) {
+                  currentNoteIndex++;
+                  while(currentNoteIndex<part.noteCount()) {
+                     final Note n=part.getNote(currentNoteIndex);
+                     currentNoteLengthInMillis+=getNoteLengthInMillis(n);
+                     if(n.isTieEnd()) break;
+                     currentNoteIndex++;
+                  }
+               }
+               //] handle tie
+               //] get note length
+               
+               if(!note.isRest()) {
+                  sendNoteOn(note.pitch);
+               }
+            } else {
+               //end of part, no more notes to play
+               closeUnclosedKeys();
+            }
+         } else {
+            //in the middle of a note, nothing to do here
+         }
+         
+      }
+      
+      public void stop() {
+         closeUnclosedKeys();
+         currentNoteIndex=-1;
+         elapsedTime=0;
+         currentNoteLengthInMillis=0;
+      }
+      
+      public void pause() {
+         closeUnclosedKeys();
+         //if a note is paused while playing, turn off the note,
+         //skip to next note after playback is resumed
+      }
+      
+      private void sendVolume() {
+         final ShortMessage m = new VolumeMessage(
+               channel, part.getVolume());
+         OutDeviceManager.instance.send(m, -1);
+      }
+      private void sendPan() {
+         final ShortMessage m = new PanMessage(
+               channel, part.getPan());
+         OutDeviceManager.instance.send(m, -1);
+      }
+      private void sendInstrument() {
+         final ShortMessage m = new InstrumentMessage(
+               channel, part.getInstrument().getValue());
+         OutDeviceManager.instance.send(m, -1);
+      }
+      private Note getCurrentNote() {
+         return part.getNote(currentNoteIndex);
+      }
+      
+      private void sendNoteOn(int pitch) {
+         //System.err.println("1 "+progress);
+         
+         final ShortMessage on = new NoteOnMessage(channel, pitch, 127);
+         OutDeviceManager.instance.send(on, -1);
+         keys[pitch]=true;
+         System.err.print("♪");
+         //System.err.println("open note("+note.pitch+") with length="+noteLengthInMillis+"");
+      }
+      private void sendNoteOff(int pitch) {
+         //System.err.println("0 "+progress);
+         //System.err.print("\\");
+         final ShortMessage off = new NoteOffMessage(channel, pitch, 127);
+         OutDeviceManager.instance.send(off, -1);
+         keys[pitch]=false;
+         //System.err.println("close note("+note.pitch+")");
+      }
+     
+      private long getNoteLengthInMillis(Note n) {
+         return (long)((float)wholeLengthInMillis * n.getActualLength() / Note.WHOLE_LENGTH);
+      }
    }
    
-   public void stopPlayLoop() {
-      if(playLoopState==PlayerState.STOPPED) throw new IllegalStateException();
-      playLoopState=PlayerState.STOPPED;
-   }
+   
    
    class PlayThread extends Thread {
       
@@ -358,7 +381,7 @@ public class RealTimeScorePlayer implements Runnable {
    }
    
    
-   ////////////////////////////// Test ///////////////////////////////////
+   ////////////////////////////// Tests ///////////////////////////////////
    public static void test_multipart() {
       Score score=new Score();
       Part part=new Part();
@@ -482,10 +505,10 @@ public class RealTimeScorePlayer implements Runnable {
       //part.setInstrument(Instrument.getInstance(128));
 //      part.setInstrument(Instrument.getInstance(8));
       part.setVolume(100);
-      for (int i = 0; i < 100; i++) {
+      for (int i = 0; i < 50; i++) {
          part.add(new Note(60, Note.WHOLE_LENGTH/16));
       }
-      part.add(new Note(70, Note.WHOLE_LENGTH/16));
+      //part.add(new Note(70, Note.WHOLE_LENGTH/16));
       
       score.add(part);
       RealTimeScorePlayer player=new RealTimeScorePlayer();
@@ -494,7 +517,27 @@ public class RealTimeScorePlayer implements Runnable {
       player.play();
       Util.sleep(3000);
       player.pause();
+      System.err.print("pause");
       Util.sleep(3000);
+      player.play();
+   }
+   public static void test_scale() {
+      Score score=new Score();
+      Part part=new Part();
+      
+      part.add(new Note(60, Note.WHOLE_LENGTH/4));
+      part.add(new Note(62, Note.WHOLE_LENGTH/4));
+      part.add(new Note(64, Note.WHOLE_LENGTH/4));
+      part.add(new Note(65, Note.WHOLE_LENGTH/4));
+      part.add(new Note(67, Note.WHOLE_LENGTH/4));
+      part.add(new Note(69, Note.WHOLE_LENGTH/4));
+      part.add(new Note(71, Note.WHOLE_LENGTH/4));
+      part.add(new Note(72, Note.WHOLE_LENGTH/4));
+      
+      score.add(part);
+      RealTimeScorePlayer player=new RealTimeScorePlayer();
+      player.setScore(score);
+      
       player.play();
    }
    public static void main(String[] args) {
@@ -502,12 +545,14 @@ public class RealTimeScorePlayer implements Runnable {
       //test_volume();
       //test_pan();
       //test_instrument();
-      //test_multipart();
+      test_multipart();
+      
       //test_tie();
-      test_small_file();
+      //test_small_file();
+      //test_scale();
    }
 
+   
   
 
-  
 }
