@@ -16,7 +16,7 @@ import api.model.Path;
 import api.model.Score;
 import api.util.Util;
 
-public class RealTimeScorePlayer {
+public class RealTimeScorePlayer implements Runnable {
    
    private Score score;
    
@@ -29,9 +29,11 @@ public class RealTimeScorePlayer {
    
    PartPlayer[] partPlayers;
    
-   
+   private long progress=0;
    
    PlayThread playThread;
+   
+   private PlayerState playLoopState=PlayerState.STOPPED; //>>>thread safe?
    
    //[ playback methods
    public void play() {
@@ -48,11 +50,10 @@ public class RealTimeScorePlayer {
          Util.sleep(500);
          // ] try to eliminate glitch
 
-         playThread = new PlayThread();
-
-         playThread.start();
+         startPlayLoop();
+         
       } else if(state==PlayerState.PAUSED) {
-         playThread.resumePlaying();
+         resumePlayLoop();
       }
       
    }
@@ -66,13 +67,13 @@ public class RealTimeScorePlayer {
    public void pause() {
       if(score==null) throw new IllegalStateException();
       if(playThread==null) throw new IllegalStateException();
-      playThread.pausePlaying();
+      pausePlayLoop();
       state=PlayerState.PAUSED;
    }
    public void stop() {
       if(score==null) throw new IllegalStateException();
       if(playThread==null) throw new IllegalStateException();
-      playThread.stopPlaying();
+      stopPlayLoop();
       state=PlayerState.STOPPED;
    }
    
@@ -108,7 +109,7 @@ public class RealTimeScorePlayer {
    }
    public long getMicrosecondPosition() {
       if(playThread==null) throw new RuntimeException();
-      return playThread.progress;
+      return progress;
    } 
    public void setTickPosition(long pos) {
       throw new RuntimeException();
@@ -276,81 +277,82 @@ public class RealTimeScorePlayer {
       }
    }
    
-   class PlayThread extends Thread {
-      private long progress=0;
+   private void startPlayLoop() {
+      playThread = new PlayThread(this);
+      playThread.start();      
+   }
+   
+   @Override
+   public void run() {
+      if(playLoopState!=PlayerState.STOPPED) throw new IllegalStateException();
+      playLoopState=PlayerState.PLAYING;
       
-      public PlayThread() {
+      Util.sleep(500); //: eliminate glitch
+      System.err.println("start playing...");
+      //[ the loop treats notes like multiple lines of customers, and 
+      //  exits when all customers are done
+      long now=System.currentTimeMillis();
+      long interval=0;
+      boolean allPlayerDone;
+      
+      while(true) {
+         
+         if (playLoopState == PlayerState.PLAYING) {
+            allPlayerDone = true;
+            for (int i = 0; i < partPlayers.length; i++) {
+               if (partPlayers[i].isDone() || score.get(i).isMute())
+                  continue;
+               allPlayerDone = false;
+               partPlayers[i].play(interval);
+               // System.err.println(increments);
+            }
+            if (allPlayerDone)
+               break;
+            interval = System.currentTimeMillis() - now;
+            progress += interval;
+            now += interval;
+         } else if(playLoopState==PlayerState.STOPPED) {
+            for (int i = 0; i < partPlayers.length; i++) {
+               partPlayers[i].stop();
+            }
+            break;
+         } else if(playLoopState==PlayerState.PAUSED) {
+            for (int i = 0; i < partPlayers.length; i++) {
+               partPlayers[i].pause();
+            }
+         }
+         Util.sleep(1);
+      }
+      //Util.sleep(500);
+      System.err.println("stop playing");
+   }
+    
+   
+   public void pausePlayLoop() {
+      if(playLoopState!=PlayerState.PLAYING) throw new IllegalStateException();
+      playLoopState=PlayerState.PAUSED;
+   }
+   public void resumePlayLoop() {
+      if(playLoopState!=PlayerState.PAUSED) throw new IllegalStateException();
+      playLoopState=PlayerState.PLAYING;
+   }
+   
+   public void stopPlayLoop() {
+      if(playLoopState==PlayerState.STOPPED) throw new IllegalStateException();
+      playLoopState=PlayerState.STOPPED;
+   }
+   
+   class PlayThread extends Thread {
+      
+      public PlayThread(Runnable target) {
+         super(target);
+         
          final int nearMaxPriority = Thread.NORM_PRIORITY
                + ((Thread.MAX_PRIORITY - Thread.NORM_PRIORITY) * 3) / 4;
          //: the priority is copied from java api
 
          setPriority(nearMaxPriority);
          setDaemon(false); //>>> should be a daemon in gui
-      }
-      
-      @Override
-      public void run() {
-         play();
-      }
-      
-      public void play() {
-         if(state!=PlayerState.STOPPED) throw new IllegalStateException();
-         state=PlayerState.PLAYING;
-         
-         Util.sleep(500); //: eliminate glitch
-         System.err.println("start playing...");
-         //[ the loop treats notes like multiple lines of customers, and 
-         //  exits when all customers are done
-         long now=System.currentTimeMillis();
-         long interval=0;
-         boolean allPlayerDone;
-         
-         while(true) {
-            
-            if (state == PlayerState.PLAYING) {
-               allPlayerDone = true;
-               for (int i = 0; i < partPlayers.length; i++) {
-                  if (partPlayers[i].isDone() || score.get(i).isMute())
-                     continue;
-                  allPlayerDone = false;
-                  partPlayers[i].play(interval);
-                  // System.err.println(increments);
-               }
-               if (allPlayerDone)
-                  break;
-               interval = System.currentTimeMillis() - now;
-               progress += interval;
-               now += interval;
-            } else if(state==PlayerState.STOPPED) {
-               for (int i = 0; i < partPlayers.length; i++) {
-                  partPlayers[i].stop();
-               }
-               break;
-            } else if(state==PlayerState.PAUSED) {
-               for (int i = 0; i < partPlayers.length; i++) {
-                  partPlayers[i].pause();
-               }
-            }
-            Util.sleep(1);
-         }
-         //Util.sleep(500);
-         System.err.println("stop playing");
-      }
-      
-      
-      PlayerState state=PlayerState.STOPPED; //>>>thread safe?
-      public void pausePlaying() {
-         if(state!=PlayerState.PLAYING) throw new IllegalStateException();
-         state=PlayerState.PAUSED;
-      }
-      public void resumePlaying() {
-         if(state!=PlayerState.PAUSED) throw new IllegalStateException();
-         state=PlayerState.PLAYING;
-      }
-      
-      public void stopPlaying() {
-         if(state==PlayerState.STOPPED) throw new IllegalStateException();
-         state=PlayerState.STOPPED;
       }
       
    }
@@ -496,14 +498,16 @@ public class RealTimeScorePlayer {
       player.play();
    }
    public static void main(String[] args) {
-      test_pause_stop();
+      //test_pause_stop();
       //test_volume();
       //test_pan();
       //test_instrument();
       //test_multipart();
-      //test_small_file();
       //test_tie();
+      test_small_file();
    }
+
+  
 
   
 }
