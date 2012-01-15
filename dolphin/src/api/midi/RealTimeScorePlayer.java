@@ -15,6 +15,13 @@ import api.model.Part;
 import api.model.Path;
 import api.model.Score;
 import api.util.Util;
+// Design Goals
+// * A score player can play a Score, pause or stop the playback, and publish playing progress
+//   to the clients.
+// * A score player can only play one score at any time
+// * A score player is a high-level class which can be used directly 
+//   by the user of the Dolphin API. Thus it ignores illegal operations
+//   instead of throwing exceptions.
 
 public class RealTimeScorePlayer implements Runnable {
    
@@ -31,13 +38,13 @@ public class RealTimeScorePlayer implements Runnable {
    
    private long progress=0;
    
-   PlayThread playThread;
+   PlayThread playThread; //there is at most one playThread per player at any time
    
    private PlayerState playLoopState=PlayerState.STOPPED; //>>>thread safe?
    // There are two threads involved in this class, one is 
    // the Event-Dispatching Thread or the main Thread, the other is
    // PlayThread. 
-   
+    
    //[ playback methods
    public void play() {
       if(score==null) throw new IllegalStateException();
@@ -78,7 +85,8 @@ public class RealTimeScorePlayer implements Runnable {
    }
    public void stop() {
       if(score==null) throw new IllegalStateException();
-      if(playThread==null) throw new IllegalStateException();
+      //if(playThread==null) throw new IllegalStateException(); 
+      //] users of this class is not required to remember the state of the player
       if(playLoopState==PlayerState.STOPPED) throw new IllegalStateException();
       playLoopState=PlayerState.STOPPED;
       state=PlayerState.STOPPED;
@@ -119,7 +127,10 @@ public class RealTimeScorePlayer implements Runnable {
       return progress;
    } 
    public void setMicrosecondPosition(long pos) {
-      
+      progress=pos;
+      for (int i = 0; i < partPlayers.length; i++) {
+         partPlayers[i].setMicrosecondPosition(pos);
+      }
    }
    public void setTickPosition(long pos) {
       throw new RuntimeException();
@@ -143,6 +154,7 @@ public class RealTimeScorePlayer implements Runnable {
    }
 
    private void startPlayLoop() {
+      if(playThread!=null) throw new RuntimeException();
       playThread = new PlayThread(this);
       playThread.start();      
    }
@@ -170,7 +182,7 @@ public class RealTimeScorePlayer implements Runnable {
                   continue;
                allPlayerDone = false;
                partPlayers[i].play(interval);
-               // System.err.println(increments);
+               //System.err.println(interval);
             }
             if (allPlayerDone)
                break;
@@ -190,7 +202,7 @@ public class RealTimeScorePlayer implements Runnable {
          Util.sleep(1);
       }
       //Util.sleep(500);
-      //OutDeviceManager.instance.closeOutDevice(); //>>>>>>>
+      OutDeviceManager.instance.closeOutDevice(); //>>>>>>>
       System.err.println("stop playing");
    }
 
@@ -211,7 +223,7 @@ public class RealTimeScorePlayer implements Runnable {
    class PartPlayer {
       int currentNoteIndex=-1;
       long currentNoteLengthInMillis=0;
-      long elapsedTime=0;
+      long currentNoteProgress=0;
       boolean[] keys=new boolean[128];
       
       Part part;
@@ -231,6 +243,24 @@ public class RealTimeScorePlayer implements Runnable {
          }
          beatLengthInMillis=(long)(1000.0f*60/part.getScore().getTempo());
          wholeLengthInMillis=part.getScore().getDenominator()*beatLengthInMillis;
+      }
+      public void setMicrosecondPosition(long pos) {
+         if(pos<0) throw new IllegalArgumentException();
+         long sum=0;
+         for (int i = 0; i < part.noteCount(); i++) {
+            if(sum>=pos) {
+               currentNoteIndex=i;
+               currentNoteProgress=sum-pos;
+               currentNoteLengthInMillis=getNoteLengthInMillis(part.get(i));
+               return; //found it!
+            }
+            sum+=getNoteLengthInMillis(part.get(i));
+         }
+         if(sum>=pos) {
+            //[ pos is longer than or equal to the part length
+            currentNoteIndex=part.noteCount(); //>>> leave the member in illegal state
+         }
+         //throw new IllegalArgumentException("pos is longer than part length"); 
       }
       public long getMicrosecondLength() {
          long sum=0;
@@ -259,10 +289,10 @@ public class RealTimeScorePlayer implements Runnable {
       //        |=======>|... t3: end, stop note B
       //>>> TODO: what if interval is greater than the length of a note
       public void play(long interval) {
-         if(part.noteCount()<=0) { return; }
+         if(part.noteCount()<=0) { return; } //>>> need to consider progress, ex. getRemainNoteCount()<=0
          if(isDone()) { throw new IllegalStateException(); }
          
-         elapsedTime+=interval;
+         currentNoteProgress+=interval;
          
          if (currentNoteIndex == -1) { //: start
             //[ prepare channel
@@ -272,9 +302,9 @@ public class RealTimeScorePlayer implements Runnable {
             //] prepare channel
          } 
 
-         if (elapsedTime >= currentNoteLengthInMillis) {
+         if (currentNoteProgress >= currentNoteLengthInMillis) {
             if(currentNoteIndex>=0) sendNoteOff(getCurrentNote().pitch);
-            elapsedTime -= currentNoteLengthInMillis;
+            currentNoteProgress -= currentNoteLengthInMillis;
 
             currentNoteIndex++;
             if(currentNoteIndex<part.noteCount()) {
@@ -303,7 +333,11 @@ public class RealTimeScorePlayer implements Runnable {
                closeUnclosedKeys();
             }
          } else {
-            //in the middle of a note, nothing to do here
+            //in the middle of a note, nothing to do here >>>
+            if(keys[getCurrentNote().pitch]!=true) {
+               sendNoteOn(getCurrentNote().pitch);
+            }
+            
          }
          
       }
@@ -311,7 +345,7 @@ public class RealTimeScorePlayer implements Runnable {
       public void stop() {
          closeUnclosedKeys();
          currentNoteIndex=-1;
-         elapsedTime=0;
+         currentNoteProgress=0;
          currentNoteLengthInMillis=0;
       }
       
@@ -346,7 +380,7 @@ public class RealTimeScorePlayer implements Runnable {
          final ShortMessage on = new NoteOnMessage(channel, pitch, 127);
          OutDeviceManager.instance.send(on, -1);
          keys[pitch]=true;
-         System.err.print("♪");
+         System.err.println("♪");
          //System.err.println("open note("+note.pitch+") with length="+noteLengthInMillis+"");
       }
       private void sendNoteOff(int pitch) {
@@ -540,19 +574,41 @@ public class RealTimeScorePlayer implements Runnable {
       
       player.play();
    }
+   public static void test_set_position() {
+      Score score=new Score();
+      Part part=new Part();
+      
+      part.add(new Note(60, Note.WHOLE_LENGTH));
+      part.add(new Note(62, Note.WHOLE_LENGTH));
+      part.add(new Note(64, Note.WHOLE_LENGTH));
+      
+      score.add(part);
+
+      RealTimeScorePlayer player=new RealTimeScorePlayer();
+      player.setScore(score);
+      player.setMicrosecondPosition(0);
+      //player.setMicrosecondPosition(1000);
+      //player.setMicrosecondPosition(2000);
+      //player.setMicrosecondPosition(3000);
+      player.setMicrosecondPosition(6000);      
+      player.play();
+      //Util.sleep(2000);
+      
+   }
    public static void main(String[] args) {
       //test_pause_stop();
       //test_volume();
       //test_pan();
       //test_instrument();
-      test_multipart();
-      
+      //test_multipart();
       //test_tie();
       //test_small_file();
       //test_scale();
+      test_set_position();
    }
 
    
   
 
+   
 }
