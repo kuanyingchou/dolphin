@@ -380,7 +380,7 @@ public class RealTimeScorePlayer implements Runnable {
          final ShortMessage on = new NoteOnMessage(channel, pitch, 127);
          OutDeviceManager.instance.send(on, -1);
          keys[pitch]=true;
-         System.err.println("♪");
+         System.err.println("♪(start="+progress+")");
          //System.err.println("open note("+note.pitch+") with length="+noteLengthInMillis+"");
       }
       private void sendNoteOff(int pitch) {
@@ -393,7 +393,7 @@ public class RealTimeScorePlayer implements Runnable {
       }
      
       private long getNoteLengthInMillis(Note n) {
-         return (long)((float)wholeLengthInMillis * n.getActualLength() / Note.WHOLE_LENGTH);
+         return (long)((float)tempoFactor*wholeLengthInMillis * n.getActualLength() / Note.WHOLE_LENGTH);
       }
    }
    
@@ -595,6 +595,20 @@ public class RealTimeScorePlayer implements Runnable {
       //Util.sleep(2000);
       
    }
+   public static void test_tempo_factor() {
+      Score score=new Score();
+      Part part=new Part();
+      part.add(new Note(60, Note.WHOLE_LENGTH));
+      part.add(new Note(62, Note.WHOLE_LENGTH));
+      part.add(new Note(64, Note.WHOLE_LENGTH));
+      score.add(part);
+      
+      RealTimeScorePlayer player=new RealTimeScorePlayer();
+      player.setScore(score);
+      player.setTempoFactor(2.0f);
+      player.play();
+      
+   }
    public static void main(String[] args) {
       //test_pause_stop();
       //test_volume();
@@ -604,7 +618,8 @@ public class RealTimeScorePlayer implements Runnable {
       //test_tie();
       //test_small_file();
       //test_scale();
-      test_set_position();
+      //test_set_position();
+      test_tempo_factor();
    }
 
    
