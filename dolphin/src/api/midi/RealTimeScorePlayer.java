@@ -304,7 +304,10 @@ public class RealTimeScorePlayer implements Runnable, ScorePlayer {
          } 
 
          if (currentNoteProgress >= currentNoteLengthInMillis) {
-            if(currentNoteIndex>=0) sendNoteOff(getCurrentNote().pitch);
+            if(currentNoteIndex>=0) {
+               if(!getCurrentNote().isRest())
+                  sendNoteOff(getCurrentNote().pitch);
+            }
             currentNoteProgress -= currentNoteLengthInMillis;
 
             currentNoteIndex++;
@@ -334,9 +337,11 @@ public class RealTimeScorePlayer implements Runnable, ScorePlayer {
                closeUnclosedKeys();
             }
          } else {
-            //in the middle of a note, nothing to do here >>>
-            if(keys[getCurrentNote().pitch]!=true) {
-               sendNoteOn(getCurrentNote().pitch);
+            // in the middle of a note, nothing to do here >>>
+            if (!getCurrentNote().isRest()) {
+               if (keys[getCurrentNote().pitch] != true) {
+                  sendNoteOn(getCurrentNote().pitch);
+               }
             }
             
          }
@@ -394,10 +399,28 @@ public class RealTimeScorePlayer implements Runnable, ScorePlayer {
       }
      
       private long getNoteLengthInMillis(Note n) {
-         return (long)((float)tempoFactor*wholeLengthInMillis * n.getActualLength() / Note.WHOLE_LENGTH);
+         return (long)((float)(1/tempoFactor)*wholeLengthInMillis * n.getActualLength() / Note.WHOLE_LENGTH);
       }
    }
-   
+   @Override
+   public void play(Score s) {
+      setScore(s);
+      play();
+   }
+
+   @Override
+   public void play(Score s, Path startPath) {
+      setScore(s);
+      //>>>startPath
+      play();
+   }
+
+   @Override
+   public void addReceiver(Receiver rec) {
+      // TODO Auto-generated method stub
+      throw new RuntimeException("not yet");
+   }
+
    
    
    class PlayThread extends Thread {
@@ -610,6 +633,16 @@ public class RealTimeScorePlayer implements Runnable, ScorePlayer {
       player.play();
       
    }
+   public static void test_another_file() {
+      Score score=Score.fromFile(new File("/Users/ken/Downloads/Willie_Nelson_-_Crazy_AABA.mid"));
+      //System.err.println(score);
+      
+      RealTimeScorePlayer player=new RealTimeScorePlayer();
+      player.setScore(score);
+      player.setTempoFactor(0.8f);
+      player.setMicrosecondPosition(20000);
+      player.play();     
+   }
    public static void main(String[] args) {
       //test_pause_stop();
       //test_volume();
@@ -620,28 +653,11 @@ public class RealTimeScorePlayer implements Runnable, ScorePlayer {
       //test_small_file();
       //test_scale();
       //test_set_position();
-      test_tempo_factor();
+      //test_tempo_factor();
+      test_another_file();
    }
 
-   @Override
-   public void play(Score s) {
-      setScore(s);
-      play();
-   }
-
-   @Override
-   public void play(Score s, Path startPath) {
-      setScore(s);
-      //>>>startPath
-      play();
-   }
-
-   @Override
-   public void addReceiver(Receiver rec) {
-      // TODO Auto-generated method stub
-      throw new RuntimeException("not yet");
-   }
-
+   
    
   
 
