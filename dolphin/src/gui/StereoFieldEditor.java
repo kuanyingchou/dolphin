@@ -40,7 +40,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 
 import api.midi.OutDeviceManager;
-import api.midi.ScorePlayer;
+import api.midi.BasicScorePlayer;
 import api.model.*;
 import view.*;
 
@@ -191,8 +191,8 @@ class PartIconDragger extends MouseAdapter {
          }
          
          //[ send msg to player
-         if(ScorePlayer.instance.isPlaying() && 
-               ScorePlayer.instance.getScore()==holdedIcon.getPart().getScore()) {
+         if(BasicScorePlayer.getInstance().isPlaying() && 
+               BasicScorePlayer.getInstance().getScore()==holdedIcon.getPart().getScore()) {
             //[ volume
             final ShortMessage cc=new ShortMessage();
             try {

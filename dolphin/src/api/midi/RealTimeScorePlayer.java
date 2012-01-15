@@ -6,6 +6,7 @@ import java.util.concurrent.ThreadFactory;
 
 import javax.sound.midi.MetaMessage;
 import javax.sound.midi.MidiEvent;
+import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 import javax.swing.SwingWorker;
 
@@ -23,7 +24,7 @@ import api.util.Util;
 //   by the user of the Dolphin API. Thus it ignores illegal operations
 //   instead of throwing exceptions.
 
-public class RealTimeScorePlayer implements Runnable {
+public class RealTimeScorePlayer implements Runnable, ScorePlayer {
    
    private Score score;
    
@@ -620,6 +621,25 @@ public class RealTimeScorePlayer implements Runnable {
       //test_scale();
       //test_set_position();
       test_tempo_factor();
+   }
+
+   @Override
+   public void play(Score s) {
+      setScore(s);
+      play();
+   }
+
+   @Override
+   public void play(Score s, Path startPath) {
+      setScore(s);
+      //>>>startPath
+      play();
+   }
+
+   @Override
+   public void addReceiver(Receiver rec) {
+      // TODO Auto-generated method stub
+      throw new RuntimeException("not yet");
    }
 
    

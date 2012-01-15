@@ -27,7 +27,7 @@ import javax.swing.SwingUtilities;
 import api.midi.NoteOffMessage;
 import api.midi.NoteOnMessage;
 import api.midi.OutDeviceManager;
-import api.midi.ScorePlayer;
+import api.midi.BasicScorePlayer;
 import api.model.Instrument;
 import api.util.Util;
 
@@ -71,7 +71,7 @@ public class VirtualKeyboard extends JComponent implements Receiver {
       mainFrame=mf;
       setPreferredSize(new Dimension(left+whiteKeyWidth*75+right, top+whiteKeyHeight+bottom));
       //MainFrame.deviceManager.addReceiver(this); //loop
-      ScorePlayer.instance.addReceiver(this);
+      BasicScorePlayer.getInstance().addReceiver(this);
       setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
       
 //      try {

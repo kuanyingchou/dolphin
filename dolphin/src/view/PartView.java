@@ -16,7 +16,7 @@ import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
 
-import api.midi.ScorePlayer;
+import api.midi.BasicScorePlayer;
 import api.model.Note;
 import api.model.Part;
 import api.util.Util;
@@ -117,7 +117,7 @@ public abstract class PartView extends AbstractCpn {
             } 
             
             //[ draw play index
-            if(!ScorePlayer.instance.isStopped() &&
+            if(!BasicScorePlayer.getInstance().isStopped() &&
                   scoreView.indexOf(this) == scoreView.staticCursor.partIndex &&
                   noteIndex==getPart().playIndex) {
                //final int y0=getYByLine(0);

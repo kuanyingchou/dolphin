@@ -22,7 +22,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import api.midi.ScorePlayer;
+import api.midi.BasicScorePlayer;
 import api.model.Path;
 import api.util.Util;
 
@@ -104,9 +104,9 @@ public class PlayToolBar extends JToolBar {
       progress.addChangeListener(new ChangeListener() {
          public void stateChanged(ChangeEvent e) {
             //if(progress.getValueIsAdjusting()) return;
-            if(!ScorePlayer.instance.isPlaying()) {
-               ScorePlayer.instance.setTickPosition(progress.getValue());
-               timeButton.setTime(ScorePlayer.instance.getMicrosecondPosition());
+            if(!BasicScorePlayer.getInstance().isPlaying()) {
+               BasicScorePlayer.getInstance().setTickPosition(progress.getValue());
+               timeButton.setTime(BasicScorePlayer.getInstance().getMicrosecondPosition());
                //System.err.println(progress.getValue());
             }
          }
@@ -133,7 +133,7 @@ public class PlayToolBar extends JToolBar {
          public void stateChanged(ChangeEvent e) {
             final float factor=tempoFactorSlider.getValue()/100.0f;
             tempoLabel.setText(new DecimalFormat("0.00x").format(factor));
-            ScorePlayer.instance.setTempoFactor(factor);
+            BasicScorePlayer.getInstance().setTempoFactor(factor);
          }
       });
       tempoLabel.addActionListener(new ActionListener() {
@@ -157,13 +157,13 @@ public class PlayToolBar extends JToolBar {
       });
       pauseButton.addActionListener(new ActionListener() {
          public void actionPerformed(ActionEvent e) {
-            ScorePlayer.instance.pause();
+            BasicScorePlayer.getInstance().pause();
             repaint();
          }
       });
       stopButton.addActionListener(new ActionListener() {
          public void actionPerformed(ActionEvent e) {
-            ScorePlayer.instance.stop();
+            BasicScorePlayer.getInstance().stop();
             progress.setValue(0);
             //progress.setEnabled(false);
             repaint();
@@ -199,24 +199,24 @@ public class PlayToolBar extends JToolBar {
       if(startFromCursor && sheet.score.isValidSelectPath(sheet.staticCursor)) {
          //final Note currentNote=sheet.score.get(sheet.staticCursor.partIndex).get(sheet.staticCursor.index);
          //if(currentNote==null) throw new RuntimeException();
-         ScorePlayer.instance.play(sheet.score, new Path(sheet.staticCursor));
+         BasicScorePlayer.getInstance().play(sheet.score, new Path(sheet.staticCursor));
       } else {
-         ScorePlayer.instance.play(sheet.score);
+         BasicScorePlayer.getInstance().play(sheet.score);
       }
       repaint();
-      if(!ScorePlayer.instance.isPlaying()) return;
+      if(!BasicScorePlayer.getInstance().isPlaying()) return;
       progress.setEnabled(true);
-      progress.setMaximum((int)ScorePlayer.instance.getTickLength()); //>>> cast
-      timeButton.setLength(ScorePlayer.instance.getMicrosecondLength());
+      progress.setMaximum((int)BasicScorePlayer.getInstance().getTickLength()); //>>> cast
+      timeButton.setLength(BasicScorePlayer.getInstance().getMicrosecondLength());
       new Thread(new Runnable() {
          public void run() {
-            while(!ScorePlayer.instance.isStopped()) {
-               final long nextTickPos=ScorePlayer.instance.getTickPosition();
-               if(ScorePlayer.instance.isPlaying()) {
+            while(!BasicScorePlayer.getInstance().isStopped()) {
+               final long nextTickPos=BasicScorePlayer.getInstance().getTickPosition();
+               if(BasicScorePlayer.getInstance().isPlaying()) {
                   SwingUtilities.invokeLater(new Runnable() {
                      public void run() {
                         progress.setValue((int)nextTickPos);
-                        timeButton.setTime(ScorePlayer.instance.getMicrosecondPosition());
+                        timeButton.setTime(BasicScorePlayer.getInstance().getMicrosecondPosition());
                         //setProgressTime(nextMsPos);
                      }
                   });
