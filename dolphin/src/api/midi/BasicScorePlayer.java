@@ -157,31 +157,18 @@ public class BasicScorePlayer implements Receiver, MetaEventListener, ScorePlaye
          paused=false;
       }
       
-      /* (non-Javadoc)
-       * @see api.midi.ScorePlayer#getTickPosition()
-       */
-      @Override
       public long getTickPosition() {
          return sequencer.getTickPosition();
       }
-      /* (non-Javadoc)
-       * @see api.midi.ScorePlayer#getMicrosecondPosition()
-       */
-      @Override
+      
       public long getMicrosecondPosition() {
          return sequencer.getMicrosecondPosition();
       } 
-      /* (non-Javadoc)
-       * @see api.midi.ScorePlayer#setTickPosition(long)
-       */
-      @Override
+      
       public void setTickPosition(long pos) {
          sequencer.setTickPosition(pos);
       }
-      /* (non-Javadoc)
-       * @see api.midi.ScorePlayer#getTickLength()
-       */
-      @Override
+      
       public long getTickLength() {
          if(sequencer==null) return 0; //>>>
          return sequencer.getTickLength();
@@ -266,7 +253,7 @@ public class BasicScorePlayer implements Receiver, MetaEventListener, ScorePlaye
          return sequencer.getMicrosecondLength();
       }
 
-      public static ScorePlayer getInstance() {
+      private static ScorePlayer getInstance() {
          return instance;
       }
 
@@ -278,6 +265,18 @@ public class BasicScorePlayer implements Receiver, MetaEventListener, ScorePlaye
 
       @Override
       public void setPan(int part, int pan) {
+         // TODO Auto-generated method stub
+         
+      }
+
+      @Override
+      public void setMicrosecondPosition(long pos) {
+         // TODO Auto-generated method stub
+         
+      }
+
+      @Override
+      public void reset() {
          // TODO Auto-generated method stub
          
       }

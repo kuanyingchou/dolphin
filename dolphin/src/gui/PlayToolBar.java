@@ -52,12 +52,13 @@ public class PlayToolBar extends JToolBar {
       private final DecimalFormat df=new DecimalFormat("00");
       private boolean reverse=false;
       private void displayTime() {
-         final int minuteCurrent=(int)(time/60000000.0);
-         final int secondCurrent=(int)((time/1000000.0)-60*minuteCurrent);
-         final int minuteAll=(int)(length/60000000.0);
-         final int secondAll=(int)((length/1000000.0)-60*minuteAll);
+         //System.err.println("b "+time);
+         final int minuteCurrent=(int)(time/60000.0);
+         final int secondCurrent=(int)((time/1000.0)-60*minuteCurrent);
+         final int minuteAll=(int)(length/60000.0);
+         final int secondAll=(int)((length/1000.0)-60*minuteAll);
          if(reverse) {
-            final int secondCurrentAll=(int)((length/1000000.0));
+            final int secondCurrentAll=(int)((length/1000.0));
             final int restSecondAll=secondCurrentAll-(minuteCurrent*60+secondCurrent);
             
             final int restMinute=restSecondAll/60;
@@ -104,9 +105,9 @@ public class PlayToolBar extends JToolBar {
       progress.addChangeListener(new ChangeListener() {
          public void stateChanged(ChangeEvent e) {
             //if(progress.getValueIsAdjusting()) return;
-            if(!BasicScorePlayer.getInstance().isPlaying()) {
-               BasicScorePlayer.getInstance().setTickPosition(progress.getValue());
-               timeButton.setTime(BasicScorePlayer.getInstance().getMicrosecondPosition());
+            if(!MainFrame.player.isPlaying()) {
+               MainFrame.player.setMicrosecondPosition(progress.getValue());
+               timeButton.setTime(MainFrame.player.getMicrosecondPosition());
                //System.err.println(progress.getValue());
             }
          }
@@ -123,23 +124,24 @@ public class PlayToolBar extends JToolBar {
       
       //[ speed
       final JButton tempoLabel=new JButton("1.00x");
-      
-      final JSlider tempoFactorSlider=new JSlider(1, 200, 100);
+      final int DEFAULT_VALUE=0;
+      final JSlider tempoFactorSlider=new JSlider(-10, 10, DEFAULT_VALUE);
       tempoFactorSlider.setPreferredSize(new Dimension(100, 30));
-      tempoFactorSlider.setMajorTickSpacing(10);
-      tempoFactorSlider.setMinorTickSpacing(1);
+      tempoFactorSlider.setMajorTickSpacing(1);
+      //tempoFactorSlider.setMinorTickSpacing(1);
       tempoFactorSlider.setSnapToTicks(true);
       tempoFactorSlider.addChangeListener(new ChangeListener() {
          public void stateChanged(ChangeEvent e) {
-            final float factor=tempoFactorSlider.getValue()/100.0f;
+            final float factor=(float) Math.pow(2, tempoFactorSlider.getValue()/10.0); 
+            //tempoFactorSlider.getValue()/100.0f;
             tempoLabel.setText(new DecimalFormat("0.00x").format(factor));
-            BasicScorePlayer.getInstance().setTempoFactor(factor);
+            MainFrame.player.setTempoFactor(factor);
          }
       });
       tempoLabel.addActionListener(new ActionListener() {
          @Override
          public void actionPerformed(ActionEvent e) {
-            tempoFactorSlider.setValue(100);
+            tempoFactorSlider.setValue(DEFAULT_VALUE);
          }
       });
       
@@ -157,13 +159,13 @@ public class PlayToolBar extends JToolBar {
       });
       pauseButton.addActionListener(new ActionListener() {
          public void actionPerformed(ActionEvent e) {
-            BasicScorePlayer.getInstance().pause();
+            MainFrame.player.pause();
             repaint();
          }
       });
       stopButton.addActionListener(new ActionListener() {
          public void actionPerformed(ActionEvent e) {
-            BasicScorePlayer.getInstance().stop();
+            MainFrame.player.stop();
             progress.setValue(0);
             //progress.setEnabled(false);
             repaint();
@@ -199,24 +201,25 @@ public class PlayToolBar extends JToolBar {
       if(startFromCursor && sheet.score.isValidSelectPath(sheet.staticCursor)) {
          //final Note currentNote=sheet.score.get(sheet.staticCursor.partIndex).get(sheet.staticCursor.index);
          //if(currentNote==null) throw new RuntimeException();
-         BasicScorePlayer.getInstance().play(sheet.score, new Path(sheet.staticCursor));
+         MainFrame.player.play(sheet.score, new Path(sheet.staticCursor));
       } else {
-         BasicScorePlayer.getInstance().play(sheet.score);
+         MainFrame.player.play(sheet.score);
       }
       repaint();
-      if(!BasicScorePlayer.getInstance().isPlaying()) return;
+      if(!MainFrame.player.isPlaying()) return;
       progress.setEnabled(true);
-      progress.setMaximum((int)BasicScorePlayer.getInstance().getTickLength()); //>>> cast
-      timeButton.setLength(BasicScorePlayer.getInstance().getMicrosecondLength());
+      progress.setMaximum(Util.toInt(MainFrame.player.getMicrosecondLength()));
+      timeButton.setLength(MainFrame.player.getMicrosecondLength());
+      
       new Thread(new Runnable() {
          public void run() {
-            while(!BasicScorePlayer.getInstance().isStopped()) {
-               final long nextTickPos=BasicScorePlayer.getInstance().getTickPosition();
-               if(BasicScorePlayer.getInstance().isPlaying()) {
+            while(!MainFrame.player.isStopped()) {
+               final long nextTickPos=MainFrame.player.getMicrosecondPosition();
+               if(MainFrame.player.isPlaying()) {
                   SwingUtilities.invokeLater(new Runnable() {
                      public void run() {
-                        progress.setValue((int)nextTickPos);
-                        timeButton.setTime(BasicScorePlayer.getInstance().getMicrosecondPosition());
+                        progress.setValue(Util.toInt(nextTickPos));
+                        timeButton.setTime(nextTickPos);
                         //setProgressTime(nextMsPos);
                      }
                   });
@@ -227,6 +230,7 @@ public class PlayToolBar extends JToolBar {
                public void run() {
                   progress.setValue(progress.getMaximum());
                   progress.setValue(0);
+                  timeButton.setTime(0);
                   //progress.setEnabled(false);
             }});
          }

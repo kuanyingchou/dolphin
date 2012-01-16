@@ -229,7 +229,7 @@ public class Util {
       }
    }
    
-   public int toInt(long target) {
+   public static int toInt(long target) {
       if(target>Integer.MAX_VALUE || target <Integer.MIN_VALUE) {
          throw new IllegalArgumentException("target is outside the range of int");
       }

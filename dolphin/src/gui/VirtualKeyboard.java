@@ -71,7 +71,7 @@ public class VirtualKeyboard extends JComponent implements Receiver {
       mainFrame=mf;
       setPreferredSize(new Dimension(left+whiteKeyWidth*75+right, top+whiteKeyHeight+bottom));
       //MainFrame.deviceManager.addReceiver(this); //loop
-      BasicScorePlayer.getInstance().addReceiver(this);
+      MainFrame.player.addReceiver(this);
       setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
       
 //      try {

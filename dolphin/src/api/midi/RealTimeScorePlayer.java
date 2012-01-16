@@ -41,7 +41,7 @@ public class RealTimeScorePlayer implements Runnable, ScorePlayer {
    
    PlayThread playThread; //there is at most one playThread per player at any time
    
-   private PlayerState playLoopState=PlayerState.STOPPED; //>>>thread safe?
+   //private PlayerState playLoopState=PlayerState.STOPPED; //>>>thread safe?
    // There are two threads involved in this class, one is 
    // the Event-Dispatching Thread or the main Thread, the other is
    // PlayThread. 
@@ -49,16 +49,20 @@ public class RealTimeScorePlayer implements Runnable, ScorePlayer {
    //[ playback methods
    public void play() {
       if(score==null) throw new IllegalStateException();
+      if(state==PlayerState.PLAYING) return; //: handle double play
+      state = PlayerState.PLAYING;
+      startPlayLoop();
+      /*
       if (state == PlayerState.STOPPED) {
          state = PlayerState.PLAYING;
 
          // [ try to eliminate glitch
-         final ShortMessage on = new NoteOnMessage(1, 60, 10);
-         OutDeviceManager.instance.send(on, -1);
-         Util.sleep(500);
-         final ShortMessage off = new NoteOffMessage(1, 60, 10);
-         OutDeviceManager.instance.send(off, -1);
-         Util.sleep(500);
+//         final ShortMessage on = new NoteOnMessage(1, 60, 10);
+//         OutDeviceManager.instance.send(on, -1);
+//         Util.sleep(500);
+//         final ShortMessage off = new NoteOffMessage(1, 60, 10);
+//         OutDeviceManager.instance.send(off, -1);
+//         Util.sleep(500);
          // ] try to eliminate glitch
 
          startPlayLoop();
@@ -68,34 +72,43 @@ public class RealTimeScorePlayer implements Runnable, ScorePlayer {
          now=System.currentTimeMillis();
          playLoopState=PlayerState.PLAYING;
       }
+      */
       
    }
   
+   //[ TODO >>>
    public void play(Path startPath) {
-      if(score==null) throw new IllegalStateException();
-      state=PlayerState.PLAYING;
-      throw new RuntimeException();  
+      play(); 
    }
    
    public void pause() {
       if(score==null) throw new IllegalStateException();
       if(playThread==null) throw new IllegalStateException();
-      if(playLoopState!=PlayerState.PLAYING) throw new IllegalStateException();
-      playLoopState=PlayerState.PAUSED;
+      //if(playLoopState!=PlayerState.PLAYING) throw new IllegalStateException();
+      //playLoopState=PlayerState.PAUSED;
       state=PlayerState.PAUSED;
    }
    public void stop() {
       if(score==null) throw new IllegalStateException();
       //if(playThread==null) throw new IllegalStateException(); 
       //] users of this class is not required to remember the state of the player
-      if(playLoopState==PlayerState.STOPPED) throw new IllegalStateException();
-      playLoopState=PlayerState.STOPPED;
+      //if(playLoopState==PlayerState.STOPPED) throw new IllegalStateException();
+      //playLoopState=PlayerState.STOPPED;
       state=PlayerState.STOPPED;
+      reset();
+   }
+   
+   public void reset() {
+      progress=0;
+      for (int i = 0; i < partPlayers.length; i++) {
+         partPlayers[i].reset();
+      }
    }
    
    //[ getters & setters
    
    public void setScore(Score s) {
+      if(score==s) return; //>>> TODO: modifications after playback
       score=s;
       final int partCount=score.partCount();
       //[ there's only 15 normal channels available, ignore the rest
@@ -155,55 +168,56 @@ public class RealTimeScorePlayer implements Runnable, ScorePlayer {
    }
 
    private void startPlayLoop() {
-      if(playThread!=null) throw new RuntimeException();
       playThread = new PlayThread(this);
       playThread.start();      
    }
 
-   long now;
+   //long now;
 
    @Override
    public void run() {
-      if(playLoopState!=PlayerState.STOPPED) throw new IllegalStateException();
-      playLoopState=PlayerState.PLAYING;
+      //if(playLoopState!=PlayerState.STOPPED) throw new IllegalStateException();
+      //playLoopState=PlayerState.PLAYING;
       
-      Util.sleep(500); //: eliminate glitch
+      //Util.sleep(500); //: eliminate glitch
       System.err.println("start playing...");
       //[ the loop treats notes like multiple lines of customers, and 
       //  exits when all customers are done
-      now=System.currentTimeMillis();
+      long now=System.currentTimeMillis();
       long interval=0;
       boolean allPlayerDone;
       
       while(true) {
-         if (playLoopState == PlayerState.PLAYING) {
+         if (state == PlayerState.PLAYING) {
             allPlayerDone = true;
             for (int i = 0; i < partPlayers.length; i++) {
                if (partPlayers[i].isDone() || score.get(i).isMute())
                   continue;
                allPlayerDone = false;
-               partPlayers[i].play(interval);
+               partPlayers[i].play((long)(interval*tempoFactor));
                //System.err.println(interval);
             }
             if (allPlayerDone)
                break;
             interval = System.currentTimeMillis() - now;
-            progress += interval;
+            progress += (long)(interval*tempoFactor);
             now += interval;
-         } else if(playLoopState==PlayerState.STOPPED) {
+         } else if(state==PlayerState.STOPPED) {
             for (int i = 0; i < partPlayers.length; i++) {
                partPlayers[i].stop();
             }
             break;
-         } else if(playLoopState==PlayerState.PAUSED) {
+         } else if(state==PlayerState.PAUSED) {
             for (int i = 0; i < partPlayers.length; i++) {
                partPlayers[i].pause();
             }
+            break;
          }
          Util.sleep(1);
       }
       //Util.sleep(500);
-      OutDeviceManager.instance.closeOutDevice(); //>>>>>>>
+      //OutDeviceManager.instance.closeOutDevice(); //>>>>>>>
+      if(state!=PlayerState.STOPPED && state!=PlayerState.PAUSED) stop(); //>>>thread safe?
       System.err.println("stop playing");
    }
 
@@ -337,7 +351,8 @@ public class RealTimeScorePlayer implements Runnable, ScorePlayer {
                closeUnclosedKeys();
             }
          } else {
-            // in the middle of a note, nothing to do here >>>
+            // [ in the middle of a note, if the note is not yet triggered
+            // (because of a pause), trigger it
             if (!getCurrentNote().isRest()) {
                if (keys[getCurrentNote().pitch] != true) {
                   sendNoteOn(getCurrentNote().pitch);
@@ -350,6 +365,10 @@ public class RealTimeScorePlayer implements Runnable, ScorePlayer {
       
       public void stop() {
          closeUnclosedKeys();
+         reset();
+      }
+      
+      public void reset() {
          currentNoteIndex=-1;
          currentNoteProgress=0;
          currentNoteLengthInMillis=0;
@@ -357,8 +376,7 @@ public class RealTimeScorePlayer implements Runnable, ScorePlayer {
       
       public void pause() {
          closeUnclosedKeys();
-         //if a note is paused while playing, turn off the note,
-         //skip to next note after playback is resumed
+         //if a note is paused while playing, turn off the note.
       }
       
       private void sendVolume(int volume) {
@@ -399,7 +417,7 @@ public class RealTimeScorePlayer implements Runnable, ScorePlayer {
       }
      
       private long getNoteLengthInMillis(Note n) {
-         return (long)((float)(1/tempoFactor)*wholeLengthInMillis * n.getActualLength() / Note.WHOLE_LENGTH);
+         return (long)((float)wholeLengthInMillis * n.getActualLength() / Note.WHOLE_LENGTH);
       }
       public void setVolume(int volume) {
          sendVolume(volume);
@@ -438,7 +456,7 @@ public class RealTimeScorePlayer implements Runnable, ScorePlayer {
    @Override
    public void addReceiver(Receiver rec) {
       // TODO Auto-generated method stub
-      throw new RuntimeException("not yet");
+      //throw new RuntimeException("not yet");
    }
 
    

@@ -28,13 +28,15 @@ public interface ScorePlayer {
 
    public abstract void stop();
 
-   public abstract long getTickPosition();
+   //public abstract long getTickPosition();
 
    public abstract long getMicrosecondPosition();
+   
+   public abstract void setMicrosecondPosition(long pos);
 
-   public abstract void setTickPosition(long pos);
+   //public abstract void setTickPosition(long pos);
 
-   public abstract long getTickLength();
+   //public abstract long getTickLength();
 
    public abstract void setTempoFactor(float tf);
 
@@ -45,4 +47,6 @@ public interface ScorePlayer {
    public abstract void setVolume(int partIndex, int volume);
    
    public abstract void setPan(int part, int pan);
+   
+   public abstract void reset();
 }

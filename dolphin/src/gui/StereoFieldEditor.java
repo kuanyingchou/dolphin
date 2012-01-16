@@ -191,8 +191,8 @@ class PartIconDragger extends MouseAdapter {
          }
          
          //[ send msg to player
-         if(BasicScorePlayer.getInstance().isPlaying() && 
-               BasicScorePlayer.getInstance().getScore()==holdedIcon.getPart().getScore()) {
+         if(MainFrame.player.isPlaying() && 
+               MainFrame.player.getScore()==holdedIcon.getPart().getScore()) {
             //[ volume
             final ShortMessage cc=new ShortMessage();
             try {

@@ -117,7 +117,7 @@ public abstract class PartView extends AbstractCpn {
             } 
             
             //[ draw play index
-            if(!BasicScorePlayer.getInstance().isStopped() &&
+            if(!MainFrame.player.isStopped() &&
                   scoreView.indexOf(this) == scoreView.staticCursor.partIndex &&
                   noteIndex==getPart().playIndex) {
                //final int y0=getYByLine(0);

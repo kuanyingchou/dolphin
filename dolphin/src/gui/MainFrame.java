@@ -36,6 +36,8 @@ import view.ScoreView;
 import api.audio.PitchProfile;
 import api.audio.SoundAnalyzer;
 import api.midi.OutDeviceManager;
+import api.midi.RealTimeScorePlayer;
+import api.midi.ScorePlayer;
 import api.model.Note;
 import api.model.Part;
 import api.model.Score;
@@ -54,6 +56,8 @@ public class MainFrame extends JFrame {
    public final ScoresTabbedPane desktop=new ScoresTabbedPane(this); 
    
    final IntensityHistory intensityHistory=new IntensityHistory();
+   
+   public static final ScorePlayer player=new RealTimeScorePlayer(); //should it be here? 
    
    
    /*public static class KeyInputStatus extends JLabel { //>>>
