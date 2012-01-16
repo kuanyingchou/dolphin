@@ -42,4 +42,7 @@ public interface ScorePlayer {
 
    public abstract long getMicrosecondLength();
 
+   public abstract void setVolume(int partIndex, int volume);
+   
+   public abstract void setPan(int part, int pan);
 }

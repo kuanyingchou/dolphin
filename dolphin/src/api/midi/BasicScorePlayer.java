@@ -269,6 +269,18 @@ public class BasicScorePlayer implements Receiver, MetaEventListener, ScorePlaye
       public static ScorePlayer getInstance() {
          return instance;
       }
+
+      @Override
+      public void setVolume(int partIndex, int volume) {
+         // TODO Auto-generated method stub
+         
+      }
+
+      @Override
+      public void setPan(int part, int pan) {
+         // TODO Auto-generated method stub
+         
+      }
      
      
    } 

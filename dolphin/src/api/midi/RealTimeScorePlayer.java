@@ -297,9 +297,9 @@ public class RealTimeScorePlayer implements Runnable, ScorePlayer {
          
          if (currentNoteIndex == -1) { //: start
             //[ prepare channel
-            sendInstrument();
-            sendPan();
-            sendVolume();
+            sendInstrument(part.getInstrument().getValue());
+            sendPan(part.getPan());
+            sendVolume(part.getVolume());
             //] prepare channel
          } 
 
@@ -361,19 +361,19 @@ public class RealTimeScorePlayer implements Runnable, ScorePlayer {
          //skip to next note after playback is resumed
       }
       
-      private void sendVolume() {
+      private void sendVolume(int volume) {
          final ShortMessage m = new VolumeMessage(
-               channel, part.getVolume());
+               channel, volume);
          OutDeviceManager.instance.send(m, -1);
       }
-      private void sendPan() {
+      private void sendPan(int pan) {
          final ShortMessage m = new PanMessage(
-               channel, part.getPan());
+               channel, pan);
          OutDeviceManager.instance.send(m, -1);
       }
-      private void sendInstrument() {
+      private void sendInstrument(int instrument) {
          final ShortMessage m = new InstrumentMessage(
-               channel, part.getInstrument().getValue());
+               channel, instrument);
          OutDeviceManager.instance.send(m, -1);
       }
       private Note getCurrentNote() {
@@ -401,6 +401,12 @@ public class RealTimeScorePlayer implements Runnable, ScorePlayer {
       private long getNoteLengthInMillis(Note n) {
          return (long)((float)(1/tempoFactor)*wholeLengthInMillis * n.getActualLength() / Note.WHOLE_LENGTH);
       }
+      public void setVolume(int volume) {
+         sendVolume(volume);
+      }
+      public void setPan(int pan) {
+         sendPan(pan);
+      }
    }
    @Override
    public void play(Score s) {
@@ -415,6 +421,20 @@ public class RealTimeScorePlayer implements Runnable, ScorePlayer {
       play();
    }
 
+   @Override
+   public void setVolume(int partIndex, int volume) {
+      if(partIndex>=0 && partIndex<partPlayers.length) {
+         partPlayers[partIndex].setVolume(volume);
+      }
+   }
+
+   @Override
+   public void setPan(int partIndex, int pan) {
+      if(partIndex>=0 && partIndex<partPlayers.length) {
+         partPlayers[partIndex].setPan(pan);
+      }
+   }
+   
    @Override
    public void addReceiver(Receiver rec) {
       // TODO Auto-generated method stub
@@ -657,9 +677,6 @@ public class RealTimeScorePlayer implements Runnable, ScorePlayer {
       test_another_file();
    }
 
-   
-   
-  
 
    
 }
