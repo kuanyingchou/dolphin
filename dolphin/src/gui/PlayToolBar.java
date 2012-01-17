@@ -23,6 +23,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import api.midi.BasicScorePlayer;
+import api.midi.ScorePlayer.PlayerListener;
 import api.model.Path;
 import api.util.Util;
 
@@ -210,6 +211,9 @@ public class PlayToolBar extends JToolBar {
       progress.setEnabled(true);
       progress.setMaximum(Util.toInt(MainFrame.player.getMicrosecondLength()));
       timeButton.setLength(MainFrame.player.getMicrosecondLength());
+      
+      MainFrame.player.clearPlayerListeners();
+      MainFrame.player.addPlayerListeners(sheet);
       
       new Thread(new Runnable() {
          public void run() {

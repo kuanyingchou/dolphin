@@ -117,15 +117,22 @@ public abstract class PartView extends AbstractCpn {
             } 
             
             //[ draw play index
+//            if(!MainFrame.player.isStopped() &&
+//                  scoreView.indexOf(this) == scoreView.staticCursor.partIndex &&
+//                  noteIndex==getPart().playIndex) {
+//               //final int y0=getYByLine(0);
+//               //final int y1=getYByLine(4);
+//               g.setColor(Color.red);
+//               g.drawLine((int)currentX, 0, (int)currentX, h());
+//            }
             if(!MainFrame.player.isStopped() &&
-                  scoreView.indexOf(this) == scoreView.staticCursor.partIndex &&
-                  noteIndex==getPart().playIndex) {
-               //final int y0=getYByLine(0);
-               //final int y1=getYByLine(4);
-               g.setColor(Color.red);
-               g.drawLine((int)currentX, 0, (int)currentX, h());
-            }
-            
+                scoreView.indexOf(this) == scoreView.staticCursor.partIndex &&
+                noteIndex==playingNote) {
+             //final int y0=getYByLine(0);
+             //final int y1=getYByLine(4);
+             g.setColor(Color.red);
+             g.drawLine((int)currentX, 0, (int)currentX, h());
+          }
          }
          if(time>=periodLength) {
             periodCount++;
@@ -186,4 +193,8 @@ public abstract class PartView extends AbstractCpn {
    //public abstract int getBarHeight();
    public abstract void drawBarLine(Graphics2D g, float x, int barNumber);
    
+   int playingNote=-1;
+   public void notePlayed(int index) {
+      playingNote=index;
+   }
 }

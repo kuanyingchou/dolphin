@@ -23,7 +23,7 @@ import api.model.Score;
 import api.model.*;
 
 
-public class BasicScorePlayer implements Receiver, MetaEventListener, ScorePlayer {
+public class BasicScorePlayer extends ScorePlayer implements Receiver, MetaEventListener {
       private boolean paused=false;
       private final java.util.List<Receiver> receivers=new ArrayList<Receiver>();
       private static final ScorePlayer instance=new BasicScorePlayer();

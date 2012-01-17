@@ -26,7 +26,7 @@ import api.util.Util;
 //   by the user of the Dolphin API. Thus it ignores illegal operations
 //   instead of throwing exceptions.
 
-public class RealTimeScorePlayer implements Runnable, ScorePlayer {
+public class RealTimeScorePlayer extends ScorePlayer implements Runnable {
    
    public static enum PlayerState { STOPPED, PLAYING, PAUSED } //>>> do we need "paused"?
    private PlayerState state=PlayerState.STOPPED;
@@ -499,18 +499,6 @@ public class RealTimeScorePlayer implements Runnable, ScorePlayer {
       
    }
    
-   private final List<PlayerListener> playerListeners=new ArrayList<PlayerListener>();
-   public void addPlayerListeners(PlayerListener lis) {
-      playerListeners.add(lis);
-   }
-   public void fireNotePlayered(Path path) {
-      for (int i = 0; i < playerListeners.size(); i++) {
-         playerListeners.get(i).notePlayed(path);
-      }
-   }
-   public static interface PlayerListener {
-      public void notePlayed(Path path);
-   }
    
    ////////////////////////////// Tests ///////////////////////////////////
    public static void test_multipart() {

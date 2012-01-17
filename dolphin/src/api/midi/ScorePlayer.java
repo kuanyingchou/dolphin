@@ -1,11 +1,14 @@
 package api.midi;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.sound.midi.Receiver;
 
 import api.model.Path;
 import api.model.Score;
 
-public interface ScorePlayer {
+public abstract class ScorePlayer {
 
    //usage:
    //play: playing
@@ -49,4 +52,20 @@ public interface ScorePlayer {
    public abstract void setPan(int part, int pan);
    
    public abstract void reset();
+   
+   private final List<PlayerListener> playerListeners=new ArrayList<PlayerListener>();
+   public void addPlayerListeners(PlayerListener lis) {
+      playerListeners.add(lis);
+   }
+   public void clearPlayerListeners() {
+      playerListeners.clear();
+   }
+   public void fireNotePlayered(Path path) {
+      for (int i = 0; i < playerListeners.size(); i++) {
+         playerListeners.get(i).notePlayed(path);
+      }
+   }
+   public static interface PlayerListener {
+      public void notePlayed(Path path);
+   }
 }

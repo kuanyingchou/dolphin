@@ -54,6 +54,7 @@ import javax.swing.SwingUtilities;
 
 import api.audio.PitchListener;
 import api.audio.SoundAnalyzer;
+import api.midi.ScorePlayer.PlayerListener;
 import api.model.AddNoteChange;
 import api.model.AddPartChange;
 import api.model.KeySignatureChange;
@@ -71,7 +72,7 @@ import api.util.Util;
 
 
 public class ScoreView extends JComponent implements 
-   ScoreChangeListener, PitchListener, Receiver
+   ScoreChangeListener, PitchListener, Receiver, PlayerListener
 {
    private java.util.List<PartView> partViews=new ArrayList<PartView>();
    //final MainFrame mainFrame;
@@ -1206,6 +1207,12 @@ System.err.println("1/"+(double)Note.WHOLE_LENGTH/dummyNote.length+"+ "+dummyNot
          
       }
       
+   }
+
+   @Override
+   public void notePlayed(Path path) {
+      this.partViews.get(path.partIndex).notePlayed(path.noteIndex);
+      repaint();
    }
 }
 
