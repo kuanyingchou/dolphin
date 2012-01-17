@@ -289,7 +289,8 @@ public class RealTimeScorePlayer implements Runnable, ScorePlayer {
       private void closeUnclosedKeys() {
          for (int i = 0; i < keys.length; i++) {
             if(keys[i]) {
-               sendNoteOff(i);
+               sendNoteOff(channel, i);
+               keys[i]=false;
             }
          }
          System.err.println("close unclosed keys");
@@ -299,8 +300,8 @@ public class RealTimeScorePlayer implements Runnable, ScorePlayer {
       //example:
       //|___A___|___B___| ... the part contains notes A and B
       //|=>|              ... t1: start, play note A
-      //|=========>|      ... t2: elapsedTime >= noteLength, stop note A
-      //        |=>|      ... t2(continued): elapsedTime -= noteLength, play note B 
+      //|=========>|      ... t2: currentNoteProgress >= noteLength, stop note A
+      //        |=>|      ... t2(continued): currentNoteProgress -= noteLength, play note B 
       //        |=======>|... t3: end, stop note B
       //>>> TODO: what if interval is greater than the length of a note
       public void play(long interval) {
@@ -311,16 +312,18 @@ public class RealTimeScorePlayer implements Runnable, ScorePlayer {
          
          if (currentNoteIndex == -1) { //: start
             //[ prepare channel
-            sendInstrument(part.getInstrument().getValue());
-            sendPan(part.getPan());
-            sendVolume(part.getVolume());
+            sendInstrument(channel, part.getInstrument().getValue());
+            sendPan(channel, part.getPan());
+            sendVolume(channel, part.getVolume());
             //] prepare channel
          } 
 
          if (currentNoteProgress >= currentNoteLengthInMillis) {
             if(currentNoteIndex>=0) {
-               if(!getCurrentNote().isRest())
-                  sendNoteOff(getCurrentNote().pitch);
+               if(!getCurrentNote().isRest()) {
+                  sendNoteOff(channel, getCurrentNote().pitch);
+                  keys[getCurrentNote().pitch]=false;
+               }
             }
             currentNoteProgress -= currentNoteLengthInMillis;
 
@@ -344,7 +347,8 @@ public class RealTimeScorePlayer implements Runnable, ScorePlayer {
                //] get note length
                
                if(!note.isRest()) {
-                  sendNoteOn(note.pitch);
+                  sendNoteOn(channel, note.pitch);
+                  keys[note.pitch]=true;
                }
             } else {
                //end of part, no more notes to play
@@ -354,8 +358,10 @@ public class RealTimeScorePlayer implements Runnable, ScorePlayer {
             // [ in the middle of a note, if the note is not yet triggered
             // (because of a pause), trigger it
             if (!getCurrentNote().isRest()) {
-               if (keys[getCurrentNote().pitch] != true) {
-                  sendNoteOn(getCurrentNote().pitch);
+               final int p=getCurrentNote().pitch;
+               if (keys[p] != true) {
+                  sendNoteOn(channel, p);
+                  keys[p]=true;
                }
             }
             
@@ -379,51 +385,20 @@ public class RealTimeScorePlayer implements Runnable, ScorePlayer {
          //if a note is paused while playing, turn off the note.
       }
       
-      private void sendVolume(int volume) {
-         final ShortMessage m = new VolumeMessage(
-               channel, volume);
-         OutDeviceManager.instance.send(m, -1);
-      }
-      private void sendPan(int pan) {
-         final ShortMessage m = new PanMessage(
-               channel, pan);
-         OutDeviceManager.instance.send(m, -1);
-      }
-      private void sendInstrument(int instrument) {
-         final ShortMessage m = new InstrumentMessage(
-               channel, instrument);
-         OutDeviceManager.instance.send(m, -1);
-      }
       private Note getCurrentNote() {
          return part.getNote(currentNoteIndex);
       }
+
       
-      private void sendNoteOn(int pitch) {
-         //System.err.println("1 "+progress);
-         
-         final ShortMessage on = new NoteOnMessage(channel, pitch, 127);
-         OutDeviceManager.instance.send(on, -1);
-         keys[pitch]=true;
-         System.err.println("♪(start="+progress+")");
-         //System.err.println("open note("+note.pitch+") with length="+noteLengthInMillis+"");
-      }
-      private void sendNoteOff(int pitch) {
-         //System.err.println("0 "+progress);
-         //System.err.print("\\");
-         final ShortMessage off = new NoteOffMessage(channel, pitch, 127);
-         OutDeviceManager.instance.send(off, -1);
-         keys[pitch]=false;
-         //System.err.println("close note("+note.pitch+")");
-      }
      
       private long getNoteLengthInMillis(Note n) {
          return (long)((float)wholeLengthInMillis * n.getActualLength() / Note.WHOLE_LENGTH);
       }
       public void setVolume(int volume) {
-         sendVolume(volume);
+         sendVolume(channel, volume);
       }
       public void setPan(int pan) {
-         sendPan(pan);
+         sendPan(channel, pan);
       }
    }
    @Override
@@ -459,7 +434,36 @@ public class RealTimeScorePlayer implements Runnable, ScorePlayer {
       //throw new RuntimeException("not yet");
    }
 
-   
+ //[ TODO >>> move sendXXX() methods up to RealTimeScorePlayer or ScorePlayer
+   private void sendVolume(int channel, int volume) {
+      final ShortMessage m = new VolumeMessage(
+            channel, volume);
+      OutDeviceManager.instance.send(m, -1);
+   }
+   private void sendPan(int channel, int pan) {
+      final ShortMessage m = new PanMessage(
+            channel, pan);
+      OutDeviceManager.instance.send(m, -1);
+   }
+   private void sendInstrument(int channel, int instrument) {
+      final ShortMessage m = new InstrumentMessage(
+            channel, instrument);
+      OutDeviceManager.instance.send(m, -1);
+   }
+   private void sendNoteOn(int channel, int pitch) {
+      //System.err.println("1 "+progress);
+      final ShortMessage on = new NoteOnMessage(channel, pitch, 127);
+      OutDeviceManager.instance.send(on, -1);
+      System.err.println("♪(start="+progress+")");
+      //System.err.println("open note("+note.pitch+") with length="+noteLengthInMillis+"");
+   }
+   private void sendNoteOff(int channel, int pitch) {
+      //System.err.println("0 "+progress);
+      //System.err.print("\\");
+      final ShortMessage off = new NoteOffMessage(channel, pitch, 127);
+      OutDeviceManager.instance.send(off, -1);
+      //System.err.println("close note("+note.pitch+")");
+   }
    
    class PlayThread extends Thread {
       
@@ -476,6 +480,9 @@ public class RealTimeScorePlayer implements Runnable, ScorePlayer {
       
    }
    
+   public static interface PlayerListener {
+      public void notePlayed(Path path);
+   }
    
    ////////////////////////////// Tests ///////////////////////////////////
    public static void test_multipart() {
