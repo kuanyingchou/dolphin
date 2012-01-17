@@ -2,6 +2,8 @@ package api.midi;
 
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ThreadFactory;
 
 import javax.sound.midi.MetaMessage;
@@ -26,20 +28,34 @@ import api.util.Util;
 
 public class RealTimeScorePlayer implements Runnable, ScorePlayer {
    
-   private Score score;
-   
-   enum PlayerState {
-      STOPPED,
-      PLAYING,
-      PAUSED
-   }
+   public static enum PlayerState { STOPPED, PLAYING, PAUSED } //>>> do we need "paused"?
    private PlayerState state=PlayerState.STOPPED;
+   
+   private Score score; 
+   
+   private Receiver outputDevice=null; 
+   //A player traverses the data in a Score and plays it to the outputDevice
    
    PartPlayer[] partPlayers;
    
-   private long progress=0;
+   private long progress=0; //playback progress in milliseconds
    
    PlayThread playThread; //there is at most one playThread per player at any time
+   
+   private float tempoFactor=1.0f;
+   
+   public RealTimeScorePlayer() {
+      this(OutDeviceManager.instance);
+   }
+   
+   public RealTimeScorePlayer(Receiver out) {
+      setOutputDevice(out);
+   }
+   
+   public void setOutputDevice(Receiver out) {
+      if(out==null) throw new IllegalArgumentException();
+      outputDevice=out;
+   }
    
    //private PlayerState playLoopState=PlayerState.STOPPED; //>>>thread safe?
    // There are two threads involved in this class, one is 
@@ -58,10 +74,10 @@ public class RealTimeScorePlayer implements Runnable, ScorePlayer {
 
          // [ try to eliminate glitch
 //         final ShortMessage on = new NoteOnMessage(1, 60, 10);
-//         OutDeviceManager.instance.send(on, -1);
+//         outputDevice.send(on, -1);
 //         Util.sleep(500);
 //         final ShortMessage off = new NoteOffMessage(1, 60, 10);
-//         OutDeviceManager.instance.send(off, -1);
+//         outputDevice.send(off, -1);
 //         Util.sleep(500);
          // ] try to eliminate glitch
 
@@ -117,8 +133,7 @@ public class RealTimeScorePlayer implements Runnable, ScorePlayer {
              ChannelManager.NORMAL_CHANNEL_SIZE:
              partCount];
       for(int i=0; i<partPlayers.length; i++) {
-         partPlayers[i]=new PartPlayer(
-               s.getPart(i), ChannelManager.getNormalChannel(i));
+         partPlayers[i]=new PartPlayer(i, ChannelManager.getNormalChannel(i));
       }
    }
    
@@ -147,10 +162,10 @@ public class RealTimeScorePlayer implements Runnable, ScorePlayer {
       }
    }
    public void setTickPosition(long pos) {
-      throw new RuntimeException();
+      throw new RuntimeException(); //>>> TODO
    }
    public long getTickLength() {
-      throw new RuntimeException();
+      throw new RuntimeException(); //>>> TODO
    }
    public long getMicrosecondLength() {
       long max=0;
@@ -160,7 +175,7 @@ public class RealTimeScorePlayer implements Runnable, ScorePlayer {
       }
       return max;
    }
-   float tempoFactor=1.0f;
+   
    public void setTempoFactor(float tf) {
       if(tf<0.1) tf=0.1f;
       if(tf>10) tf=10;
@@ -242,15 +257,17 @@ public class RealTimeScorePlayer implements Runnable, ScorePlayer {
       boolean[] keys=new boolean[128];
       
       Part part;
-      final long beatLengthInMillis;
-      final long wholeLengthInMillis;
+      int partIndex;
       int channel;
       
+      final long beatLengthInMillis;
+      final long wholeLengthInMillis;
+      
       //states: sleeping, started, ended
-      public PartPlayer(Part p, int ch) {
-         if(p==null || p.getScore()==null) throw new IllegalArgumentException();
+      public PartPlayer(int partIndex, int ch) {
+         part=score.get(partIndex);
+         if(part==null || part.getScore()==null) throw new IllegalArgumentException();
          //] >>> if score is absent, use a default value
-         part=p;
          if(part.getInstrument().isPercussion()) {
             channel=ChannelManager.PERCUSSION_CHANNEL;
          } else {
@@ -349,6 +366,7 @@ public class RealTimeScorePlayer implements Runnable, ScorePlayer {
                if(!note.isRest()) {
                   sendNoteOn(channel, note.pitch);
                   keys[note.pitch]=true;
+                  fireNotePlayered(new Path(partIndex, currentNoteIndex));
                }
             } else {
                //end of part, no more notes to play
@@ -414,6 +432,7 @@ public class RealTimeScorePlayer implements Runnable, ScorePlayer {
       play();
    }
 
+   //>>>>TODO how about the settings in the score?
    @Override
    public void setVolume(int partIndex, int volume) {
       if(partIndex>=0 && partIndex<partPlayers.length) {
@@ -431,29 +450,29 @@ public class RealTimeScorePlayer implements Runnable, ScorePlayer {
    @Override
    public void addReceiver(Receiver rec) {
       // TODO Auto-generated method stub
-      //throw new RuntimeException("not yet");
+      throw new RuntimeException("only one receiver allowed right now");
    }
 
  //[ TODO >>> move sendXXX() methods up to RealTimeScorePlayer or ScorePlayer
    private void sendVolume(int channel, int volume) {
       final ShortMessage m = new VolumeMessage(
             channel, volume);
-      OutDeviceManager.instance.send(m, -1);
+      outputDevice.send(m, -1);
    }
    private void sendPan(int channel, int pan) {
       final ShortMessage m = new PanMessage(
             channel, pan);
-      OutDeviceManager.instance.send(m, -1);
+      outputDevice.send(m, -1);
    }
    private void sendInstrument(int channel, int instrument) {
       final ShortMessage m = new InstrumentMessage(
             channel, instrument);
-      OutDeviceManager.instance.send(m, -1);
+      outputDevice.send(m, -1);
    }
    private void sendNoteOn(int channel, int pitch) {
       //System.err.println("1 "+progress);
       final ShortMessage on = new NoteOnMessage(channel, pitch, 127);
-      OutDeviceManager.instance.send(on, -1);
+      outputDevice.send(on, -1);
       System.err.println("♪(start="+progress+")");
       //System.err.println("open note("+note.pitch+") with length="+noteLengthInMillis+"");
    }
@@ -461,7 +480,7 @@ public class RealTimeScorePlayer implements Runnable, ScorePlayer {
       //System.err.println("0 "+progress);
       //System.err.print("\\");
       final ShortMessage off = new NoteOffMessage(channel, pitch, 127);
-      OutDeviceManager.instance.send(off, -1);
+      outputDevice.send(off, -1);
       //System.err.println("close note("+note.pitch+")");
    }
    
@@ -480,6 +499,15 @@ public class RealTimeScorePlayer implements Runnable, ScorePlayer {
       
    }
    
+   private final List<PlayerListener> playerListeners=new ArrayList<PlayerListener>();
+   public void addPlayerListeners(PlayerListener lis) {
+      playerListeners.add(lis);
+   }
+   public void fireNotePlayered(Path path) {
+      for (int i = 0; i < playerListeners.size(); i++) {
+         playerListeners.get(i).notePlayed(path);
+      }
+   }
    public static interface PlayerListener {
       public void notePlayed(Path path);
    }
