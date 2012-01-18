@@ -38,7 +38,7 @@ public class RealTimeScorePlayer extends ScorePlayer implements Runnable {
    
    PartPlayer[] partPlayers;
    
-   private long progress=0; //playback progress in milliseconds
+   private float progress=0; //playback progress in milliseconds
    
    PlayThread playThread; //there is at most one playThread per player at any time
    
@@ -153,7 +153,7 @@ public class RealTimeScorePlayer extends ScorePlayer implements Runnable {
    }
    public long getMicrosecondPosition() {
       if(playThread==null) throw new RuntimeException();
-      return progress;
+      return (long)progress; //>>> safe to convert?
    } 
    public void setMicrosecondPosition(long pos) {
       progress=pos;
@@ -209,13 +209,13 @@ public class RealTimeScorePlayer extends ScorePlayer implements Runnable {
                if (partPlayers[i].isDone() || score.get(i).isMute())
                   continue;
                allPlayerDone = false;
-               partPlayers[i].play((long)(interval*tempoFactor));
+               partPlayers[i].play((interval*tempoFactor));
                //System.err.println(interval);
             }
             if (allPlayerDone)
                break;
             interval = System.currentTimeMillis() - now;
-            progress += (long)(interval*tempoFactor);
+            progress += (interval*tempoFactor);
             now += interval;
          } else if(state==PlayerState.STOPPED) {
             for (int i = 0; i < partPlayers.length; i++) {
@@ -253,7 +253,7 @@ public class RealTimeScorePlayer extends ScorePlayer implements Runnable {
    class PartPlayer {
       int currentNoteIndex=-1;
       long currentNoteLengthInMillis=0;
-      long currentNoteProgress=0;
+      float currentNoteProgress=0;
       boolean[] keys=new boolean[128];
       
       Part part;
@@ -321,7 +321,7 @@ public class RealTimeScorePlayer extends ScorePlayer implements Runnable {
       //        |=>|      ... t2(continued): currentNoteProgress -= noteLength, play note B 
       //        |=======>|... t3: end, stop note B
       //>>> TODO: what if interval is greater than the length of a note
-      public void play(long interval) {
+      public void play(float interval) {
          if(part.noteCount()<=0) { return; } //>>> need to consider progress, ex. getRemainNoteCount()<=0
          if(isDone()) { throw new IllegalStateException(); }
          
