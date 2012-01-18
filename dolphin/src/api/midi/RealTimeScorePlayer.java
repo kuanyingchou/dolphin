@@ -29,6 +29,7 @@ import api.util.Util;
 public class RealTimeScorePlayer extends ScorePlayer implements Runnable {
    
    public static enum PlayerState { STOPPED, PLAYING, PAUSED } //>>> do we need "paused"?
+   
    private PlayerState state=PlayerState.STOPPED;
    
    private Score score; 
@@ -36,13 +37,14 @@ public class RealTimeScorePlayer extends ScorePlayer implements Runnable {
    private Receiver outputDevice=null; 
    //A player traverses the data in a Score and plays it to the outputDevice
    
-   PartPlayer[] partPlayers;
+   private PartPlayer[] partPlayers;
    
    private float progress=0; //playback progress in milliseconds
    
-   PlayThread playThread; //there is at most one playThread per player at any time
+   private PlayThread playThread; //there is at most one playThread per player at any time
    
    private float tempoFactor=1.0f;
+   
    
    public RealTimeScorePlayer() {
       this(OutDeviceManager.instance);
@@ -129,11 +131,11 @@ public class RealTimeScorePlayer extends ScorePlayer implements Runnable {
       final int partCount=score.partCount();
       //[ there's only 15 normal channels available, ignore the rest
       partPlayers=new PartPlayer[
-             partCount>ChannelManager.NORMAL_CHANNEL_SIZE?
-             ChannelManager.NORMAL_CHANNEL_SIZE:
+             partCount>ChannelNumberMapper.NORMAL_CHANNEL_SIZE?
+             ChannelNumberMapper.NORMAL_CHANNEL_SIZE:
              partCount];
       for(int i=0; i<partPlayers.length; i++) {
-         partPlayers[i]=new PartPlayer(i, ChannelManager.getNormalChannel(i));
+         partPlayers[i]=new PartPlayer(i, ChannelNumberMapper.toNormalChannel(i));
       }
    }
    
@@ -148,9 +150,7 @@ public class RealTimeScorePlayer extends ScorePlayer implements Runnable {
       return state==PlayerState.STOPPED;
    }
    
-   public long getTickPosition() {
-      throw new RuntimeException();
-   }
+  
    public long getMicrosecondPosition() {
       if(playThread==null) throw new RuntimeException();
       return (long)progress; //>>> safe to convert?
@@ -161,12 +161,7 @@ public class RealTimeScorePlayer extends ScorePlayer implements Runnable {
          partPlayers[i].setMicrosecondPosition(pos);
       }
    }
-   public void setTickPosition(long pos) {
-      throw new RuntimeException(); //>>> TODO
-   }
-   public long getTickLength() {
-      throw new RuntimeException(); //>>> TODO
-   }
+   
    public long getMicrosecondLength() {
       long max=0;
       for (int i = 0; i < partPlayers.length; i++) {
@@ -181,12 +176,47 @@ public class RealTimeScorePlayer extends ScorePlayer implements Runnable {
       if(tf>10) tf=10;
       tempoFactor=tf;
    }
-
+   //[ TODO: not supported yet, but what's the use of ticks?
+   public long getTickPosition() {
+      throw new RuntimeException();
+   }
+   public void setTickPosition(long pos) {
+      throw new RuntimeException(); 
+   }
+   public long getTickLength() {
+      throw new RuntimeException(); 
+   }
+   //]
+   //] getters & setters
+   
    private void startPlayLoop() {
       playThread = new PlayThread(this);
       playThread.start();      
    }
 
+   private void play(float interval) {
+      for (int i = 0; i < partPlayers.length; i++) {
+         partPlayers[i].play(interval);
+      }
+   }
+   private void stop(float interval) {
+      for (int i = 0; i < partPlayers.length; i++) {
+         partPlayers[i].stop();
+      }
+   }
+   private void pause(float interval) {
+      for (int i = 0; i < partPlayers.length; i++) {
+         partPlayers[i].pause();
+      }
+   }
+   private boolean isDone() {
+      for (int i = 0; i < partPlayers.length; i++) {
+         if (!score.get(i).isMute() && !partPlayers[i].isDone()) {
+            return false;
+         }
+      }
+      return true;
+   }
    //long now;
 
    @Override
@@ -200,32 +230,19 @@ public class RealTimeScorePlayer extends ScorePlayer implements Runnable {
       //  exits when all customers are done
       long now=System.currentTimeMillis();
       long interval=0;
-      boolean allPlayerDone;
       
       while(true) {
          if (state == PlayerState.PLAYING) {
-            allPlayerDone = true;
-            for (int i = 0; i < partPlayers.length; i++) {
-               if (partPlayers[i].isDone() || score.get(i).isMute())
-                  continue;
-               allPlayerDone = false;
-               partPlayers[i].play((interval*tempoFactor));
-               //System.err.println(interval);
-            }
-            if (allPlayerDone)
-               break;
+            if(isDone()) break;
+            play(interval);
             interval = System.currentTimeMillis() - now;
             progress += (interval*tempoFactor);
             now += interval;
          } else if(state==PlayerState.STOPPED) {
-            for (int i = 0; i < partPlayers.length; i++) {
-               partPlayers[i].stop();
-            }
+            stop(interval);
             break;
          } else if(state==PlayerState.PAUSED) {
-            for (int i = 0; i < partPlayers.length; i++) {
-               partPlayers[i].pause();
-            }
+            pause(interval);
             break;
          }
          Util.sleep(1);
@@ -236,15 +253,19 @@ public class RealTimeScorePlayer extends ScorePlayer implements Runnable {
       System.err.println("stop playing");
    }
 
-   static class ChannelManager {
+   static class ChannelNumberMapper {
+      //partIndex: 0  1  2  3  4  5  6  7  8  9  10  11  12  13  14  15
+      //channel  : 0  1  2  3  4  5  6  7  8 10  11  12  13  14  15 exp  
+      //>>> TODO: the mapping should be instrument based
       public static int CHANNEL_SIZE=16;
-      public static int NORMAL_CHANNEL_SIZE=CHANNEL_SIZE-1;
+      public static int NORMAL_CHANNEL_SIZE=8;
       public static int PERCUSSION_CHANNEL=9;
-      public static int getNormalChannel(int num) {
-         final int res=num>=9?num+1:num;
-         if(res>=CHANNEL_SIZE) throw new RuntimeException();
-         return res;
+      public static int toNormalChannel(int num) {
+         //final int res=num>=9?num+1:num;
+         if(num>=CHANNEL_SIZE) throw new RuntimeException();
+         return num;
       }
+      
       public static int getPercussionChannel() {
          return PERCUSSION_CHANNEL;
       }
@@ -269,7 +290,7 @@ public class RealTimeScorePlayer extends ScorePlayer implements Runnable {
          if(part==null || part.getScore()==null) throw new IllegalArgumentException();
          //] >>> if score is absent, use a default value
          if(part.getInstrument().isPercussion()) {
-            channel=ChannelManager.PERCUSSION_CHANNEL;
+            channel=ChannelNumberMapper.PERCUSSION_CHANNEL;
          } else {
             channel=ch;
          }
@@ -322,7 +343,7 @@ public class RealTimeScorePlayer extends ScorePlayer implements Runnable {
       //        |=======>|... t3: end, stop note B
       //>>> TODO: what if interval is greater than the length of a note
       public void play(float interval) {
-         if(part.noteCount()<=0) { return; } //>>> need to consider progress, ex. getRemainNoteCount()<=0
+         if(part.noteCount()<=0 || part.isMute()) { return; } //>>> need to consider progress, ex. getRemainNoteCount()<=0
          if(isDone()) { throw new IllegalStateException(); }
          
          currentNoteProgress+=interval;
@@ -484,7 +505,7 @@ public class RealTimeScorePlayer extends ScorePlayer implements Runnable {
       //System.err.println("close note("+note.pitch+")");
    }
    
-   class PlayThread extends Thread {
+   static class PlayThread extends Thread {
       
       public PlayThread(Runnable target) {
          super(target);
