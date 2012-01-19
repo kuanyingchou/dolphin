@@ -83,7 +83,7 @@ public abstract class PartView extends AbstractCpn {
 //g.drawLine(HEAD_END_MARK, 0, HEAD_END_MARK, h());      
       g.setStroke(lineStroke);
       
-      final int periodLength=(Note.WHOLE_LENGTH/getPart().getScore().getDenominator())*getPart().getScore().getNumerator();
+      final int periodLength=(Note.WHOLE_LENGTH/getPart().getScore().getNoteValuePerBeat())*getPart().getScore().getBeatsPerMeasure();
       int time=0;
       int periodCount=1; //>>>1 base?
       

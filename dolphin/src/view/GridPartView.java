@@ -15,8 +15,8 @@ public class GridPartView extends PartView {
    private static final int NUM_POS=128;
    private static final int WHOLE_WIDTH=100;
    int noteHeight=5;
-   int beatLength=Note.WHOLE_LENGTH/part.getScore().getDenominator();
-   int barLength=beatLength*part.getScore().getNumerator();
+   int beatLength=Note.WHOLE_LENGTH/part.getScore().getNoteValuePerBeat();
+   int barLength=beatLength*part.getScore().getBeatsPerMeasure();
    
    public GridPartView(ScoreView s, Part p) {
       super(s, p);

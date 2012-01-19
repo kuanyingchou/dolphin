@@ -531,10 +531,10 @@ L1:      for(int j=0; j<positions.size(); j++) {
       // [ time signature
       g.setFont(sonataFont);
       final int numWidth=SwingUtilities.computeStringWidth(g.getFontMetrics(),
-            String.valueOf(getPart().getScore().getDenominator()));
+            String.valueOf(getPart().getScore().getNoteValuePerBeat()));
       currentX+=numWidth;
-      g.drawString(String.valueOf(getPart().getScore().getNumerator()), currentX, getYByLine(3));
-      g.drawString(String.valueOf(getPart().getScore().getDenominator()), currentX, getYByLine(1));
+      g.drawString(String.valueOf(getPart().getScore().getBeatsPerMeasure()), currentX, getYByLine(3));
+      g.drawString(String.valueOf(getPart().getScore().getNoteValuePerBeat()), currentX, getYByLine(1));
       currentX+=numWidth;
 
       // [ draw tempo

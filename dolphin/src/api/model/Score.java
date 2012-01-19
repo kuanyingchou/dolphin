@@ -34,8 +34,8 @@ public class Score {
    final java.util.List<Part> parts=new ArrayList<Part>();
    String title;
    Key keySignature=Key.C;
-   int numerator;
-   int denominator; //>>> group these two?
+   int beatsPerMeasure;
+   int noteValuePerBeat; //>>> group these two?
    float tempo=120;
    
    public static final int STRONG=100;
@@ -55,8 +55,8 @@ public class Score {
    public Score() {
       id=uid++;
       setTitle("untitled"+id);
-      setNumerator(4);
-      setDenominator(4);
+      setBeatsPerMeasure(4);
+      setNoteValuePerBeat(4);
    }
    
    //[ model
@@ -111,24 +111,24 @@ public class Score {
       notifyScoreChange(ape);
    }
    
-   public void setNumerator(int n) {
-      setTimeSignature(n, denominator);  
+   public void setBeatsPerMeasure(int n) {
+      setTimeSignature(n, noteValuePerBeat);  
    }
-   public void setDenominator(int d) {
-      setTimeSignature(numerator, d);
+   public void setNoteValuePerBeat(int d) {
+      setTimeSignature(beatsPerMeasure, d);
    }
    public void setTimeSignature(int n, int d) {
-      if(n==numerator && d==denominator) return;
+      if(n==beatsPerMeasure && d==noteValuePerBeat) return;
       final ScoreChange c=new TimeSignatureChange(n, d, this);
       c.perform();
       if(isLogging) logChange(c);
       notifyScoreChange(c);
    }
-   public int getNumerator() {
-      return numerator;
+   public int getBeatsPerMeasure() {
+      return beatsPerMeasure;
    }
-   public int getDenominator() {
-      return denominator;
+   public int getNoteValuePerBeat() {
+      return noteValuePerBeat;
    }
    
    public void setTempo(float t) {

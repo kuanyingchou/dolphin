@@ -217,8 +217,8 @@ NEXT_EVENT:
       //[ time sig.
       final MetaMessage timeSigMsg=new MetaMessage();
       timeSigMsg.setMessage(0x58, new byte[] {
-            (byte)score.getNumerator(),
-            (byte)(Util.log2(score.getDenominator())),
+            (byte)score.getBeatsPerMeasure(),
+            (byte)(Util.log2(score.getNoteValuePerBeat())),
             0, //>>> MIDI clocks per metronome tick
             0  //>>> 1/32 per 24 MIDI clocks
       }, 4);
@@ -242,8 +242,8 @@ NEXT_EVENT:
       }, 3);
       infoTrack.add(new MidiEvent(tempoMsg, 0));
       
-      final int beatLength=Note.WHOLE_LENGTH/score.getDenominator();
-      final int barLength=beatLength*score.getNumerator();
+      final int beatLength=Note.WHOLE_LENGTH/score.getNoteValuePerBeat();
+      final int barLength=beatLength*score.getBeatsPerMeasure();
       
       final Instrument[] channelInsts=new Instrument[16];
       int channelIndex=0;
@@ -355,7 +355,7 @@ NEXT_EVENT:
       return sequence;
    }
    private static void separateCrossNotes(Score score) { //[ separate note on bar-lines(cross-note)
-      final int barLength=Note.WHOLE_LENGTH/score.getDenominator()*score.getNumerator();
+      final int barLength=Note.WHOLE_LENGTH/score.getNoteValuePerBeat()*score.getBeatsPerMeasure();
       
       for(int partIndex=0; partIndex<score.partCount(); partIndex++) {
          final Part part=score.get(partIndex);
@@ -562,9 +562,9 @@ NEXT_NOTE:  for(int noteIndex=0; noteIndex<part.noteCount(); noteIndex++) {
                score.setTempo(60000000.0f / nTempo);
                break;
             case 0x58:
-               score.setNumerator((abData[0] & 0xFF));
+               score.setBeatsPerMeasure((abData[0] & 0xFF));
 //System.err.println("in: "+(1 << (abData[1] & 0xFF)));               
-               score.setDenominator((1 << (abData[1] & 0xFF)));
+               score.setNoteValuePerBeat((1 << (abData[1] & 0xFF)));
                break;
             case 0x59:
                final boolean isMajorKey=(abData[1] != 1);

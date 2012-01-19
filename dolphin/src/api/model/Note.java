@@ -12,7 +12,7 @@ public class Note {
    //  *3 is for triplets //>>> seems unnecessary
    
    public int pitch; //0~127, -1: rest
-   public int length; //relative to WHOLE_LENGTH
+   public int length; //relative to WHOLE_LENGTH //>>> TODO: using floating point?
    public int dot;
    
    public Note chord=null;

@@ -81,8 +81,8 @@ public class ScoreDialog extends JDialog {
       final Key key=score.getKeySignature();
       if(key==null) throw new IllegalArgumentException();
       keyCombo.setSelectedItem(key);
-      timeNumSpinner.setValue(score.getNumerator());
-      timeDenSpinner.setValue(score.getDenominator());
+      timeNumSpinner.setValue(score.getBeatsPerMeasure());
+      timeDenSpinner.setValue(score.getNoteValuePerBeat());
       //tempoValueSpinner.setValue((int)score.tempo); //>>>the cast may be dangerous
       tempoValueSpinner.setText(String.valueOf(score.getTempo())); //>>> verify input
 

@@ -9,18 +9,18 @@ public class TimeSignatureChange extends ScoreChange {
    
    public TimeSignatureChange(int numerator, int denominator, Score s) {
       super(s);
-      oldNumerator=s.numerator;
-      oldDenominator=s.denominator;
+      oldNumerator=s.beatsPerMeasure;
+      oldDenominator=s.noteValuePerBeat;
       newNumerator=numerator;
       newDenominator=denominator;
    }
    @Override
    public void perform() {
-      score.numerator=newNumerator;
-      score.denominator=newDenominator;
+      score.beatsPerMeasure=newNumerator;
+      score.noteValuePerBeat=newDenominator;
       
       //>>> one time sig. may have many patterns
-      switch(score.numerator) {
+      switch(score.beatsPerMeasure) {
       case 2: score.beatPattern=new int[] {Score.STRONG, Score.WEAK}; break;
       case 3: score.beatPattern=new int[] {Score.STRONG, Score.WEAK, Score.WEAK}; break;
       case 4: score.beatPattern=new int[] {Score.STRONG, Score.WEAK, Score.STRONG, Score.WEAK}; break;
