@@ -17,6 +17,8 @@ import api.model.Note;
 import api.model.Part;
 import api.model.Path;
 import api.model.Score;
+import api.model.ScoreChange;
+import api.model.ScoreChangeListener;
 import api.util.Util;
 // Design Goals
 // * A score player can play a Score, pause or stop the playback, and publish playing progress
@@ -26,11 +28,14 @@ import api.util.Util;
 //   by the user of the Dolphin API. Thus it ignores illegal operations
 //   instead of throwing exceptions.
 
-public class RealTimeScorePlayer extends ScorePlayer implements Runnable {
+public class RealTimeScorePlayer extends ScorePlayer implements Runnable, ScoreChangeListener {
    
    public static enum PlayerState { STOPPED, PLAYING, PAUSED } //>>> do we need "paused"?
-   
    private PlayerState state=PlayerState.STOPPED;
+   private void setState(PlayerState s) { 
+      state=s;
+      System.err.println("enter state "+state.toString());
+   }
    
    private Score score; 
    
@@ -67,8 +72,13 @@ public class RealTimeScorePlayer extends ScorePlayer implements Runnable {
    //[ playback methods
    public void play() {
       if(score==null) throw new IllegalStateException();
-      if(state==PlayerState.PLAYING) return; //: handle double play
-      state = PlayerState.PLAYING;
+      if(state==PlayerState.PLAYING) return; //: double play
+      if(isScoreModified) { //[ >>> reset() ?
+         progress=0; 
+         buildPartPlayers();
+         isScoreModified=false;
+      }
+      setState(PlayerState.PLAYING);
       startPlayLoop();
       /*
       if (state == PlayerState.STOPPED) {
@@ -101,10 +111,10 @@ public class RealTimeScorePlayer extends ScorePlayer implements Runnable {
    
    public void pause() {
       if(score==null) throw new IllegalStateException();
-      if(playThread==null) throw new IllegalStateException();
+      //if(playThread==null) throw new IllegalStateException();
       //if(playLoopState!=PlayerState.PLAYING) throw new IllegalStateException();
       //playLoopState=PlayerState.PAUSED;
-      state=PlayerState.PAUSED;
+      setState(PlayerState.PAUSED);
    }
    public void stop() {
       if(score==null) throw new IllegalStateException();
@@ -112,7 +122,7 @@ public class RealTimeScorePlayer extends ScorePlayer implements Runnable {
       //] users of this class is not required to remember the state of the player
       //if(playLoopState==PlayerState.STOPPED) throw new IllegalStateException();
       //playLoopState=PlayerState.STOPPED;
-      state=PlayerState.STOPPED;
+      setState(PlayerState.STOPPED);
       reset();
    }
    
@@ -128,6 +138,12 @@ public class RealTimeScorePlayer extends ScorePlayer implements Runnable {
    public void setScore(Score s) {
       if(score==s) return; //>>> TODO: modifications after playback
       score=s;
+      buildPartPlayers();
+      
+      score.addScoreChangeListener(this);
+   }
+   
+   private void buildPartPlayers() {
       final int partCount=score.partCount();
       //[ there's only 15 normal channels available, ignore the rest
       partPlayers=new PartPlayer[
@@ -135,8 +151,16 @@ public class RealTimeScorePlayer extends ScorePlayer implements Runnable {
              ChannelNumberMapper.NORMAL_CHANNEL_SIZE:
              partCount];
       for(int i=0; i<partPlayers.length; i++) {
-         partPlayers[i]=new PartPlayer(i, ChannelNumberMapper.toNormalChannel(i));
+         int channel;
+         if(score.get(i).getInstrument().isPercussion()) {
+            channel=ChannelNumberMapper.PERCUSSION_CHANNEL;
+         } else {
+            channel=ChannelNumberMapper.toNormalChannel(i);   
+         }
+         
+         partPlayers[i]=new PartPlayer(i, channel);
       }
+      //System.err.println("   build partplayers");
    }
    
    public Score getScore() {
@@ -225,7 +249,7 @@ public class RealTimeScorePlayer extends ScorePlayer implements Runnable {
       //playLoopState=PlayerState.PLAYING;
       
       //Util.sleep(500); //: eliminate glitch
-      System.err.println("start playing...");
+      System.err.println("start playthread...");
       //[ the loop treats notes like multiple lines of customers, and 
       //  exits when all customers are done
       long now=System.currentTimeMillis();
@@ -249,8 +273,8 @@ public class RealTimeScorePlayer extends ScorePlayer implements Runnable {
       }
       //Util.sleep(500);
       //OutDeviceManager.instance.closeOutDevice(); //>>>>>>>
-      if(state!=PlayerState.STOPPED && state!=PlayerState.PAUSED) stop(); //>>>thread safe?
-      System.err.println("stop playing");
+      if(state==PlayerState.PLAYING) stop(); //>>>thread safe? how about notifying listeners?
+      System.err.println("stop playthread");
    }
 
    static class ChannelNumberMapper {
@@ -289,13 +313,9 @@ public class RealTimeScorePlayer extends ScorePlayer implements Runnable {
          part=score.get(partIndex);
          if(part==null || part.getScore()==null) throw new IllegalArgumentException();
          //] >>> if score is absent, use a default value
-         if(part.getInstrument().isPercussion()) {
-            channel=ChannelNumberMapper.PERCUSSION_CHANNEL;
-         } else {
-            channel=ch;
-         }
+         channel=ch;
          beatLengthInMillis=(long)(1000.0f*60/part.getScore().getTempo());
-         wholeLengthInMillis=part.getScore().getDenominator()*beatLengthInMillis;
+         wholeLengthInMillis=part.getScore().getNoteValuePerBeat()*beatLengthInMillis;
       }
       public void setMicrosecondPosition(long pos) {
          if(pos<0) throw new IllegalArgumentException();
@@ -350,7 +370,9 @@ public class RealTimeScorePlayer extends ScorePlayer implements Runnable {
          
          if (currentNoteIndex == -1) { //: start
             //[ prepare channel
-            sendInstrument(channel, part.getInstrument().getValue());
+            if(!part.getInstrument().isPercussion()) {
+               sendInstrument(channel, part.getInstrument().getValue());
+            }
             sendPan(channel, part.getPan());
             sendVolume(channel, part.getVolume());
             //] prepare channel
@@ -737,6 +759,15 @@ public class RealTimeScorePlayer extends ScorePlayer implements Runnable {
       //test_set_position();
       //test_tempo_factor();
       test_another_file();
+   }
+
+   private boolean isScoreModified=false;
+   @Override
+   public void scoreChanged(ScoreChange e) {
+      if(state==PlayerState.PLAYING || state==PlayerState.PAUSED) {
+         stop();
+         isScoreModified=true;
+      }
    }
 
 
