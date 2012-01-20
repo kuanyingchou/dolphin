@@ -256,17 +256,18 @@ public class RealTimeScorePlayer extends ScorePlayer implements Runnable, ScoreC
       long interval=0;
       
       while(true) {
+         final float intervalTimesTempoFactor=interval*tempoFactor;
          if (state == PlayerState.PLAYING) {
             if(isDone()) break;
-            play(interval);
+            play(intervalTimesTempoFactor);
             interval = System.currentTimeMillis() - now;
-            progress += (interval*tempoFactor);
+            progress += (intervalTimesTempoFactor);
             now += interval;
          } else if(state==PlayerState.STOPPED) {
-            stop(interval);
+            stop(intervalTimesTempoFactor);
             break;
          } else if(state==PlayerState.PAUSED) {
-            pause(interval);
+            pause(intervalTimesTempoFactor);
             break;
          }
          Util.sleep(1);
