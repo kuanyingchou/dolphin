@@ -20,8 +20,15 @@
 %custom content title
 \renewcommand{\contentsname}{目錄}
 
+%custom figure title
+\renewcommand{\figurename}{圖}
+
 %paragraph spacing
 \parskip 7.2pt
+
+%label numbering style
+\renewcommand{\thefigure}{\arabic{figure}}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
 
@@ -87,9 +94,7 @@ Music MasterWorks[]是一套特殊的樂譜編輯器，其voice-to-note功能可
 Java SE 含有一套可處理聲音的低階函式庫Java Sound API，可處理採樣和MIDI兩種類型的聲音，本節介紹其MIDI子套件。
 
 \begin{figure}
-\caption{
- 圖 \label{fig:mididevice}：MidiDevice的類別圖
-}
+\caption{ \label{fig:mididevice}：MidiDevice的類別圖 }
 \end{figure}
 
 MIDI子套件可分為Wire Protocol和MIDI檔兩大部分。Wire Protocol代表動態的MIDI系統，其主要類別為MidiDevice。MidiDevice含有Transmitter和Receiver，如圖~\ref{fig:mididevice}所示，Transmitter如同MidiDevice的輸出端，而Receiver則如同MidiDevice的輸入端；各MidiDevice以Transmitter和Receiver互相連接。有些MidiDevice會產生MidiEvent(如MIDI鍵盤)，有些MidiDevice會接收MidiEvent(如合成器)。在此系統中，MidiDevice會互相合作以達成工作。
@@ -104,7 +109,7 @@ MIDI子套件可分為Wire Protocol和MIDI檔兩大部分。Wire Protocol代表�
 Sequence則用來模擬靜態的MIDI檔。圖~\ref{fig:sequence}為Sequence所定義的資料結構。其中，Sequence代表整首樂曲，其內含有零至多個Track，Track代表音軌，含有零至多個MidiEvent， MidiEvent表示MIDI事件，含有時間戳記，用來記錄事件的發生時間，及一個MidiMessage，用來記錄事件的內容。我們可將Sequence視為MidiEvent的集合。
 
 \begin{figure}
-\caption{圖 \label{fig:sequence}：Sequence的類別圖}
+\caption{ \label{fig:sequence}：Sequence的類別圖 }
 \end{figure}
 
 MidiEvent的時間戳記以樂曲開頭為起點，隨著時間遞增，其單位由Sequence的divisionType和resolution來決定。divisionType主要可分為PPQ(purses/ticks per quarter note)和SMPTE (ticks per frame)兩種，而SMPTE還可依FPS(frames per second)值分為24、25、29.97和30四種；resolution則通常為2的倍數，如120、240、480等，越高越精確。當divisionType為PPQ時，resolution的值代表每個四分音符含有的時間戳記；當divisionType為SMPTE時，resolution則代表每個frame含有的時間戳記。
