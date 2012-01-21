@@ -1,13 +1,14 @@
+% Manually converted from "Dolphin樂譜編輯器L.doc" on January 20, 2012
+%-----------------------------------------------------------------
 \documentclass[12pt,a4paper,oneside]{report}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \usepackage{fontspec} 
 \usepackage{xeCJK} 
-\usepackage{url}
-\usepackage{mathtools}
 
 %set chinese font
-%\setCJKmainfont{AR PL UMing TW}
-\setCJKmainfont{cwTeXFangSong}
+%\setCJKmainfont{AR PL UMing TW} 
+\setCJKmainfont{cwTeXFangSong} 
+%\setCJKmainfont{cwTeXKai} 
+%\setCJKmainfont{cwTeXMing} 
 
 %handle chinese newline
 \XeTeXlinebreaklocale "zh"
@@ -18,6 +19,7 @@
 
 %custom chapter title
 %\renewcommand{\chaptername}{章}
+%\renewcommand{\chaptername}{第\CJKnumber{\thechapter}章}
 
 %custom content title
 \renewcommand{\contentsname}{目錄}
@@ -31,22 +33,28 @@
 %label numbering style
 \renewcommand{\thefigure}{\arabic{figure}}
 
-\bibliographystyle{unsrt}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{mathtools} 
+\usepackage{url} % for \url
+%-----------------------------------------------------------------
 \begin{document}
 
 \title{Dolphin 樂譜編輯器}
 \date{\today}
 \maketitle
 
-\begin{abstract}
+%\begin{abstract} % not very useful in Chinese
+%\thispagestyle{empty} % suppress page number
+\begin{center}
+Dolphin 樂譜編輯器
+
+摘要
+\end{center}
 
 我們開發出一套所見即所得的樂譜編輯器Dolphin，支援即時五線譜與簡譜的轉換及MIDI檔與樂譜的轉換等進階功能，另外也支援各種輸入方式如MIDI裝置輸入、虛擬鍵盤輸入及哼唱輸入等。Dolphin還具備腳本編輯器讓使用者撰寫腳本來控制樂譜。我們相信這些自動化的功能可大幅改善樂譜編輯器的可用性並使其用途更為廣泛。
 
 關鍵詞：樂譜編輯器、音樂函式庫、自動旋律轉錄
 
-\end{abstract}
+%\end{abstract}
 
 \tableofcontents
 
@@ -154,27 +162,27 @@ Dolphin可讓使用者選擇匯入MIDI檔編輯，或自行創作新的樂譜。
 Dolphin的主要特色列舉如下：
 \begin{enumerate}
 \item 五線譜、簡譜及鋼琴捲譜的編修。
-\item 各聲部皆可獨立調整以五線譜、簡譜或鋼琴捲譜來顯示、編輯。
-\item 匯入、匯出MIDI 檔
-\item 可匯入現有的MIDI檔，也可將樂譜匯出為MIDI檔。
-\item 樂譜播放
-\item 可播放編輯中的樂譜，調整播放進度和速度，也可調整輸出的MIDI裝置。
-\item 立體聲編輯器
-\item 透過平面圖編輯各聲部樂器的位置以模擬立體聲的效果。
-\item 腳本編輯器 
-\item 可以JavaScript、Python、Ruby等多種語言撰寫腳本(script)來控制編輯器或樂譜。
+      各聲部皆可獨立調整以五線譜、簡譜或鋼琴捲譜來顯示、編輯。
+\item 匯入、匯出MIDI 檔。
+      可匯入現有的MIDI檔，也可將樂譜匯出為MIDI檔。
+\item 樂譜播放。
+      可播放編輯中的樂譜，調整播放進度和速度，也可調整輸出的MIDI裝置。
+\item 立體聲編輯器。
+      透過平面圖編輯各聲部樂器的位置以模擬立體聲的效果。
+\item 腳本編輯器。
+      可以JavaScript、Python、Ruby等多種語言撰寫腳本(script)來控制編輯器或樂譜。
 \item 復原、重做。
-\item 支援無次數限制的復原和重做。
-\item 樂譜縮放
-\item 樂譜檢視可任意放大、縮小。
-\item 多檔編輯、單檔多窗
-\item 可同時編輯多個檔案，單檔也可以顯示於多個編輯窗，各編輯窗皆可編輯並會同步更新。
-\item 哼唱輸入
-\item 支援以哼唱方式來輸入音符。
-\item 虛擬MIDI鍵盤輸入
-\item 可彈奏螢幕上的虛擬MIDI鍵盤來輸入音符。
-\item MIDI裝置輸入
-\item 可彈奏實體MIDI裝置如MIDI鍵盤來輸入音符。 
+      支援無次數限制的復原和重做。
+\item 樂譜縮放。
+      樂譜檢視可任意放大、縮小。
+\item 多檔編輯、單檔多窗。
+      可同時編輯多個檔案，單檔也可以顯示於多個編輯窗，各編輯窗皆可編輯並會同步更新。
+\item 哼唱輸入。
+      支援以哼唱方式來輸入音符。
+\item 虛擬MIDI鍵盤輸入。
+      可彈奏螢幕上的虛擬MIDI鍵盤來輸入音符。
+\item MIDI裝置輸入。
+      可彈奏實體MIDI裝置如MIDI鍵盤來輸入音符。 
 \end{enumerate}
 
 \section{基本操作}
@@ -330,9 +338,11 @@ Dolphin的立體聲編輯器則透過改變聲部的平衡(pan)和音量來決�
 我們使用Java Scripting API來實作腳本編輯器。透過綁定功能將編輯器實體匯入腳本(script)的執行環境中，便可以腳本來控制編輯器實體的行為，並存取、修改其所包含的樂譜。
 例如，若要為樂譜加上一百個C4音符，使用者可以撰寫如圖 14的腳本。/* user怎麼操作? */
 
-for(i=0; i<100; i++) \{ 
-dp.getScore().getParagraph(0).getPart(0).add(new Note(60));
-\}
+\begin{verbatim}
+for(i=0; i<100; i++) { 
+   dp.getScore().getParagraph(0).getPart(0).add(new Note(60));
+}
+\end{verbatim}
 圖 14：以迴圈加入音符
 
 其中，dp即為編輯器的實體/* dp由何處取得? 還reserved word?  */，getScore()方法會傳回目前操作中的樂譜，getParagraph(0)會傳回該樂譜的第一節，getPart(0)則會傳回該節的第一個聲部，add(new Note(60))則對該聲部加上一個音高值為60的C4音符。而若想控制編輯器，例如執行復原動作，可以執行如圖 15的腳本。
