@@ -1,0 +1,34 @@
+\usepackage{fontspec} 
+\usepackage{xeCJK} 
+
+%set chinese font
+%\setCJKmainfont{AR PL UMing TW} 
+\setCJKmainfont{cwTeXFangSong} 
+%\setCJKmainfont{cwTeXKai} 
+%\setCJKmainfont{cwTeXMing} 
+
+%handle chinese newline
+\XeTeXlinebreaklocale "zh"
+\XeTeXlinebreakskip = 0pt plus 1pt
+
+%custom abstract title
+\renewcommand{\abstractname}{摘要} 
+
+%custom chapter title
+%\renewcommand{\chaptername}{章}
+%\renewcommand{\chaptername}{第\CJKnumber{\thechapter}章}
+
+%custom content title
+\renewcommand{\contentsname}{目錄}
+
+%custom figure title
+\renewcommand{\figurename}{圖}
+
+%paragraph spacing
+\parskip 7.2pt
+
+%label numbering style
+\renewcommand{\thefigure}{\arabic{figure}}
+
+\usepackage{mathtools} 
+\usepackage{url} % for \url
