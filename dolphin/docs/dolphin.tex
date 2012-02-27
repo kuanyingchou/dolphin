@@ -30,8 +30,9 @@ Dolphin 樂譜編輯器
 \tableofcontents
 
 \chapter{緒論}
-
 \section{研究背景與動機}
+% \addtocontents{toc}{}
+% Why did you want to do it? What was your goal? 
 
 樂譜編輯器(musical notation editor, scorewriter)是用來輸入、編輯及輸出樂譜或音樂的軟體；其之於樂譜的關係就如同文書處理器(word processor)之於文書。相較於傳統的方式，樂譜編輯器可利用各種自動化的工具簡化並加速樂譜的處理流程，且產生出的樂譜較手寫更為美觀，方便用來出版、散佈，作為教學、觀摩或演奏之用。
 
@@ -39,7 +40,7 @@ Dolphin 樂譜編輯器
 
 市面上的樂譜編輯器多以五線譜來呈現。然而除了五線譜外，世界各地仍流行多種記錄音樂的系統，簡潔易讀的簡譜(numbered musical notation)便是其中之一。簡譜屬於文字譜的一種\cite{chinaEncyclopedia}，是以阿拉伯數字「1234567」記寫音階階名的譜式\footnote{在此採《中國音樂史．樂譜篇》中「數字簡譜」\cite{chinaMusicHistory}的定義。}。簡譜的歷史悠久。中國唐朝(618–907)出現的工尺譜便含有簡譜的影子，其所使用的「上、尺、工、凡、六、五、乙」可對應至簡譜的一至七\cite{wiki}；在十六世紀的中東，有以波斯數字記寫音階的記譜法；而後在十七至十九世紀的歐洲則有盧梭等人的改良及推廣。日本、爪哇島及峇里島亦存有類似的系統\cite{britannica}。簡譜在清朝由日本傳入中國，當時便廣為新式學堂所用。今日簡譜仍經常用於音樂教學，以及坊間的流行歌本中。
 
-鋼琴捲譜(piano roll notation)是另一種樂譜編輯器常缺乏的記譜法。鋼琴捲譜屬於圖像譜的一種，因形似鋼琴捲(piano roll)而得名。鋼琴捲是一種早期的音樂儲存媒介，藉由在紙捲上打孔來記錄音符的資訊，由自奏鋼琴(player piano)讀取並將音樂彈奏出來。鋼琴捲在收音機和唱片普及前的年代曾相當流行\cite{thePiano}。鋼琴捲譜以橫軸代表時間，縱軸代表音高；這樣的表示方式相當直覺，初學者也易於上手。
+鋼琴捲譜(piano roll notation)是另一種樂譜編輯器常缺乏的記譜法。鋼琴捲譜屬於圖像譜的一種，因形似鋼琴捲(piano roll)而得名。鋼琴捲是一種早期的音樂儲存媒介，藉由在紙捲上打孔來記錄音符的資訊，由以氣壓驅動的自奏鋼琴(player piano)讀取並將樂曲彈奏出來。鋼琴捲在一九二零年代曾相當流行，而後逐漸被收音機和唱片所取代\cite{thePiano}。今日的鋼琴捲譜多以橫軸代表時間，縱軸代表音高，譜中長短不一的矩形則代表音符，矩形的長短決定音符的時值；這樣的表示方式相當直覺，初學者也易於上手。
 
 %[htb] means placing the figure here, at the top, or at the bottom, order means preference, see http://www.sci.utah.edu/~macleod/latex/latex-figures.html
 \begin{figure}[htb]
@@ -70,13 +71,110 @@ Music MasterWorks[]是一套特殊的樂譜編輯器，其voice-to-note功能可
 
 \section{論文大綱}
 
-在下一章我們介紹Dolphin 所使用到的基礎程式庫。第三章介紹Dolphin及其主要特色。第四章介紹編輯器的設計及實作，最末章為結論及展望。
+在下一章我們介紹Dolphin 所使用到的基礎程式庫。第三章介紹Dolphin及其主要特色。第四章介紹編輯器的設計及實作，最末章為結論及展望。//>>>
 
-\chapter{基礎程式庫}
+\chapter{Dolphin概觀}
+% What did you do? What is Dolphin? What can I do with it?
+
+Dolphin是一個所見即所得的樂譜編輯器，具備完整的功能輔助使用者編輯樂譜。圖~\ref{fig:screenshot}為系統的截圖。
+
+\begin{figure}[htb]
+\centering
+\includegraphics[scale=0.3]{img/screenshot.png}
+\caption{ Dolphin執行畫面}
+\label{fig:screenshot}
+\end{figure}
+
+Dolphin可讓使用者選擇匯入MIDI檔編輯，或自行創作新的樂譜。樂譜的各聲部可獨立以五線譜、簡譜或鋼琴捲譜來檢視，也可任意調整縮放。使用者可編輯樂譜的各項屬性，並為樂譜新增聲部和音符。在輸入時，可選擇以滑鼠在譜上點擊或用鍵盤以類似輸入法的方式來輸入音符，也可以彈奏畫面上的虛擬MIDI鍵盤或外接的實體MIDI鍵盤來輸入。使用者也可以直接對著麥克風哼唱來輸入，Dolphin會自動將哼唱轉換為對應的音符。Dolphin支援無次數限制的復原和重做，使用者不必擔心輸入錯誤。在編輯過程中也可以隨時播放樂譜，也可開啟立體聲編輯器在播放過程中即時地編輯立體聲的效果。若使用者會撰寫程式，也可開啟腳本編輯器，以JavaScript、Python或Ruby等語言撰寫腳本來控制或分析樂譜。
+
+Dolphin的主要特色列舉如下：
+\begin{enumerate}
+\item 五線譜、簡譜及鋼琴捲譜的編修。
+      各聲部皆可獨立調整以五線譜、簡譜或鋼琴捲譜來顯示、編輯。
+\item 匯入、匯出MIDI 檔。
+      可匯入現有的MIDI檔，也可將樂譜匯出為MIDI檔。
+\item 樂譜播放。
+      可播放編輯中的樂譜，調整播放進度和速度，也可調整輸出的MIDI裝置。
+\item 立體聲編輯器。
+      透過平面圖編輯各聲部樂器的位置以模擬立體聲的效果。
+\item 腳本編輯器。
+      可以JavaScript、Python、Ruby等多種語言撰寫腳本(script)來控制編輯器或樂譜。
+\item 復原、重做。
+      支援無次數限制的復原和重做。
+\item 樂譜縮放。
+      樂譜檢視可任意放大、縮小。
+\item 多檔編輯、單檔多窗。
+      可同時編輯多個檔案，單檔也可以顯示於多個編輯窗，各編輯窗皆可編輯並會同步更新。
+\item 哼唱輸入。
+      支援以哼唱方式來輸入音符。
+\item 虛擬MIDI鍵盤輸入。
+      可彈奏螢幕上的虛擬MIDI鍵盤來輸入音符。
+\item MIDI裝置輸入。
+      可彈奏實體MIDI裝置如MIDI鍵盤來輸入音符。 
+\end{enumerate}
+
+\chapter{使用說明書}
+% how to use it?
+\section{操作環境}
+\subsection{主視窗}
+\subsection{工具列}
+/* 
+解說視窗各區域
+*/
+
+/* 
+解說menu bar及其使用
+*/
+\section{編輯樂譜}
+   \subsection{空白樂譜}
+   \subsection{由MIDI 檔匯入}
+\section{編輯聲部}
+   \subsection{修改聲部屬性}
+   \subsection{選擇譜式}
+\section{編輯音符}
+   \subsection{滑鼠輸入}
+   \subsection{鍵盤輸入}
+   \subsection{虛擬鍵盤輸入}
+   \subsection{MIDI 鍵盤輸入}
+   \subsection{哼唱輸入}
+   \subsection{修改音符}
+\section{匯出MIDI 檔}
+\section{樂譜播放器}
+\section{腳本編輯器}
+\section{立體聲編輯器}
+
+\chapter{設計與實作} 
+% How did you implement it?
+
+\section{系統架構}
+
+
+\begin{figure}[htb]
+\centering
+\includegraphics[scale=0.2]{img/framework.png}
+\caption{ Dolphin架構圖}
+\label{fig:framework}
+\end{figure}
+
+圖\ref{fig:framework}為本系統的架構圖。Dolphin以Java語言實作，主要可分為Dolphin API和Dolphin GUI兩個部分。Dolphin API為系統的核心，包含樂譜模型、演算法及訊息傳遞機制，為一套獨立且可重複使用的音樂函式庫。Dolphin GUI為系統的圖形使用者介面，包含用來顯示和編輯樂譜的編輯窗以及各式面板和工具列。
+
+在底層方面，我們使用JPraat來處理哼唱輸入的聲音樣本。使用Java Sound API來處理聲音的擷取以及與MIDI相關的各項功能，如樂譜的播放及MIDI裝置的輸入等。Java Scripting API則用來實作腳本編輯器。
+
+
+/* 
+解說 Dolphin API 含有哪些主要類別, 各含哪些主要方法
+*/
+
+/* 
+解說 Dolphin GUI 含有哪些主要類別, 各含哪些主要方法
+*/
+
+\section{基礎程式庫}
+% What third-party librares did you use?
 
 本章介紹Dolphin所用到的函式庫，包含Java Sound API[]的MIDI子套件、Java Scripting API[]及JPraat。其中，Java Sound API和Java Scripting API已內建於Java SE[]中，而JPraat則包含於Dolphin中，使用者皆不需再安裝額外的函式庫。
 
-\section{Java Sound API MIDI子套件}
+\subsection{Java Sound API MIDI子套件}
 
 Java SE 含有一套可處理聲音的低階函式庫Java Sound API，可處理採樣和MIDI兩種類型的聲音，本節介紹其MIDI子套件。
 
@@ -113,7 +211,7 @@ MidiMessage由一串位元組所組成，其中，最常見的是以0x9開頭的
      解說你有用到的主要類別, 並各自解說你有用到的主要方法
 */
 
-\section{Java Scripting API}
+\subsection{Java Scripting API}
 
 Java Scripting API位於javax.script中，是一個獨立於腳本語言(scripting language)的直譯器使用介面。目前Java SE內建有JavaScript的直譯器，在Java Scripting API的專案頁上也提供如Python、Ruby、AWK等二十幾種語言的直譯器讓使用者自行下載、擴充。
 
@@ -122,86 +220,6 @@ Java SE中的JavaScript直譯器具有LiveConnect功能，可在JavaScript中匯
 /*
      解說你有用到的主要類別, 並各自解說你有用到的主要方法
 */
-
-
-\chapter{使用說明書}
-\section{Dolphin概觀}
-
-Dolphin是一個所見即所得的樂譜編輯器，具備完整的功能輔助使用者編輯樂譜。圖~\ref{fig:screenshot}為系統的截圖。
-
-\begin{figure}[htb]
-\centering
-\includegraphics[scale=0.3]{img/screenshot.png}
-\caption{ Dolphin執行畫面}
-\label{fig:screenshot}
-\end{figure}
-
-Dolphin可讓使用者選擇匯入MIDI檔編輯，或自行創作新的樂譜。樂譜的各聲部可獨立以五線譜、簡譜或鋼琴捲譜來檢視，也可任意調整縮放。使用者可編輯樂譜的各項屬性，並為樂譜新增聲部和音符。在輸入時，可選擇以滑鼠在譜上點擊或用鍵盤以類似輸入法的方式來輸入音符，也可以彈奏畫面上的虛擬MIDI鍵盤或外接的實體MIDI鍵盤來輸入。使用者也可以直接對著麥克風哼唱來輸入，Dolphin會自動將哼唱轉換為對應的音符。Dolphin支援無次數限制的復原和重做，使用者不必擔心輸入錯誤。在編輯過程中也可以隨時播放樂譜，也可開啟立體聲編輯器在播放過程中即時地編輯立體聲的效果。若使用者會撰寫程式，也可開啟腳本編輯器，以JavaScript、Python或Ruby等語言撰寫腳本來控制或分析樂譜。
-
-/* 
-解說視窗各區域
-*/
-
-/* 
-解說menu bar及其使用
-*/
-
-\section{系統特點}
-
-Dolphin的主要特色列舉如下：
-\begin{enumerate}
-\item 五線譜、簡譜及鋼琴捲譜的編修。
-      各聲部皆可獨立調整以五線譜、簡譜或鋼琴捲譜來顯示、編輯。
-\item 匯入、匯出MIDI 檔。
-      可匯入現有的MIDI檔，也可將樂譜匯出為MIDI檔。
-\item 樂譜播放。
-      可播放編輯中的樂譜，調整播放進度和速度，也可調整輸出的MIDI裝置。
-\item 立體聲編輯器。
-      透過平面圖編輯各聲部樂器的位置以模擬立體聲的效果。
-\item 腳本編輯器。
-      可以JavaScript、Python、Ruby等多種語言撰寫腳本(script)來控制編輯器或樂譜。
-\item 復原、重做。
-      支援無次數限制的復原和重做。
-\item 樂譜縮放。
-      樂譜檢視可任意放大、縮小。
-\item 多檔編輯、單檔多窗。
-      可同時編輯多個檔案，單檔也可以顯示於多個編輯窗，各編輯窗皆可編輯並會同步更新。
-\item 哼唱輸入。
-      支援以哼唱方式來輸入音符。
-\item 虛擬MIDI鍵盤輸入。
-      可彈奏螢幕上的虛擬MIDI鍵盤來輸入音符。
-\item MIDI裝置輸入。
-      可彈奏實體MIDI裝置如MIDI鍵盤來輸入音符。 
-\end{enumerate}
-
-\section{基本操作}
-\section{進階操作}
-
-\chapter{設計與實作} 
-
-\section{系統架構}
-
-
-\begin{figure}[htb]
-\centering
-\includegraphics[scale=0.2]{img/framework.png}
-\caption{ Dolphin架構圖}
-\label{fig:framework}
-\end{figure}
-
-圖\ref{fig:framework}為本系統的架構圖。Dolphin以Java語言實作，主要可分為Dolphin API和Dolphin GUI兩個部分。Dolphin API為系統的核心，包含樂譜模型、演算法及訊息傳遞機制，為一套獨立且可重複使用的音樂函式庫。Dolphin GUI為系統的圖形使用者介面，包含用來顯示和編輯樂譜的編輯窗以及各式面板和工具列。
-
-在底層方面，我們使用JPraat來處理哼唱輸入的聲音樣本。使用Java Sound API來處理聲音的擷取以及與MIDI相關的各項功能，如樂譜的播放及MIDI裝置的輸入等。Java Scripting API則用來實作腳本編輯器。
-
-
-/* 
-解說 Dolphin API 含有哪些主要類別, 各含哪些主要方法
-*/
-
-/* 
-解說 Dolphin GUI 含有哪些主要類別, 各含哪些主要方法
-*/
-
 
 
 \section{樂譜模型}
@@ -251,15 +269,17 @@ Part表示聲部，具有樂器( ? )、音量(volume)及平衡(pan)等屬性，�
 \end{figure}
 
 多個樂譜介面可連接至同一個樂譜，然而樂譜並不直接連結至樂譜介面，而是透過樂譜改動傾聽者(ScoreChangeListener)的scoreChanged()方法來與樂譜介面溝通，如圖~\ref{fig:model_view}所示。此設計基於觀察者模式(observer pattern)\cite{designPattern}，樂譜並不依賴樂譜介面，可以獨立存在。
+
+樂譜介面同時具有樂譜的操控者和樂譜改動的傾聽者雙重身分。樂譜介面可呼叫公開方法(public method)直接操作樂譜；為確保各傾聽者都能掌握樂譜的最新狀況，當樂譜發生改動時，樂譜會將該其「轉化」為訊息物件，並以此物件通知所有連接到該樂譜的樂譜改動傾聽者，各傾聽者再各自做對應的反應。樂譜並不需要知道各傾聽者在接收到訊息後要做什麼樣的動作，而對樂譜介面而言，此設計也可分離「溝通」和「反應」的程式碼。傳遞的「訊息物件」即為一樂譜改動的實體(instance)。
+
+\subsection{五線譜}
+\subsection{簡譜}
+\subsection{鋼琴捲譜}
 /****
 漏講其它各種view
 ****/
 
 \section{樂譜改動}
-
-樂譜介面同時具有樂譜的操控者和樂譜改動的傾聽者雙重身分。樂譜介面可呼叫公開方法(public method)直接操作樂譜；為確保各傾聽者都能掌握樂譜的最新狀況，當樂譜發生改動時，樂譜會將該其「轉化」為訊息物件，並以此物件通知所有連接到該樂譜的樂譜改動傾聽者，各傾聽者再各自做對應的反應。樂譜並不需要知道各傾聽者在接收到訊息後要做什麼樣的動作，而對樂譜介面而言，此設計也可分離「溝通」和「反應」的程式碼。傳遞的「訊息物件」即為一樂譜改動的實體(instance)。
-
-
 
 \begin{figure}[htb]
 \centering
@@ -346,6 +366,26 @@ Part表示聲部，具有樂器( ? )、音量(volume)及平衡(pan)等屬性，�
 樂譜播放器具有三種不同的狀態，分別為停止狀態(stopped)、播放狀態(playing)及暫停狀態(paused)。在預設的情況下，播放器處於無聲的停止狀態。當使用者選擇「播放」後，播放器則會進到播放狀態並開始撥放樂曲，在播放狀態下，使用者可選擇「停止」回到停止狀態，或選擇「暫停」進到暫停狀態。在暫停狀態下，樂曲停止播放，若選擇「播放」可回到播放狀態，樂曲會從暫停的地方開始播放；若選擇「停止」，則讓播放器捨棄目前的撥放進度並回到停止狀態。
  移到CH3  ************/  
 
+
+\section{腳本編輯器}
+
+我們使用Java Scripting API來實作腳本編輯器。透過綁定功能將編輯器實體匯入腳本(script)的執行環境中，便可以腳本來控制編輯器實體的行為，並存取、修改其所包含的樂譜。
+例如，若要為樂譜加上一百個C4音符，使用者可以撰寫如下的腳本。/* user怎麼操作? */
+
+\begin{verbatim}
+for(i=0; i<100; i++) { 
+   dp.getScore().getParagraph(0).getPart(0).add(new Note(60));
+}
+\end{verbatim}
+
+其中，dp即為編輯器的實體/* dp由何處取得? 還reserved word?  */，getScore()方法會傳回目前操作中的樂譜，getParagraph(0)會傳回該樂譜的第一節，getPart(0)則會傳回該節的第一個聲部，add(new Note(60))則對該聲部加上一個音高值為60的C4音符。而若想控制編輯器，例如執行復原動作，可以執行如下面的腳本。
+
+\begin{verbatim}
+dp.perform(dp.undoAction);
+\end{verbatim}
+
+腳本編輯器的預設語言為JavaScript，使用者也可自行安裝直譯器，便可以其他語言來控制編輯器和樂譜。
+
 \section{立體聲編輯器}
 
 在不受干擾的環境中，聽力正常的人們能輕易地辨認出聲源的位置。我們的大腦可依循多項線索來推知此資訊，如兩耳時間差(interaural time difference, ITD)及兩耳音量差(interaural level difference , ILD)。即便只剩單耳的聽力，人們也能單純透過音量(volume)和聲音通過頭部、肩膀及外耳造成的音量及音色變化來判斷聲源的位置，此變化可以頭部傳導函式(head-related transfer function, HRTF)[]來描述。
@@ -373,26 +413,7 @@ Dolphin的立體聲編輯器則透過改變聲部的平衡(pan)和音量來決�
 實作沒講清楚: 左右聲道如何處理?
 */
 
-\section{腳本編輯器}
-
-我們使用Java Scripting API來實作腳本編輯器。透過綁定功能將編輯器實體匯入腳本(script)的執行環境中，便可以腳本來控制編輯器實體的行為，並存取、修改其所包含的樂譜。
-例如，若要為樂譜加上一百個C4音符，使用者可以撰寫如下的腳本。/* user怎麼操作? */
-
-\begin{verbatim}
-for(i=0; i<100; i++) { 
-   dp.getScore().getParagraph(0).getPart(0).add(new Note(60));
-}
-\end{verbatim}
-
-其中，dp即為編輯器的實體/* dp由何處取得? 還reserved word?  */，getScore()方法會傳回目前操作中的樂譜，getParagraph(0)會傳回該樂譜的第一節，getPart(0)則會傳回該節的第一個聲部，add(new Note(60))則對該聲部加上一個音高值為60的C4音符。而若想控制編輯器，例如執行復原動作，可以執行如下面的腳本。
-
-\begin{verbatim}
-dp.perform(dp.undoAction);
-\end{verbatim}
-
-腳本編輯器的預設語言為JavaScript，使用者也可自行安裝直譯器，便可以其他語言來控制編輯器和樂譜。
-
-\chapter{MIDI 檔的匯入與匯出}
+\section{MIDI 檔的匯入與匯出}
 
 Java Sound API 內的類別Sequence 用來表示樂曲，API 內建有讀取和寫出MIDI檔的方法。因此我們只需要實作Sequence 至Score的轉換，便可實作出MIDI 檔和樂譜的轉換。
 
@@ -400,7 +421,7 @@ Java Sound API 內的類別Sequence 用來表示樂曲，API 內建有讀取和�
 另外，為了使用Java Sound API提供的各項功能，我們實作了樂譜和Sequence的轉換函式。例如在播放樂譜時，我們先將樂譜「編譯」為Sequence，再利用Java Sound API播放出來；而在匯入MIDI檔時，則先使用Java Sound API讀進MIDI檔成為Sequence，再將其「反編譯」為樂譜，我們將在進一步解釋轉換的演算法。
 移置到4.8  *******/
 
-\section{匯入MIDI 檔}
+\subsection{匯入MIDI 檔}
 
 和MIDI檔一樣，Sequence僅記錄音而不是音符。每個音以Note On訊息開始，以Note Off訊息(或強度為零的Note On訊息)結束。然而，Note On和Note Off僅含音高(pitch)和強度(velocity)兩樣和音符有關的資訊，並不包含時值。我們僅能由兩個MidiEvent中時間戳記的差來得到音的長度。然而一個音尚可能由多個以連結線(tie)連結的音符所產生，故我們以多次的解析過程來找出音符的個數及各音符正確的時值，Sequence 至Score的轉換可分為以下九個主要步驟： 
 
@@ -440,7 +461,7 @@ Sequence的基本屬性會以MetaMessage紀錄在時間戳記為零的地方，�
 
 將剩餘的不合法音符拆解為合法音符的集合，並以連接線連結。
 
-\section{匯出MIDI 檔}
+\subsection{匯出MIDI 檔}
 
 如同匯入MIDI 檔的演算法，我們只需要實作Score 至Sequence 的轉換，便可匯出MIDI 檔：
 
@@ -454,6 +475,18 @@ Sequence的基本屬性會以MetaMessage紀錄在時間戳記為零的地方，�
 
 以強度值100(最高為127)為強拍，80為弱拍設定音符的節奏資訊。二拍為強、弱，三拍為強、弱、弱，四拍為強、弱、強、弱，五拍為強、弱、強、弱、弱，六拍為強、弱、弱、強、弱、弱，並為每小節的第一拍增加強度值10。
 
+
+
+\chapter{結論與展望}
+
+Dolphin除了有基本的樂譜編修能力，也具備許多其它同類型軟體普遍缺乏的自動化功能，如立體聲編輯器、哼唱輸入、五線譜與簡譜的即時轉換、MIDI檔與樂譜的轉換，以及腳本編輯器。
+
+然而Dolphin仍有許多待改進之處，如加強哼唱輸入的效能和準確性、改善MIDI轉譜的正確性、擴充音樂符號、歌詞輸入及列印等，我們希望能繼續開發使其更為完善。
+
+Dolphin 為一開放源碼的自由軟體，以GPL 釋出。
+
+
+\appendix
 
 \chapter{哼唱輸入}
 
@@ -473,18 +506,6 @@ p=69+12\times\log_2{\left(\frac{f}{440}\right)}
 其中，\(p\)代表音高值，\(f\)為基本頻率(單位為Hz)。計算出音高及音長兩項資訊後，系統便可產生出對應的音符。再利用傾聽者的機制將音符填入樂譜介面的游標位置，便可完成哼唱輸入。
 
 然而，每個人的音域都不盡相同，當人哼出旋律時，往往唱不出所想的音高。為此，我們以事先校準的方式來得到補償值，在實際哼唱時系統便可依該值自動補償哼唱者的音高。
-
-\chapter{結論與展望}
-
-Dolphin除了有基本的樂譜編修能力，也具備許多其它同類型軟體普遍缺乏的自動化功能，如立體聲編輯器、哼唱輸入、五線譜與簡譜的即時轉換、MIDI檔與樂譜的轉換，以及腳本編輯器。
-
-然而Dolphin仍有許多待改進之處，如加強哼唱輸入的效能和準確性、改善MIDI轉譜的正確性、擴充音樂符號、歌詞輸入及列印等，我們希望能繼續開發使其更為完善。
-
-Dolphin 為一開放源碼的自由軟體，以GPL 釋出。
-
-
-\appendix
-
 \chapter{Praat及音高追蹤}
 
 Praat是一套由阿姆斯特丹大學的Paul Boersma和David Weenink所開發的開放原始碼語音分析軟體。
