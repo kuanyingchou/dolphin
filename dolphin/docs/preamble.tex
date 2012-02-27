@@ -1,5 +1,10 @@
 \usepackage{fontspec} 
 \usepackage{xeCJK} 
+% \usepackage{mathtools} % can not be found in Ubuntu
+\usepackage{amsmath} % for equations
+\usepackage{url} % for \url
+\usepackage{graphicx} % for images
+\usepackage{chngcntr} % for fixing figure numbering, see http://www.tex.ac.uk/cgi-bin/texfaq2html?label=running-nos
 
 %set chinese font
 %\setCJKmainfont{AR PL UMing TW} 
@@ -28,8 +33,6 @@
 \parskip 7.2pt
 
 %label numbering style
-\renewcommand{\thefigure}{\arabic{figure}}
+%\renewcommand{\thefigure}{\arabic{figure}}
+\counterwithout{figure}{chapter}
 
-% \usepackage{mathtools} % can not find in Ubuntu
-\usepackage{amsmath} 
-\usepackage{url} % for \url
