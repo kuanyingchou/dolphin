@@ -8,11 +8,11 @@ APPENDIX_STR='Appendix:'
 #] constants
 
 class Section:
-   def __init__(self, name):
-      self.name=name
+   def __init__(self, control_name):
+      self.control_name=control_name
       self.number=1
-   def get_control_name(self):
-      return '\\'+self.name
+   def get_control_str(self):
+      return '\\'+self.control_name
 
 sections=[
    #Section("part"),
@@ -29,15 +29,16 @@ if len(sys.argv) <= 1 or sys.argv[1][-4:]!='.tex':
    exit()
 
 filename=sys.argv[1]
-f=open(filename, 'r')
+
 try:
+   f=open(filename, 'r')
    for line in f:
       sline=line.strip()
-      if sline == '': 
+      if sline == '' or sline.find('%')==0: 
          continue
       for secIndex in range(len(sections)):
          sec=sections[secIndex]
-         if sline.find(sec.get_control_name())>=0:
+         if sline.find(sec.get_control_str())>=0:
             sys.stdout.write(INDENT*secIndex)
             titleStart=sline.find('{')+1
             #print sec.name,
@@ -55,7 +56,7 @@ try:
             break
       #print line
 except IOError:
-   print 'io error'
+   print 'read error'
 finally:
    f.close()
 
