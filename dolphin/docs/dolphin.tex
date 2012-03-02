@@ -5,6 +5,8 @@
 % Todo:
 % * fix references
 % * update content
+%   * stereo editor
+%   * model
 % * add tutorial
 % Done:
 % * fix figures
@@ -15,7 +17,7 @@
 \begin{document}
 
 \title{Dolphin 樂譜編輯器}
-\date{\today}
+\date{This file is produced on \today}
 \maketitle
 
 %\begin{abstract} % not very useful in Chinese
@@ -36,7 +38,8 @@ Dolphin 樂譜編輯器
 
 \chapter{緒論}
 \section{研究背景與動機}
-% \addtocontents{toc}{}
+% \addtocontents{toc}{} % used to add description to table of contents
+
 % Why did you want to do it? What was your goal? 
 
 樂譜編輯器(musical notation editor, scorewriter)是用來輸入、編輯及輸出樂譜或音樂的軟體；其之於樂譜的關係就如同文書處理器(word processor)之於文書。相較於傳統的方式，樂譜編輯器可利用各種自動化的工具簡化並加速樂譜的處理流程，且產生出的樂譜較手寫更為美觀，方便用來出版、散佈，作為教學、觀摩或演奏之用。
@@ -115,7 +118,7 @@ Dolphin的主要特色列舉如下：
 \end{enumerate}
 
 \chapter{使用說明書}
-% how to use it?
+% WHAT in detail and HOW to use it
 \section{操作環境}
 \subsection{主視窗}
 \subsection{工具列}
@@ -143,6 +146,8 @@ Dolphin的主要特色列舉如下：
 \section{樂譜播放器}
 \section{腳本編輯器}
 \section{立體聲編輯器}
+% what is streo field editor?
+立體聲編輯器讓使用者以圖像的方式編輯各個樂器在虛擬舞台上的位置，用來模擬立體聲的效果。使用者的修改不僅會反映在樂譜中，也會及時反應到目前播放的樂曲，方便使用者微調，比較各種不同的設定。
 
 \chapter{設計與實作} 
 % How did you implement it?
@@ -369,17 +374,18 @@ dp.perform(dp.undoAction);
 腳本編輯器的預設語言為JavaScript，使用者也可自行安裝直譯器，便可以其他語言來控制編輯器和樂譜。
 
 \section{立體聲編輯器}
-% what is streo field editor?
-立體聲編輯器讓使用者以圖像的方式編輯各個樂器在虛擬舞台上的位置，用來模擬立體聲的效果。使用者的修改不僅會反映在樂譜中，也會及時反應到目前播放的樂曲，方便使用者微調，比較。
+% how did stereo field editor is designed and implemented?
 
-% how did I create stereo field editor?
 % how do we locate sound?
-當手機響時，我們能僅憑鈴聲找到手機的位置；有人叫我們的名字時，我們也能立刻找到呼喚者的位置。聽到聲音時，我們不僅試著理解聲音的內容，也會自動推測聲源和我們的相對位置。許多線索可用來推測這項資訊。我們的一對耳朵分別位於頭部兩側，相距約21.5 公分，若聲源偏離我們的正前或正後方，由於聲源和左右耳的距離不一，兩耳接收到聲音的時間和感受到的聲音的強度便會不同，造成兩耳時間差(interaural time difference, ITD)和兩耳音量差(interaural level difference , ILD)。此外，聲波通過環境(如地面、牆壁)或身體(如頭部、肩膀及外耳)等物體時也會因反射或干擾造成音量及音色的變化。我們的大腦便能根據這些資料決定聲源的位置。
+當手機響時，我們能僅憑鈴聲找到手機；有人叫我們的名字時，我們也能立刻找到呼喚者。聽到聲音時，我們不僅試著理解聲音的內容，也會自動推測聲源的位置，許多線索可用來推測這項資訊。我們的一對耳朵分別位於頭部兩側，相距約21.5 公分，若聲源偏離我們的正前或正後方，由於聲源和左右耳的距離不一，兩耳接收到聲音的時間和感受到的音量便會不同，造成兩耳時間差(interaural time difference, ITD)和兩耳音量差(interaural level difference , ILD)。此外，聲波通過環境(如地面、牆壁)或身體(如頭部、肩膀及外耳)等物體，其頻率也會因反射或干擾而變化。我們的大腦便能根據這些資料決定聲源的位置。
 
-% how can we play stereo sound?
-聆聽重製音樂歌手或樂手在舞台上演唱或演奏音樂時，表演者的位置我們可以操縱這些線索來產生虛擬的音源。使用一般的雙聲道喇叭，透過改變兩喇叭放音的音量差讓大腦產生錯覺，讓人誤以為聲音是由兩喇叭之間某個不存在的音源所發出，便可用來模擬真實世界的聲音效果。這種方式所產生的聲音常稱為立體聲(stereophonic sound, stereo)。
+% how can we create reproduced stereo sound?
+然而，大腦有時也會誤判聲源的位置。將一對喇叭置於聽者前方，兩喇叭和聽者等距，喇叭和聽者會形成一個以兩喇叭連線為底邊的等腰三角形；若兩隻喇叭以一樣的音量播放一樣的音樂，由於聲音同時以同樣的強度傳進聽者的兩耳，聽者會以為音樂是由兩喇叭中間傳來，此現象又稱為phantom center \cite{maxing_audio}{p185}。藉由改變左右喇叭的音量，我們可以模擬聲源在聽者前方移動的效果。當左喇叭的音量比右喇叭大時，我們會以為聲源偏向左邊；而當右喇叭的音量比左喇叭大時，聲源會偏向右邊。在一九三○年代，華特迪士尼的工程師便利用這個效果製作出第一部含有立體聲的電影「幻想曲」\cite{fantasia}。
 
-% implementation
+% how can we generate stereo sound in MIDI?
+今日，我們可調整混音器上的pan pot(panoramic potentiometer)來移動聲源的位置，此技術稱為panning。pan pot 是一個旋鈕，其位置通常以時間表示(稱為pan clock)；轉至七點鐘方向，聲音會完全從左喇叭的位置傳來(稱為hard left)；轉至五點鐘方向會從右喇叭傳來(稱為hard right)，十二點鐘向則在正前方(稱為hard center 或dead center)。在MIDI 中則是透過Pan 訊息(CC#10)來控制panning，以8 的bit(0 到127) 代表pan pot 的七點到五點。由於0 至127 的中心是63.5，無法在MIDI 訊息中表示，故其有效範圍定為1 至127，64 為hard center，0 和1 皆可用來代表hard left，
+
+% design
 Dolphin的立體聲編輯器則透過改變聲部的平衡(pan)和音量來決定樂器的位置。撥放時樂譜撥放器便會以音量和兩耳音量差來達到立體聲的效果。
 
 立體聲編輯器以一虛擬的立體場域(stereo field)來讓使用者編輯立體聲效果，每個聲部的樂器會對應到立體場域上的一個虛擬聲源，如圖 \ref{fig:stereo_editor}。當虛擬聲源沿著立體場域的橫坐標移動便會改變虛擬聲源相對於聽者 /* 在哪裡?  */的方位，而當虛擬聲源沿著縱座標移動則會改變虛擬聲源相對於聽者的距離。  /* 如何使用? 應在CH3說明. */
@@ -396,6 +402,7 @@ Dolphin的立體聲編輯器則透過改變聲部的平衡(pan)和音量來決�
 理論沒講清楚!.
 */
 
+% implementation
 聲音的音量和聲源至聽者的距離呈反比[21]，當虛擬聲源為於立體場域的最下方時，我們定義虛擬聲源與聽者的距離為1，且其產生的音量為最大值；而當虛擬聲源為於立體場域的最上方時，定義虛擬聲源與聽者的距離為127。虛擬聲源的音量便是音量的最大值除以虛擬聲源與聽者的距離。 /*
 實作沒講清楚: 左右聲道如何處理?
 */
@@ -468,7 +475,7 @@ Sequence的基本屬性會以MetaMessage紀錄在時間戳記為零的地方，�
 
 Dolphin除了有基本的樂譜編修能力，也具備許多其它同類型軟體普遍缺乏的自動化功能，如立體聲編輯器、哼唱輸入、五線譜與簡譜的即時轉換、MIDI檔與樂譜的轉換，以及腳本編輯器。
 
-然而Dolphin仍有許多待改進之處，如加強哼唱輸入的效能和準確性、改善MIDI轉譜的正確性、擴充音樂符號、歌詞輸入及列印等，我們希望能繼續開發使其更為完善。
+然I create 而Dolphin仍有許多待改進之處，如加強哼唱輸入的效能和準確性、改善MIDI轉譜的正確性、擴充音樂符號、歌詞輸入及列印等，我們希望能繼續開發使其更為完善。
 
 Dolphin 為一開放源碼的自由軟體，以GPL 釋出。
 
