@@ -48,7 +48,7 @@ Dolphin 樂譜編輯器
 
 市面上的樂譜編輯器多以五線譜來呈現。然而除了五線譜外，世界各地仍流行多種記錄音樂的系統，簡潔易讀的簡譜(numbered musical notation)便是其中之一。簡譜屬於文字譜的一種\cite{chinaEncyclopedia}，是以阿拉伯數字「1234567」記寫音階階名的譜式\footnote{在此採《中國音樂史．樂譜篇》中「數字簡譜」\cite{chinaMusicHistory}的定義。}。簡譜的歷史悠久。中國唐朝(618–907)出現的工尺譜便含有簡譜的影子，其所使用的「上、尺、工、凡、六、五、乙」可對應至簡譜的一至七\cite{wiki}；在十六世紀的中東，有以波斯數字記寫音階的記譜法；而後在十七至十九世紀的歐洲則有盧梭等人的改良及推廣。日本、爪哇島及峇里島亦存有類似的系統\cite{britannica}。簡譜在清朝由日本傳入中國，當時便廣為新式學堂所用。今日簡譜仍經常用於音樂教學，以及坊間的流行歌本中。
 
-鋼琴捲譜(piano roll notation)是另一種樂譜編輯器常缺乏的記譜法。鋼琴捲譜屬於圖像譜的一種，因形似鋼琴捲(piano roll)而得名。鋼琴捲是一種早期的音樂儲存媒介，藉由在紙捲上打孔來記錄音符的資訊，由以氣壓驅動的自奏鋼琴(player piano)讀取並將樂曲彈奏出來。鋼琴捲在一九二零年代曾相當流行，而後逐漸被收音機和唱片所取代\cite{thePiano}。今日的鋼琴捲譜多以橫軸代表時間，縱軸代表音高，譜中長短不一的矩形則代表音符，矩形的長短決定音符的時值；這樣的表示方式相當直覺，初學者也易於上手。
+鋼琴捲譜(piano roll notation)是另一種樂譜編輯器常缺乏的記譜法。鋼琴捲譜屬於圖像譜的一種，因形似鋼琴捲(piano roll)而得名。鋼琴捲是一種紙捲，紙上有許多孔洞記寫樂曲的資訊，可安裝在以氣壓驅動的自奏鋼琴(player piano)上。自奏鋼琴透過追蹤器(tracker bar)讀取鋼琴捲並以機械裝置將捲上紀錄的樂曲彈奏出來。。鋼琴捲和自奏鋼琴在一九二零年代曾相當流行，而後逐漸被收音機和唱片所取代\cite{thePiano}。今日的鋼琴捲譜多以橫軸代表時間，縱軸代表音高。譜中長短不一的矩形則代表音符，矩形的高度決定音的高度，矩形的長短決定音的時值；這樣的表示方式相當直覺，初學者也易於上手。
 
 \figurewithcaption
 {fig:piano_roll}
@@ -387,7 +387,7 @@ dp.perform(dp.undoAction);
 %figure pan pot
 
 % how can we generate stereo sound in MIDI?
-今日，我們可調整混音器上的pan pot(panoramic potentiometer)來移動聲源的位置，此技術稱為panning。pan pot 是一個旋鈕，其位置通常以時間表示(稱為pan clock)；轉至七點鐘方向，聲音會完全從左喇叭的位置傳來(稱為hard left)；轉至五點鐘方向會從右喇叭傳來(稱為hard right)，十二點鐘向則在正前方(稱為hard center 或dead center)。在MIDI 中則是透過Pan 訊息(CC#10)來控制panning，以8 的bit(0 到127) 代表pan pot 的七點到五點。由於0 至127 的中心是63.5，無法在MIDI 訊息中表示，故其有效範圍定為1 至127，64 為hard center，0 和1 皆可用來代表hard left \cite{http://www.midi.org/techspecs/rp36.php}。
+今日，我們可調整混音器上的聲像調整鈕(pan pot, panoramic potentiometer)來移動聲源的位置，此技術稱為panning。聲像調整鈕是一個旋鈕，其設定通常以時間表示(稱為pan clock)；轉至七點鐘方向，聲音會完全從左喇叭的位置傳來(稱為hard left)；轉至五點鐘方向會從右喇叭傳來(稱為hard right)，十二點鐘向則在正前方(稱為hard center 或dead center)。在MIDI 中則是透過Pan 訊息(CC#10)來控制panning，以8 個bit(0 到127) 代表聲像調整鈕的七點到五點。由於0 至127 的中心是63.5，無法在MIDI 訊息中表示，故其有效範圍定為1 至127，64 為hard center，0 和1 皆可用來代表hard left \cite{http://www.midi.org/techspecs/rp36.php}。
 
 %figure midi pan pot mapping
 
