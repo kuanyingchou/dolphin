@@ -28,7 +28,7 @@ Dolphin 樂譜編輯器
 摘要
 \end{center}
 
-我們開發出一套所見即所得的樂譜編輯器Dolphin，支援即時五線譜與簡譜的轉換及MIDI檔與樂譜的轉換等進階功能，另外也支援各種輸入方式如MIDI裝置輸入、虛擬鍵盤輸入及哼唱輸入等。Dolphin還具備腳本編輯器讓使用者撰寫腳本來控制樂譜。我們相信這些自動化的功能可大幅改善樂譜編輯器的可用性並使其用途更為廣泛。
+我們開發出一套所見即所得的樂譜編輯器Dolphin。Dolphin 支援各種輸入方式如鍵盤輸入、滑鼠輸入、MIDI裝置輸入、虛擬鍵盤輸入及哼唱輸入等，也支援即時五線譜與簡譜的轉換及MIDI檔與樂譜的轉換等進階功能。Dolphin還具備腳本編輯器讓使用者撰寫腳本來控制樂譜。我們希望這些功能可大幅改善樂譜編輯器的易用性，進而讓更多人學習及創作音樂。
 
 關鍵詞：樂譜編輯器、音樂函式庫、自動旋律轉錄
 
@@ -54,7 +54,7 @@ Dolphin 樂譜編輯器
 {fig:piano_roll}
 {img/piano_roll.png}
 {0.3}
-{早期的鋼琴捲(圖片來源：http://website.lineone.net/~agr/rollscan2.html)}
+{早期的鋼琴捲(圖片來源：\url{http://website.lineone.net/~agr/rollscan2.html)}}
 
 在輸入方面，大部分的樂譜編輯器支援滑鼠輸入，可以點擊或拖拉的方式來新增、修改音符。也有部分支援鍵盤輸入，透過按鍵對應，或以組合鍵的方式來輸入音符，操作方式如同作業系統的輸入法(input method)。雖然相較於紙筆，這類方式已簡便許多，但對不熟悉樂理的初學者或演奏者而言，輸入樂譜仍往往是件困難的工作。
 
@@ -147,10 +147,9 @@ Dolphin的主要特色列舉如下：
 \section{腳本編輯器}
 \section{立體聲編輯器}
 % what is streo field editor?
-立體聲編輯器讓使用者以圖像的方式編輯各個樂器在虛擬舞台上的位置，用來模擬立體聲的效果。使用者的修改不僅會反映在樂譜中，也會及時反應到目前播放的樂曲，方便使用者微調，比較各種不同的設定。
+立體聲編輯器讓使用者以圖像的方式編輯各個樂器在虛擬舞台上的位置，用來模擬立體聲的效果。使用者的修改不僅會反映在樂譜中，也會即時反應到目前播放的樂曲，方便使用者微調、比較各種不同的設定。
 
-在音場圖中，每個聲部的樂器(以X加上矩型框表示)會對應到舞台上的一個虛擬聲源，，如圖 \ref{fig:stereo_editor}。當虛擬聲源沿著音場的橫坐標移動便會改變虛擬聲源相對於聽者 /* 在哪裡?  */的方位，而當虛擬聲源沿著縱座標移動則會改變虛擬聲源相對於聽者的距離。  /* 如何使用? 應在CH3說明. */
-
+在音場圖中，每個聲部的樂器(以X加上矩型框表示)會對應到舞台上的一個虛擬聲源，，如圖 \ref{fig:stereo_editor}。當虛擬聲源沿著音場的橫坐標移動便會改變虛擬聲源相對於聽者的方位，而當虛擬聲源沿著縱座標移動則會改變虛擬聲源的強度。
 
 \figurewithcaption
 {fig:stereo_editor}
@@ -161,6 +160,13 @@ Dolphin的主要特色列舉如下：
 \chapter{設計與實作} 
 % How did you implement it?
 
+因此，我們統一以一個矩型的音場圖來代表音場。橫座標代表音場中樂器相對於聽者的方位，最左到最右的跨度取決於實際兩喇叭和聽者連線的夾角。縱座標可視為音場的深度，以樂器的音量表示。使用矩形的另一個好處是我們可以用比扇形大的視窗區域來表示較為擁擠的音場前方。音場圖和實際音場的對應如圖 \ref{fig:stage_mapping}所示。
+
+\figurewithcaption
+{fig:stage_mapping}
+{img/stage_mapping.png}
+{1.0}
+{音場圖和音場的對應，圖中灰色的扇形區域即為音場，灰色的矩形區域則為音場圖。以鋼琴三重奏(piano trio)為例，通常鋼琴置於舞台中央，高音的小提琴在左側，而低沉的大提琴則在右側}
 \section{系統架構}
 
 
@@ -198,7 +204,7 @@ Java SE 含有一套可處理聲音的低階函式庫Java Sound API，可處理�
 {0.15}
 {MidiDevice的類別圖}
 
-MIDI子套件可分為Wire Protocol和MIDI檔兩大部分。Wire Protocol代表動態的MIDI系統，其主要類別為MidiDevice。MidiDevice含有Transmitter和Receiver，如圖~\ref{fig:mididevice}所示，Transmitter如同MidiDevice的輸出端，而Receiver則如同MidiDevice的輸入端；各MidiDevice以Transmitter和Receiver互相連接。有些MidiDevice會產生MidiEvent(如MIDI鍵盤)，有些MidiDevice會接收MidiEvent(如合成器)。在此系統中，MidiDevice會互相合作以達成工作。
+MIDI子套件可分為Wire Protocol 和MIDI 檔兩大部分。Wire Protocol 代表動態的MIDI 系統，其主要介面為MidiDevice。在此系統中，各MidiDevice互相連接以達成工作。MidiDevice 含有Transmitter 和Receiver，如圖~\ref{fig:mididevice}所示，Transmitter為MidiDevice的輸出端，而Receiver則為MidiDevice的輸入端，各MidiDevice 透過Transmitter 和Receiver 傳遞MidiEvent。MidiEvent 表示MIDI 事件，含有時間戳記記錄事件的發生時間，以及一個MidiMessage 記錄事件的內容。有些MidiDevice負責產生MidiEvent(如MIDI鍵盤)，有些MidiDevice負責接收MidiEvent(如產生聲音的合成器)。
 
 /*
      解說你有用到的主要類別, 並各自解說你有用到的主要方法
@@ -207,7 +213,7 @@ MIDI子套件可分為Wire Protocol和MIDI檔兩大部分。Wire Protocol代表�
 
 
 
-Sequence則用來模擬靜態的MIDI檔。圖~\ref{fig:sequence}為Sequence所定義的資料結構。其中，Sequence代表整首樂曲，其內含有零至多個Track，Track代表音軌，含有零至多個MidiEvent， MidiEvent表示MIDI事件，含有時間戳記，用來記錄事件的發生時間，及一個MidiMessage，用來記錄事件的內容。我們可將Sequence視為MidiEvent的集合。
+靜態的MIDI檔則以Sequence 來表示。圖~\ref{fig:sequence}為Sequence所定義的資料結構。其中，Sequence代表整首樂曲，其內含有零至多個Track，Track代表音軌，含有零至多個MidiEvent。我們可將Sequence視為MidiEvent的集合。
 
 \figurewithcaption
 {fig:sequence}
@@ -215,9 +221,9 @@ Sequence則用來模擬靜態的MIDI檔。圖~\ref{fig:sequence}為Sequence所�
 {0.15}
 {Sequence 的類別圖}
 
-MidiEvent的時間戳記以樂曲開頭為起點，隨著時間遞增，其單位由Sequence的divisionType和resolution來決定。divisionType主要可分為PPQ(purses/ticks per quarter note)和SMPTE (ticks per frame)兩種，而SMPTE還可依FPS(frames per second)值分為24、25、29.97和30四種；resolution則通常為2的倍數，如120、240、480等，越高越精確。當divisionType為PPQ時，resolution的值代表每個四分音符含有的時間戳記；當divisionType為SMPTE時，resolution則代表每個frame含有的時間戳記。
+在Wire Protocol 中，MidiEvent 的時間戳記的值皆為0；在MIDI 檔中，MidiEvent的時間戳記則以樂曲開頭為起點，隨著時間遞增，其單位由Sequence的divisionType和resolution兩個欄位來決定。divisionType可為PPQ(purses/ticks per quarter note)或SMPTE (ticks per frame)。當divisionType為PPQ時，resolution的值代表每個四分音符含有的時間戳記，例如當resolution 為480，代表每個四分音符含有480 個tick，在以四分音符為一拍(beat)，每分鐘120 拍的樂譜中則為0.5 秒。SMPTE 可分為SMPTE_24、SMPTE_25、SMPTE_30，及SMPTE_30DROP，分別代表FPS(frames per second)值24、25、30，和29.97。當divisionType為SMPTE時，resolution則代表每個frame含有的時間戳記，例如當採用SMPTE_30且resolution 為8時，每秒則有240 個tick。resolution通常為2的倍數，如120、240、480等，越高越精確。
 
-MidiMessage由一串位元組所組成，其中，最常見的是以0x9開頭的Note On訊息和以0x8開頭的Note Off訊息，分別用來模擬樂器聲音的「放」和「收」，例如鋼琴的鍵落和鍵起。一個Note On訊息和其後的一個Note Off訊息合起來便可形成一個音。
+MidiMessage由一個status byte(或稱command byte) 後接零至多個data byte 所組成。最常見的MidiMessage 是以status byte 為0x9的Note On訊息和以status byte 為0x8的Note Off訊息。Note On 和Note Off分別用來模擬樂器聲音的「放」和「收」，一個Note On訊息和其後的一個Note Off訊息合起來便可形成一個音，例如按下MIDI 鍵盤的琴鍵，鍵盤會送出一個Note On訊息；放開琴鍵則再送出一個Note Off訊息。
 
 /*
      解說你有用到的主要類別, 並各自解說你有用到的主要方法
@@ -225,7 +231,7 @@ MidiMessage由一串位元組所組成，其中，最常見的是以0x9開頭的
 
 \subsection{Java Scripting API}
 
-Java Scripting API位於javax.script中，是一個獨立於腳本語言(scripting language)的直譯器使用介面。目前Java SE內建有JavaScript的直譯器，在Java Scripting API的專案頁上也提供如Python、Ruby、AWK等二十幾種語言的直譯器讓使用者自行下載、擴充。
+Java Scripting API位於javax.script中，是一個獨立於腳本語言(scripting language)的直譯器使用介面。目前Java SE內建有JavaScript的直譯器，使用者也可自行下載如Python、Ruby、AWK等直譯引擎(scripting engine)\footnote{這個網頁收集了許多開放原始碼的直譯引擎：\url{http://java-source.net/open-source/scripting-languages}}。
 
 Java SE中的JavaScript直譯器具有LiveConnect功能，可在JavaScript中匯入Java的類別和套件來使用，另外如Ruby的直譯器JRuby、Python的直譯器Jython等多種直譯器也提供了類似的溝通機制。而Java Scripting API也提供綁定(bindings)的機制讓直譯器在執行期直接使用底層Java虛擬機器所含物件的公開介面，我們利用該功能讓腳本編輯器得以操作Dolphin及其內的樂譜。
 
@@ -422,13 +428,6 @@ dp.perform(dp.undoAction);
 
 要定出樂器在舞台上的位置，我們需要解決樂器相對於聽者的方位和距離兩個問題。樂器的方位可以Panning 來實作。要注意的是，各喇叭和聽者的相對位置，以及聽者面向的方向皆會影響方位，造成不同寬度和位置的音場(見圖 \ref{fig:stage})。模擬樂器的距離會遇到更多問題。以音量而言，我們不但需要知道各樂器實際能產生多少能量，還需控制使用者作業系統的音量設定、擴大器的音量設定、喇叭和聽者的距離和喇叭的擺放方式才能重製出希望的音量。以頻率而言，高頻音的衰減在近距離的音樂聆聽環境並不明顯。回聲由聽者所處的環境所決定。而各樂器通常也不像交通工具會處於持續移動的狀態。由於以上這些限制，我們難以藉由音量、頻率、回聲和移動來模擬音場中樂器和聽者的絕對距離。其實就算處於演奏現場，各樂器和我們的距離也難以僅憑聽覺定出，各樂器的比重或音量才是更明顯的元素。
 
-因此，我們統一以一個矩型的音場圖來代表音場。橫座標代表音場中樂器相對於聽者的方位，最左到最右的跨度取決於實際兩喇叭和聽者連線的夾角。縱座標可視為音場的深度，以樂器的音量表示。使用矩形的另一個好處是我們可以用比扇形大的視窗區域來表示較為擁擠的音場前方。音場圖和實際音場的對應如圖 \ref{fig:stage_mapping}所示。
-
-\figurewithcaption
-{fig:stage_mapping}
-{img/stage_mapping.png}
-{1.0}
-{音場圖和音場的對應，圖中灰色的扇形區域即為音場，灰色的矩形區域則為音場圖。以鋼琴三重奏(piano trio)為例，通常鋼琴置於舞台中央，高音的小提琴在左側，而低沉的大提琴則在右側}
 %] design
 
 %[ implementation
