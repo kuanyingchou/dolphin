@@ -233,7 +233,7 @@ MidiMessage由一個status byte(或稱command byte) 後接零至多個data byte 
 
 Java Scripting API位於javax.script中，是一個獨立於腳本語言(scripting language)的直譯器使用介面。目前Java SE內建有JavaScript的直譯器，使用者也可自行下載如Python、Ruby、AWK等直譯引擎(scripting engine)\footnote{這個網頁收集了許多開放原始碼的直譯引擎：\url{http://java-source.net/open-source/scripting-languages}}。
 
-Java SE中的JavaScript直譯器具有LiveConnect功能，可在JavaScript中匯入Java的類別和套件來使用，另外如Ruby的直譯器JRuby、Python的直譯器Jython等多種直譯器也提供了類似的溝通機制。而Java Scripting API也提供綁定(bindings)的機制讓直譯器在執行期直接使用底層Java虛擬機器所含物件的公開介面，我們利用該功能讓腳本編輯器得以操作Dolphin及其內的樂譜。
+Java SE中的JavaScript直譯器具有LiveConnect功能，可在JavaScript中匯入Java的類別和套件來使用，另外如Ruby的直譯引擎JRuby、Python的直譯引擎Jython等多種直譯器也提供了類似的溝通機制。而Java Scripting API也提供綁定(bindings)的功能讓直譯引擎在執行期直接使用底層Java虛擬機器所含物件的公開介面，我們利用這兩樣功能讓腳本編輯器得以操作Dolphin及其內的樂譜。
 
 /*
      解說你有用到的主要類別, 並各自解說你有用到的主要方法
