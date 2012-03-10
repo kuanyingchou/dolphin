@@ -235,7 +235,7 @@ MIDI子套件可分為Wire Protocol 和MIDI 檔兩大部分。Wire Protocol 代�
 {0.15}
 {Sequence 的類別圖}
 
-在Wire Protocol 中，MidiEvent 的時間戳記的值皆為0；在MIDI 檔中，MidiEvent的時間戳記則以樂曲開頭為起點，隨著時間遞增，其單位由Sequence的divisionType和resolution兩個欄位來決定。divisionType可為PPQ(purses/ticks per quarter note)或SMPTE (ticks per frame)。當divisionType為PPQ時，resolution的值代表每個四分音符含有的時間戳記，例如當resolution 為480，代表每個四分音符含有480 個tick，在以四分音符為一拍(beat)，每分鐘120 拍的樂譜中則為0.5 秒。SMPTE 可分為SMPTE_24、SMPTE_25、SMPTE_30，及SMPTE_30DROP，分別代表FPS(frames per second)值24、25、30，和29.97。當divisionType為SMPTE時，resolution則代表每個frame含有的時間戳記，例如當採用SMPTE_30且resolution 為8時，每秒則有240 個tick。resolution通常為2的倍數，如120、240、480等，越高越精確。
+在Wire Protocol 中，MidiEvent 的時間戳記的值皆為0；在MIDI 檔中，MidiEvent的時間戳記則以樂曲開頭為起點，隨著時間遞增，其單位由Sequence的divisionType和resolution兩個欄位來決定。divisionType可為PPQ(purses/ticks per quarter note)或SMPTE (ticks per frame)。當divisionType為PPQ時，resolution的值代表每個四分音符含有的時間戳記，例如當resolution 為480，代表每個四分音符含有480 個tick，在以四分音符為一拍(beat)，每分鐘120 拍的樂譜中則為0.5 秒。SMPTE 可分為SMPTE\_24、SMPTE\_25、SMPTE\_30，及SMPTE\_30DROP，分別代表FPS(frames per second)值24、25、30，和29.97。當divisionType為SMPTE時，resolution則代表每個frame含有的時間戳記，例如當採用SMPTE\_30且resolution 為8時，因每秒有30 個frame，每個frame 有8個tick，每秒便有240 個tick。resolution值通常為2的倍數，值越高越精確。
 
 MidiMessage由一個status byte(或稱command byte) 後接零至多個data byte 所組成。最常見的MidiMessage 是以status byte 為0x9的Note On訊息和以status byte 為0x8的Note Off訊息。Note On 和Note Off分別用來模擬樂器聲音的「放」和「收」，一個Note On訊息和其後的一個Note Off訊息合起來便可形成一個音，例如按下MIDI 鍵盤的琴鍵，鍵盤會送出一個Note On訊息；放開琴鍵則再送出一個Note Off訊息。
 
@@ -245,7 +245,7 @@ MidiMessage由一個status byte(或稱command byte) 後接零至多個data byte 
 
 \subsection{Java Scripting API}
 
-Java Scripting API位於javax.script中，是一個通用的直譯器使用介面，可讓JVM 執行各種腳本語言。目前Java SE內建有JavaScript的直譯引擎(scripting engine)，使用者也可自行下載直譯引擎以執行Python、Ruby、AWK等多種語言\footnote{這個網頁收集了許多可供Java Scripting API 使用的直譯引擎：\url{http://java-source.net/open-source/scripting-languages}}。
+Java Scripting API位於javax.script中，是一個通用的直譯器使用介面，可讓JVM 執行各種腳本語言。目前Java SE內建有JavaScript的直譯引擎(scripting engine)，使用者也可自行下載直譯引擎以執行Python、Ruby、AWK等多種語言\footnote{其它直譯引擎可至下列網址下載：\url{http://java-source.net/open-source/scripting-languages}}。
 
 Java SE中的JavaScript直譯引擎具有LiveConnect功能，可在JavaScript中匯入Java的類別和套件來使用，另外如Ruby的直譯引擎JRuby、Python的直譯引擎Jython等多種直譯器也提供了類似的溝通機制。而Java Scripting API也提供綁定(bindings)的功能讓直譯引擎在執行期直接使用底層Java虛擬機器所含物件的公開介面，我們利用這兩樣功能讓腳本編輯器得以操作Dolphin及其內的樂譜。
 
