@@ -90,6 +90,7 @@ import javax.sound.midi.Receiver;
 	</formalpara>
 
 */
+@Deprecated
 public class DumpSequence
 {
 	private static String[]	sm_astrKeyNames = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};

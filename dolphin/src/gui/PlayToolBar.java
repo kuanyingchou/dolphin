@@ -54,12 +54,12 @@ public class PlayToolBar extends JToolBar {
       private boolean reverse=false;
       private void displayTime() {
          //System.err.println("b "+time);
-         final int minuteCurrent=(int)(time/60000.0);
-         final int secondCurrent=(int)((time/1000.0)-60*minuteCurrent);
-         final int minuteAll=(int)(length/60000.0);
-         final int secondAll=(int)((length/1000.0)-60*minuteAll);
+         final int minuteCurrent=(int)(time/60000000.0);
+         final int secondCurrent=(int)((time/1000000.0)-60*minuteCurrent);
+         final int minuteAll=(int)(length/60000000.0);
+         final int secondAll=(int)((length/1000000.0)-60*minuteAll);
          if(reverse) {
-            final int secondCurrentAll=(int)((length/1000.0));
+            final int secondCurrentAll=(int)((length/1000000.0));
             final int restSecondAll=secondCurrentAll-(minuteCurrent*60+secondCurrent);
             
             final int restMinute=restSecondAll/60;
@@ -218,12 +218,12 @@ public class PlayToolBar extends JToolBar {
       new Thread(new Runnable() {
          public void run() {
             while(!MainFrame.player.isStopped()) {
-               final long nextTickPos=MainFrame.player.getMicrosecondPosition();
+               final long nextPos=MainFrame.player.getMicrosecondPosition();
                if(MainFrame.player.isPlaying()) {
                   SwingUtilities.invokeLater(new Runnable() {
                      public void run() {
-                        progress.setValue(Util.toInt(nextTickPos));
-                        timeButton.setTime(nextTickPos);
+                        progress.setValue(Util.toInt(nextPos));
+                        timeButton.setTime(nextPos);
                         //setProgressTime(nextMsPos);
                      }
                   });

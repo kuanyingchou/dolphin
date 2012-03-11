@@ -51,6 +51,7 @@ import	javax.sound.midi.Receiver;
 
 /**	Displays the file format information of a MIDI file.
  */
+@Deprecated
 public class DumpReceiver
 	implements	Receiver
 {

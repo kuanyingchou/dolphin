@@ -35,6 +35,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import view.ScoreView;
 import api.audio.PitchProfile;
 import api.audio.SoundAnalyzer;
+import api.midi.BasicScorePlayer;
 import api.midi.OutDeviceManager;
 import api.midi.RealTimeScorePlayer;
 import api.midi.ScorePlayer;
@@ -57,7 +58,7 @@ public class MainFrame extends JFrame {
    
    final IntensityHistory intensityHistory=new IntensityHistory();
    
-   public static final ScorePlayer player=new RealTimeScorePlayer(); //should it be here? 
+   public static final ScorePlayer player=new BasicScorePlayer(); //should it be here? 
    
    
    /*public static class KeyInputStatus extends JLabel { //>>>

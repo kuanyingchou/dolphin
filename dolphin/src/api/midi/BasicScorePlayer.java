@@ -26,14 +26,15 @@ import api.model.*;
 public class BasicScorePlayer extends ScorePlayer implements Receiver, MetaEventListener {
       private boolean paused=false;
       private final java.util.List<Receiver> receivers=new ArrayList<Receiver>();
-      private static final ScorePlayer instance=new BasicScorePlayer();
+      //private static final ScorePlayer instance=new BasicScorePlayer();
       //private DumpReceiver debugDump=new DumpReceiver(System.err);
       //private ScoreView sv;
       //private Receiver output=null;
       
-      private BasicScorePlayer() {
-         
+      public BasicScorePlayer() {
+         // TODO Auto-generated constructor stub
       }
+      
       /*public void setOutput(Receiver r) {
          output=r;
       }*/
@@ -253,9 +254,9 @@ public class BasicScorePlayer extends ScorePlayer implements Receiver, MetaEvent
          return sequencer.getMicrosecondLength();
       }
 
-      private static ScorePlayer getInstance() {
-         return instance;
-      }
+      //private static ScorePlayer getInstance() {
+      //   return instance;
+      //}
 
       @Override
       public void setVolume(int partIndex, int volume) {
@@ -271,8 +272,9 @@ public class BasicScorePlayer extends ScorePlayer implements Receiver, MetaEvent
 
       @Override
       public void setMicrosecondPosition(long pos) {
-         // TODO Auto-generated method stub
-         
+         if(sequencer!=null) {
+            sequencer.setMicrosecondPosition(pos);
+         }
       }
 
       @Override
