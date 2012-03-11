@@ -1,4 +1,5 @@
 bug:
+    <audio> tempo is not right while playing
 	<view> change time sig. return to staff view
 	<view> scrollRectToVisible not function in StaffPartView
 	<dialog> pitchProfileDialog's background color
