@@ -158,6 +158,23 @@ Dolphin的主要特色列舉如下：
  移到CH3  ************/  
 
 \section{腳本編輯器}
+
+例如，若要為樂譜加上一百個C4音符，使用者可以撰寫如下的腳本。/* user怎麼操作? */
+
+\begin{verbatim}
+for(i=0; i<100; i++) { 
+   dp.getScore().getPart(0).add(new Note(60));
+}
+\end{verbatim}
+
+其中，dp是一個系統已定義的全域變數，代表編輯器的實體。getScore()方法會傳回目前操作中的樂譜，getPart(0)則會傳回該樂譜的第一個聲部，add(new Note(60))則對該聲部加上一個音高值為60的C4音符。而若想控制編輯器，例如執行復原動作，可以執行如下面的腳本。
+
+\begin{verbatim}
+dp.perform(dp.undoAction);
+\end{verbatim}
+
+腳本編輯器的預設語言為JavaScript，使用者也可自行安裝直譯器，便可以其他語言來控制編輯器和樂譜。
+
 \section{立體聲編輯器}
 % what is streo field editor?
 立體聲編輯器讓使用者以圖像的方式編輯各個樂器在虛擬舞台上的位置，用來模擬立體聲的效果。使用者的修改不僅會反映在樂譜中，也會即時反應到目前播放的樂曲，方便使用者微調、比較各種不同的設定。
@@ -227,7 +244,7 @@ MIDI子套件可分為Wire Protocol 和MIDI 檔兩大部分。Wire Protocol 代�
 
 
 
-靜態的MIDI檔則以Sequence 來表示。圖~\ref{fig:sequence}為Sequence所定義的資料結構。其中，Sequence代表整首樂曲，其內含有零至多個Track，Track代表音軌，含有零至多個MidiEvent。我們可將Sequence視為MidiEvent的集合。
+靜態的MIDI檔則以Sequence 來表示。圖~\ref{fig:sequence}為Sequence所定義的資料結構。其中，Sequence代表整首樂曲，其內含有零至多個Track，Track代表音軌，含有零至多個MidiEvent。每個MidiEvent 含有一個MidiMessage 和一個時間戳記(tick)，我們可將Sequence視為MidiEvent的集合。
 
 \figurewithcaption
 {fig:sequence}
@@ -235,24 +252,15 @@ MIDI子套件可分為Wire Protocol 和MIDI 檔兩大部分。Wire Protocol 代�
 {0.15}
 {Sequence 的類別圖}
 
-在Wire Protocol 中，MidiEvent 的時間戳記的值皆為0；在MIDI 檔中，MidiEvent的時間戳記則以樂曲開頭為起點，隨著時間遞增，其單位由Sequence的divisionType和resolution兩個欄位來決定。divisionType可為PPQ(purses/ticks per quarter note)或SMPTE (ticks per frame)。當divisionType為PPQ時，resolution的值代表每個四分音符含有的時間戳記，例如當resolution 為480，代表每個四分音符含有480 個tick，在以四分音符為一拍(beat)，每分鐘120 拍的樂譜中則為0.5 秒。SMPTE 可分為SMPTE\_24、SMPTE\_25、SMPTE\_30，及SMPTE\_30DROP，分別代表FPS(frames per second)值24、25、30，和29.97。當divisionType為SMPTE時，resolution則代表每個frame含有的時間戳記，例如當採用SMPTE\_30且resolution 為8時，因每秒有30 個frame，每個frame 有8個tick，每秒便有240 個tick。resolution值通常為2的倍數，值越高越精確。
-
 MidiMessage由一個status byte(或稱command byte) 後接零至多個data byte 所組成。最常見的MidiMessage 是以status byte 為0x9的Note On訊息和以status byte 為0x8的Note Off訊息。Note On 和Note Off分別用來模擬樂器聲音的「放」和「收」，一個Note On訊息和其後的一個Note Off訊息合起來便可形成一個音，例如按下MIDI 鍵盤的琴鍵，鍵盤會送出一個Note On訊息；放開琴鍵則再送出一個Note Off訊息。
 
-/*
-     解說你有用到的主要類別, 並各自解說你有用到的主要方法
-*/
+Dolphin 的樂譜播放器(\ref{scorePlayer}) 及MIDI 檔的匯入、匯出(\ref{midiImportExport})皆會使用到MIDI API。
 
 \subsection{Java Scripting API}
 
-Java Scripting API位於javax.script中，是一個通用的直譯器使用介面，可讓JVM 執行各種腳本語言。目前Java SE內建有JavaScript的直譯引擎(scripting engine)，使用者也可自行下載直譯引擎以執行Python、Ruby、AWK等多種語言\footnote{其它直譯引擎可至下列網址下載：\url{http://java-source.net/open-source/scripting-languages}}。
+Java Scripting API位於javax.script中，是一個通用的直譯器使用介面，可讓JVM 執行各種腳本語言。目前Java SE內建有JavaScript的直譯引擎(scripting engine)，使用者也可自行下載直譯引擎以執行Python、Ruby、AWK等多種語言\footnote{其它語言的直譯引擎可至下列網址下載：\url{http://java-source.net/open-source/scripting-languages}}。
 
-Java SE中的JavaScript直譯引擎具有LiveConnect功能，可在JavaScript中匯入Java的類別和套件來使用，另外如Ruby的直譯引擎JRuby、Python的直譯引擎Jython等多種直譯器也提供了類似的溝通機制。而Java Scripting API也提供綁定(bindings)的功能讓直譯引擎在執行期直接使用底層Java虛擬機器所含物件的公開介面，我們利用這兩樣功能讓腳本編輯器得以操作Dolphin及其內的樂譜。
-
-/*
-     解說你有用到的主要類別, 並各自解說你有用到的主要方法
-*/
-
+Java SE中的JavaScript直譯引擎具有LiveConnect功能，可在JavaScript中匯入Java的類別和套件來使用，另外如Ruby的直譯引擎JRuby、Python的直譯引擎Jython等多種直譯器也提供了類似的溝通機制。而Java Scripting API也提供綁定(bindings)的功能讓直譯引擎在執行期直接使用底層Java虛擬機器所含物件的公開介面，我們利用這兩樣功能讓腳本編輯器得以操作Dolphin及其內的樂譜。腳本編輯器的實作請參考\ref{sec:scriptEditor} 一節。
 
 \section{樂譜模型}
 
@@ -346,6 +354,7 @@ Java Sound API中的Sequence僅記錄MIDI訊息而不是音符，是屬於低階
 我們用一個例子來解釋執行、復原、重做和訊息配發功能的運作過程。當使用者為樂譜新增一個聲部時，樂譜會將必要的資訊填入一個新產生的新增聲部改動(AddPartChange)，「執行」該改動，然後將該改動儲存起來，再將其配發給所有已註冊的樂譜改動傾聽者，此時可能是一個負責繪製該樂譜的樂譜介面。而樂譜介面得知一個新增聲部改動發生後，便會重新繪製畫面。如此一來，使用者便可看到更新的樂譜。若使用者反悔想復原樂譜，樂譜也可對該改動執行「回復」，「回復」會再產生一個刪除聲部改動(RemovePartChange)。樂譜「執行」此刪除聲部改動以將剛產生的聲部移除，再以此改動通知該樂譜所有的樂譜改動傾聽者。由於此刪除聲部改動不是由使用者直接產生，故此改動不會被儲存起來。
 
 \section{樂譜播放器}
+\label{sec:scorePlayer}
 
 樂譜播放器(撥放器，ScorePlayer)負責將樂譜撥放出來，讓使用者得以聆聽編輯中的樂譜。當使用者選擇「播放」後，播放器會先將編輯中的樂譜轉換為Sequence，再將該Sequence透過Sequencer播放出來。
 
@@ -371,23 +380,9 @@ Java Sound API中的Sequence僅記錄MIDI訊息而不是音符，是屬於低階
 
 
 \section{腳本編輯器}
+\label{sec:scriptEditor}
 
 我們使用Java Scripting API來實作腳本編輯器。透過綁定功能將編輯器實體匯入腳本(script)的執行環境中，便可以腳本來控制編輯器實體的行為，並存取、修改其所包含的樂譜。
-例如，若要為樂譜加上一百個C4音符，使用者可以撰寫如下的腳本。/* user怎麼操作? */
-
-\begin{verbatim}
-for(i=0; i<100; i++) { 
-   dp.getScore().getPart(0).add(new Note(60));
-}
-\end{verbatim}
-
-其中，dp即為編輯器的實體/* dp由何處取得? 還reserved word?  */，getScore()方法會傳回目前操作中的樂譜，getPart(0)則會傳回該樂譜的第一個聲部，add(new Note(60))則對該聲部加上一個音高值為60的C4音符。而若想控制編輯器，例如執行復原動作，可以執行如下面的腳本。
-
-\begin{verbatim}
-dp.perform(dp.undoAction);
-\end{verbatim}
-
-腳本編輯器的預設語言為JavaScript，使用者也可自行安裝直譯器，便可以其他語言來控制編輯器和樂譜。
 
 \section{立體聲編輯器}
 % how did stereo field editor is designed and implemented?
@@ -450,12 +445,15 @@ dp.perform(dp.undoAction);
 %] implementation
 
 \section{MIDI 檔的匯入與匯出}
+\label{midiImportExport}
 
 Java Sound API 內的類別Sequence 用來表示樂曲，API 內建有讀取和寫出MIDI檔的方法。因此我們只需要實作Sequence 至Score的轉換，便可實作出MIDI 檔和樂譜的轉換。
 
 /******  移置到4.8  
 另外，為了使用Java Sound API提供的各項功能，我們實作了樂譜和Sequence的轉換函式。例如在播放樂譜時，我們先將樂譜「編譯」為Sequence，再利用Java Sound API播放出來；而在匯入MIDI檔時，則先使用Java Sound API讀進MIDI檔成為Sequence，再將其「反編譯」為樂譜，我們將在進一步解釋轉換的演算法。
 移置到4.8  *******/
+
+在Wire Protocol 中，MidiEvent 的時間戳記的值皆為0；在MIDI 檔中，MidiEvent的時間戳記則以樂曲開頭為起點，隨著時間遞增，其單位由Sequence的divisionType和resolution兩個欄位來決定。divisionType可為PPQ(purses/ticks per quarter note)或SMPTE (ticks per frame)。當divisionType為PPQ時，resolution的值代表每個四分音符含有的時間戳記，例如當resolution 為480，代表每個四分音符含有480 個tick，在以四分音符為一拍(beat)，每分鐘120 拍的樂譜中則為0.5 秒。SMPTE 可分為SMPTE\_24、SMPTE\_25、SMPTE\_30，及SMPTE\_30DROP，分別代表FPS(frames per second)值24、25、30，和29.97。當divisionType為SMPTE時，resolution則代表每個frame含有的時間戳記，例如當採用SMPTE\_30且resolution 為8時，因每秒有30 個frame，每個frame 有8個tick，每秒便有240 個tick。resolution值通常為2的倍數，值越高越精確。
 
 \subsection{匯入MIDI 檔}
 
