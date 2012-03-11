@@ -291,7 +291,7 @@ Java Sound API中的Sequence僅記錄MIDI訊息而不是音符，是屬於低階
 {0.4}
 {樂譜介面的類別圖}
 
-樂譜介面(ScoreView)負責顯示和操作樂譜(Score)，內含對應至節的節介面(ParagraphView)以及對應至聲部(Part)的聲部介面(PartView)，如圖~\ref{fig:view} 所示。為了讓各聲部皆可獨立以五線譜、簡譜或是鋼琴捲譜來呈現，我們為聲部介面設計了對應的子類別，包含以五線譜呈現聲部的五線譜聲部介面(StaffPartView)，以簡譜來呈現聲部的簡譜聲部介面(NumPartView)，以及以鋼琴捲譜來呈現聲部的鋼琴捲譜聲部介面(GridPartView)。三種譜的顯示可在執行期自由切換且不會改動到樂譜。
+樂譜介面(ScoreView)負責顯示和操作樂譜(Score)，內含對應至節的節介面(ParagraphView)以及對應至聲部(Part)的聲部介面(PartView)。如圖~\ref{fig:view} 所示。為了讓各聲部皆可獨立以五線譜、簡譜或是鋼琴捲譜來呈現，我們為聲部介面設計了對應的子類別，包含以五線譜呈現聲部的五線譜聲部介面(StaffPartView)，以簡譜來呈現聲部的簡譜聲部介面(NumPartView)，以及以鋼琴捲譜來呈現聲部的鋼琴捲譜聲部介面(GridPartView)。三種譜的顯示可在執行期自由切換且不會改動到樂譜。
 
 \figurewithcaption
 {fig:model_view}
@@ -299,17 +299,16 @@ Java Sound API中的Sequence僅記錄MIDI訊息而不是音符，是屬於低階
 {0.1}
 {樂譜介面和樂譜模型的連接方式}
 
-為了讓使用者可同時以五線譜、簡譜等不同的樂譜介面編輯同一份樂譜，我們設計了樂譜改動傾聽者(ScoreChangeListener)。各樂譜介面先以樂譜改動傾聽者的身份向樂譜註冊，而後當樂譜改動時，樂譜會呼叫樂譜改動傾聽者的scoreChanged() 方法來通知樂譜介面。多個樂譜介面可連接至同一個樂譜，然而樂譜並不直接連結至樂譜介面，
-此設計基於觀察者模式(observer pattern)\cite{designPatterns}\ref{fig:model_view}
+多個樂譜介面可連接至同一個樂譜，然而樂譜並不直接連結至樂譜介面，而是透過樂譜改動傾聽者(ScoreChangeListener)與樂譜介面溝通\ref{fig:model_view}。當樂譜介面產生後，我們先對Score 呼叫addScoreChangeListener() 方法向樂譜註冊樂譜介面，而後當樂譜改動時，樂譜便會自動呼叫樂譜改動傾聽者的scoreChanged() 方法來通知各樂譜介面，各樂譜介面會收到一個ScoreChange 物件，並根據ScoreChange 的內容更新樂譜或游標的顯示。此設計基於觀察者模式(observer pattern)\cite{designPatterns}
 
-樂譜介面同時具有樂譜的操控者和樂譜改動的傾聽者雙重身分。樂譜介面可呼叫公開方法(public method)直接操作樂譜；為確保各傾聽者都能掌握樂譜的最新狀況，當樂譜發生改動時，樂譜會將該改動包裝為訊息物件，並以此物件通知所有連接到該樂譜的樂譜改動傾聽者，各傾聽者再各自做對應的反應。樂譜並不需要知道各傾聽者在接收到訊息後要做什麼樣的動作。此設計分離「溝通」和「反應」的程式碼。傳遞的訊息物件即為樂譜改動(ScoreChange)的實體。
+% impl. of ScoreChange
 
 \subsection{五線譜}
+五線譜樂譜介面(StaffPartView) 負責五線譜的顯示。
 \subsection{簡譜}
+簡譜樂譜介面(NumberedPartView) 負責簡譜的顯示。
 \subsection{鋼琴捲譜}
-/****
-漏講其它各種view
-****/
+鋼琴捲譜樂譜介面(GridPartView) 負責鋼琴捲譜的顯示。
 
 \section{樂譜改動}
 \label{sec:changes}
