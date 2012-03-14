@@ -3,6 +3,7 @@
 %    xelatex -interaction=nonstopmode dolphin.tex
 %-----------------------------------------------------------------
 % Todo:
+% * update views
 % * update player
 % * update MIDI input/output
 % * add Dolphin API usage
@@ -39,8 +40,9 @@ Dolphin 樂譜編輯器
 
 \tableofcontents
 
-\chapter{緒論}
-\section{研究背景與動機}
+\chapter{緒論} % preface
+
+\section{研究背景與動機} % goals
 % \addtocontents{toc}{} % used to add description to table of contents
 
 % Why did you want to do it? What was your goal? 
@@ -51,7 +53,7 @@ Dolphin 樂譜編輯器
 
 市面上的樂譜編輯器多以五線譜來呈現。然而除了五線譜外，世界各地仍流行多種記錄音樂的系統，簡潔易讀的簡譜(numbered musical notation)便是其中之一。簡譜屬於文字譜的一種\cite{chinaEncyclopedia}，是以阿拉伯數字「1234567」記寫音階階名的譜式\footnote{在此採《中國音樂史．樂譜篇》中「數字簡譜」\cite{chinaMusicHistory}的定義。}。簡譜的歷史悠久。中國唐朝(618–907)出現的工尺譜便含有簡譜的影子，其所使用的「上、尺、工、凡、六、五、乙」可對應至簡譜的一至七\cite{wiki}；在十六世紀的中東，有以波斯數字記寫音階的記譜法；而後在十七至十九世紀的歐洲則有盧梭等人的改良及推廣。日本、爪哇島及峇里島亦存有類似的系統\cite{britannica}。簡譜在清朝由日本傳入中國，當時便廣為新式學堂所用。今日簡譜仍經常用於音樂教學，以及坊間的流行歌本中。
 
-鋼琴捲譜(piano roll notation)是另一種樂譜編輯器常缺乏的記譜法。鋼琴捲譜屬於圖像譜的一種，因形似鋼琴捲(piano roll)而得名。鋼琴捲是一種紙捲，紙上有許多孔洞記寫樂曲的資訊，可安裝在以氣壓驅動的自奏鋼琴(player piano)上。自奏鋼琴透過追蹤器(tracker bar)讀取鋼琴捲並以機械裝置將捲上紀錄的樂曲彈奏出來。。鋼琴捲和自奏鋼琴在一九二零年代曾相當流行，而後逐漸被收音機和唱片所取代\cite{thePiano}。今日的鋼琴捲譜多以橫軸代表時間，縱軸代表音高。譜中長短不一的矩形則代表音符，矩形的高度決定音的高度，矩形的長短決定音的時值；這樣的表示方式相當直覺，初學者也易於上手。
+鋼琴捲譜(piano roll notation)是另一種樂譜編輯器常缺乏的記譜法。鋼琴捲譜屬於圖像譜的一種，因形似鋼琴捲(piano roll)而得名。鋼琴捲是一種紙捲，紙上有許多孔洞記寫樂曲的資訊，可安裝在以氣壓驅動的自奏鋼琴(player piano)上。自奏鋼琴透過追蹤器(tracker bar)讀取鋼琴捲並以機械裝置將捲上紀錄的樂曲彈奏出來。鋼琴捲和自奏鋼琴在一九二零年代曾相當流行，而後逐漸被收音機和唱片所取代\cite{thePiano}。今日的鋼琴捲譜多以橫軸代表時間，縱軸代表音高。譜中長短不一的矩形則代表音符，矩形的高度決定音的高度，矩形的長短決定音的時值；這樣的表示方式相當直覺，初學者也易於上手。
 
 \figurewithcaption
 {fig:piano_roll}
@@ -65,7 +67,7 @@ Dolphin 樂譜編輯器
 
 因此，我們開發出一套樂譜編輯器Dolphin，能以五線譜、簡譜和鋼琴捲譜來呈現樂譜，並支援多種自動化的功能來輔助使用者輸入，例如能將現有的音樂檔案自動轉換為樂譜，以演奏的方式輸入樂譜，甚至直接將使用者的哼唱轉換為樂譜。Dolphin也能讓使用者撰寫腳本來擴充或自創特殊的功能。
 
-\section{相關研究}
+\section{相關研究} % background
 
 Sibelius[]是一套熱門的樂譜編輯器。除了具有編輯、排版及輸出樂譜的功能之外，也包含許多進階的功能。例如Flexi-time可即時地將MIDI鍵盤的彈奏轉錄為樂譜。PhotoScore則可將印刷樂譜掃描至編輯器。Scorch瀏覽器外掛可讓未安裝Sibelius的一般使用者透過瀏覽器線上觀看樂譜。然而，Sibelius並未提供腳本功能，也無法以麥克風來輸入樂譜。
 
@@ -77,13 +79,13 @@ Music MasterWorks[]是一套特殊的樂譜編輯器，其voice-to-note功能可
 
 哼唱鈴i-Ring[]是一套可用哼唱方式製作手機鈴聲的音樂工具。然而如同Music MasterWorks，必須在錄音結束後才能看到轉換結果，三十秒的錄音時限及只適合接收「他-他-他」的音也限縮了不少自由度。
 
-\section{論文大綱}
+\section{論文大綱} % chapter structures
 
 在下一章我們介紹Dolphin的主要特色，第三章為使用說明書。第四章介紹編輯器的設計及實作，最末章為結論及展望。
 
-\chapter{系統概觀}
+\chapter{系統概觀} % introduction
 
-% What did you do? What is Dolphin? What can I do with it?
+% What is Dolphin? What does it has?
 
 \figurewithcaption
 {fig:screenshot}
@@ -119,7 +121,333 @@ Dolphin的主要特色列舉如下：
       可外接實體MIDI裝置如MIDI鍵盤來輸入音符。 
 \end{enumerate}
 
-\chapter{使用說明書}
+
+\chapter{設計與實作} % design and implementation
+% How did you implement it?
+
+\section{系統架構} % system architecture
+
+
+\figurewithcaption
+{fig:framework}
+{img/framework.png}
+{0.2}
+{Dolphin架構圖}
+
+圖\ref{fig:framework}為本系統的架構圖。Dolphin以Java語言實作，主要可分為Dolphin API和Dolphin GUI兩個部分。Dolphin API為系統的核心，包含樂譜模型、演算法及訊息傳遞機制，為一套獨立且可重複使用的音樂函式庫。Dolphin GUI為系統的圖形使用者介面，包含用來顯示和編輯樂譜的編輯窗以及各式面板和工具列。
+
+在底層方面，我們使用JPraat來處理哼唱輸入的聲音樣本。使用Java Sound API來處理聲音的擷取以及與MIDI相關的各項功能，如樂譜的播放及MIDI裝置的輸入等。Java Scripting API則用來實作腳本編輯器。
+
+
+/* 
+解說 Dolphin API 含有哪些主要類別, 各含哪些主要方法
+*/
+
+/* 
+解說 Dolphin GUI 含有哪些主要類別, 各含哪些主要方法
+*/
+
+\section{基礎程式庫} % 3rd party libraries
+% What third-party librares did you use?
+
+本章介紹Dolphin所用到的函式庫，包含Java Sound API[]的MIDI子套件、Java Scripting API[]及JPraat。其中，Java Sound API和Java Scripting API已內建於Java SE[]中，而JPraat則包含於Dolphin中，使用者皆不需再安裝額外的函式庫。
+
+\subsection{Java Sound API MIDI子套件}
+
+Java SE 含有一套可處理聲音的低階函式庫Java Sound API，可處理採樣和MIDI兩種類型的聲音，本節介紹其MIDI子套件。
+
+\figurewithcaption
+{fig:mididevice}
+{img/mididevice.png}
+{0.15}
+{MidiDevice的類別圖}
+
+MIDI子套件可分為Wire Protocol 和MIDI 檔兩大部分。Wire Protocol 代表動態的MIDI 系統，其主要介面為MidiDevice。在此系統中，各MidiDevice互相連接以達成工作。MidiDevice 含有Transmitter 和Receiver，如圖~\ref{fig:mididevice}所示，Transmitter為MidiDevice的輸出端，而Receiver則為MidiDevice的輸入端，各MidiDevice 透過Transmitter 和Receiver 傳遞MidiEvent。MidiEvent 表示MIDI 事件，含有時間戳記記錄事件的發生時間，以及一個MidiMessage 記錄事件的內容。有些MidiDevice負責產生MidiEvent(如MIDI鍵盤)，有些MidiDevice負責接收MidiEvent(如產生聲音的合成器)。
+
+/*
+     解說你有用到的主要類別, 並各自解說你有用到的主要方法
+*/
+
+
+
+
+靜態的MIDI檔則以Sequence 來表示。圖~\ref{fig:sequence}為Sequence所定義的資料結構。其中，Sequence代表整首樂曲，其內含有零至多個Track，Track代表音軌，含有零至多個MidiEvent。每個MidiEvent 含有一個MidiMessage 和一個時間戳記(tick)，我們可將Sequence視為MidiEvent的集合。
+
+\figurewithcaption
+{fig:sequence}
+{img/sequence.png}
+{0.15}
+{Sequence 的類別圖}
+
+MidiMessage由一個status byte(或稱command byte) 後接零至多個data byte 所組成。最常見的MidiMessage 是以status byte 為0x9的Note On訊息和以status byte 為0x8的Note Off訊息。Note On 和Note Off分別用來模擬樂器聲音的「放」和「收」，一個Note On訊息和其後的一個Note Off訊息合起來便可形成一個音，例如按下MIDI 鍵盤的琴鍵，鍵盤會送出一個Note On訊息；放開琴鍵則再送出一個Note Off訊息。
+
+Dolphin 的樂譜播放器(\ref{scorePlayer}) 及MIDI 檔的匯入、匯出(\ref{midiImportExport})皆會使用到MIDI API。
+
+\subsection{Java Scripting API} % scripting api
+
+Java Scripting API位於javax.script中，是一個通用的直譯器使用介面，可讓JVM 執行各種腳本語言。目前Java SE內建有JavaScript的直譯引擎(scripting engine)，使用者也可自行下載直譯引擎以執行Python、Ruby、AWK等多種語言\footnote{其它語言的直譯引擎可至下列網址下載：\url{http://java-source.net/open-source/scripting-languages}}。
+
+Java SE中的JavaScript直譯引擎具有LiveConnect功能，可在JavaScript中匯入Java的類別和套件來使用，另外如Ruby的直譯引擎JRuby、Python的直譯引擎Jython等多種直譯器也提供了類似的溝通機制。而Java Scripting API也提供綁定(bindings)的功能讓直譯引擎在執行期直接使用底層Java虛擬機器所含物件的公開介面，我們利用這兩樣功能讓腳本編輯器得以操作Dolphin及其內的樂譜。腳本編輯器的實作請參考\ref{sec:scriptEditor} 一節。
+
+\section{樂譜模型}
+
+Java Sound API中的Sequence僅記錄MIDI訊息而不是音符，是屬於低階的MIDI檔模型，並不適合所見即所得的樂譜編輯器。因此，我們為Dolphin定義了一套高階的模型，模型的結構如圖\ref{fig:model}所示。
+
+\figurewithcaption
+{fig:model}
+{img/model.eps}
+{0.5}
+{Dolphin的樂譜模型}
+
+其中，Score代表整首樂譜，具有標題、調號(key signature)、拍號(time signature)及節奏(tempo)等屬性，並含有零至多個Part。Part表示聲部，具有樂器、音量(volume)及平衡(pan)等屬性，其內包含零至多個Note。Note為音符，含有音高(pitch)、時值(time value)和附點(dot)等資訊。Score對應於Java Sound API中的Sequence，Part則對應於Track，而Note則對應於MidiEvent。相較於Sequence，Score的模型才合乎人類對樂譜的概念，不僅較易操作，且可以更自然的方式來表示樂譜。
+
+樂譜模型的各個類別皆具有存取其屬性的存取函式，而Score和Part還具有
+新增、刪除等用來操作模型結構的方法。 /*  
+仔細說明  
+*/
+
+關於樂譜的復原(undo)、重做(redo)，以及通知改動的機制，請參考\ref{sec:changes} 節。
+
+
+\section{樂譜介面} % scoreview
+
+
+\figurewithcaption
+{fig:view}
+{img/view.eps}
+{0.4}
+{樂譜介面的類別圖}
+
+樂譜介面(ScoreView)負責顯示和操作樂譜(Score)，內含對應至節的節介面(ParagraphView)以及對應至聲部(Part)的聲部介面(PartView)。如圖~\ref{fig:view} 所示。為了讓各聲部皆可獨立以五線譜、簡譜或是鋼琴捲譜來呈現，我們為聲部介面設計了對應的子類別，包含以五線譜呈現聲部的五線譜聲部介面(StaffPartView)，以簡譜來呈現聲部的簡譜聲部介面(NumPartView)，以及以鋼琴捲譜來呈現聲部的鋼琴捲譜聲部介面(GridPartView)。三種譜的顯示可在執行期自由切換且不會改動到樂譜。
+
+\figurewithcaption
+{fig:model_view}
+{img/model_view.png}
+{0.1}
+{樂譜介面和樂譜模型的連接方式}
+
+多個樂譜介面可連接至同一個樂譜，然而樂譜並不直接連結至樂譜介面，而是透過樂譜改動傾聽者(ScoreChangeListener)與樂譜介面溝通\ref{fig:model_view}。當樂譜介面產生後，我們先對Score 呼叫addScoreChangeListener() 方法向樂譜註冊樂譜介面，而後當樂譜改動時，樂譜便會自動呼叫樂譜改動傾聽者的scoreChanged() 方法來通知各樂譜介面，各樂譜介面會收到一個ScoreChange 物件，並根據ScoreChange 的內容更新樂譜或游標的顯示。此設計基於觀察者模式(observer pattern)\cite{designPatterns}
+
+% impl. of ScoreChange
+
+\subsection{五線譜}
+五線譜樂譜介面(StaffPartView) 負責五線譜的顯示。
+\subsection{簡譜}
+簡譜樂譜介面(NumberedPartView) 負責簡譜的顯示。
+\subsection{鋼琴捲譜}
+鋼琴捲譜樂譜介面(GridPartView) 負責鋼琴捲譜的顯示。
+
+\section{樂譜改動} % scorechange
+\label{sec:changes}
+
+\figurewithcaption
+{fig:changes}
+{img/changes.eps}
+{0.3}
+{樂譜改動的類別圖}
+
+除了後端的模型和前端的介面外，我們也為樂譜(Score)設計了各種樂譜改動(ScoreChange)，用來描述樂譜的修改動作並讓樂譜傳遞改動訊息。圖 \ref{fig:changes}為樂譜改動的類別圖，在Dolphin中，樂譜改動的基底類別(base class)為ScoreChange。各種樂譜改動記錄不同的修改資訊，本身可被執行(perform)和回復(revert)，也可以被傳遞、配發給感興趣的傾聽者。
+
+樂譜改動有八個子類別，分別為用來修改聲部的聲部改動(PartChange)、新增聲部的新增聲部改動(AddPartChange)，以及刪除聲部的刪除聲部改動(RemovePartChange)、修改標題的標題改動(TitleChange)、修改調號的調號改動(KeySignatureChange)、修改拍號的拍號改動(TimeSignatureChange)、修改節拍的節拍改動(TempoChange)，以及複合改動(ComboChange)。
+
+複合改動(ComboChange)用來代表多重的改動。複合改動內含一個樂譜改動的串列，其本身也是一個樂譜改動。複合改動的「執行」即為依序「執行」串列內的所有改動，而其「復原」即為倒序「復原」串列中的改動，此設計衍生自複合模式(composite pattern)\ref{designPattern}。複合改動可讓客戶在執行期自行組裝各種較複雜的動作，例如一個「刪除多個音符」的動作即可拆解為多個刪除音符改動(RemoveNoteChange)，而一個「改變音符」的動作則可拆解為一個刪除音符改動和一個新增音符改動(AddNoteChange)。複合改動也可包含其他的複合改動來組成樹狀結構以支援更複雜的動作，例如一個「取代多個音符為一個新音符」的動作即可以一個刪除多個音符的複合改動和一個新增音符改動所構成。
+
+聲部改動有六個子類別，分別為新增音符的新增音符改動(AddNoteChange)、刪除音符的刪除音符改動(RemoveNoteChange)、修改樂器的樂器改動(InstrumentChange)、修改音量的音量改動(VolumeChange)、修改聲像的聲像改動(PanChange)，以及修改是否靜音的靜音改動(MuteChange)。
+
+樂譜改動有三種不同的狀態。當改動剛被生成時，會處在未執行狀態(unperformed)；而當其perform()被呼叫後，會先儲存必要的資訊再執行編輯動作，執行完便進到已執行狀態(performed)；再呼叫revert()即會根據儲存的資訊回復先前執行的編輯動作，然後進到已回復狀態(reverted)。已回復的改動可再被執行，再執行後也可再回復。
+
+由於各樂譜改動皆可被執行和回復，我們便可以樂譜改動來實作樂譜的復原(undo)及重做(redo)功能。藉由將改動儲存起來，樂譜能復原已執行的改動，讓樂譜回復至改動發生之前的狀態。例如當樂譜的狀態為S1時，如圖~\ref{fig:undo_redo}所示，樂譜已依序發生了e1、e2和e3三個改動，三個改動皆處在改動串列中，且皆已被執行。此時若執行復原動作，Score會呼叫e3的revert()，然後將next左移一格，代表e3進到已回復狀態，使樂譜狀態成為S2。
+
+/*  
+解釋這些ScoreChange 有何方法? 如何使用?   
+*/ 
+
+
+\figurewithcaption
+{fig:undo_redo}
+{img/undo_redo.png}
+{0.1}
+{復原及重做的運作}
+
+\figurewithcaption
+{fig:undo_redo_cont}
+{img/undo_redo_cont.png}
+{0.1}
+{復原及重做的運作(續)}
+
+承接圖~\ref{fig:undo_redo}，當樂譜的狀態處於S2時，使用者可選擇繼續復原、重做或再執行一個新動作，如圖~\ref{fig:undo_redo_cont}。若繼續復原，樂譜會呼叫e2的revert()，左移next使樂譜進到S3。若重做，樂譜會呼叫e3的perform()並右移next，表示e3重回已執行的狀態，樂譜便進到S4。若執行新動作產生改動e4，樂譜則會先清空next及其右的所有改動(此時僅e3被移除)，將e4填入next的位置再將next右移，代表e4已執行，而樂譜則進到S5的狀態。
+
+我們用一個例子來解釋執行、復原、重做和訊息配發功能的運作過程。當使用者為樂譜新增一個聲部時，樂譜會將必要的資訊填入一個新產生的新增聲部改動(AddPartChange)，「執行」該改動，然後將該改動儲存起來，再將其配發給所有已註冊的樂譜改動傾聽者，此時可能是一個負責繪製該樂譜的樂譜介面。而樂譜介面得知一個新增聲部改動發生後，便會重新繪製畫面。如此一來，使用者便可看到更新的樂譜。若使用者反悔想復原樂譜，樂譜也可對該改動執行「回復」，「回復」會再產生一個刪除聲部改動(RemovePartChange)。樂譜「執行」此刪除聲部改動以將剛產生的聲部移除，再以此改動通知該樂譜所有的樂譜改動傾聽者。由於此刪除聲部改動不是由使用者直接產生，故此改動不會被儲存起來。
+
+\section{樂譜播放器} % scoreplayer
+\label{sec:scorePlayer}
+
+樂譜播放器(撥放器，ScorePlayer)負責將樂譜撥放出來，讓使用者得以聆聽編輯中的樂譜。當使用者選擇「播放」後，播放器會先將編輯中的樂譜轉換為Sequence，再將該Sequence透過Sequencer播放出來。
+
+/*********  移到 2.1 
+
+\figurewithcaption
+{fig:play}
+{img/play.png}
+{0.12}
+{Java Sound API中Sequence的播放流程}
+
+如圖 \ref{fig:play}所示，Sequencer在播放Sequence時，會將Sequence內的MIDI訊號依時間戳記依序送出，音源器(Synthesizer)根據接收到的MIDI訊號自行產生或自音源庫中提取對應的音源，再傳送電子訊號給喇叭(speaker, loudspeaker)，喇叭則根據電子訊號產生聲音再由聽者所接收。
+移到 2.1    **********/ 
+
+
+樂譜播放器也可讓使用者在執行期選擇音源器。音源器有分軟體和硬體兩種，我們一般常用的作業系統皆內建有軟體音源器。在Windows作業系統下，除了Java平台內建的音源器Java Sound Synthesizer之外，使用者也可選擇系統內建的Microsoft MIDI Mapper和Microsoft GS Wavetable Synth兩種音源器。除了軟體音源器外，樂譜播放器也可將MIDI訊號送給外接的硬體音源器來產生聲音。不同的音源器會具有不同的音色，使用者可依其偏好自行選擇。 /* 內部如何與library 銜接 ?  */
+
+我們以輸出裝置管理員(OutDeviceManager)來管理系統可使用的音源器。所有要撥放的MIDI訊號皆會送給輸出裝置管理員， 使用者可呼叫其setOutDevice() 方法選擇音源器。 /* 內部如何與library 銜接 ?  */
+
+/*  漏解釋 樂譜播放器, 輸出裝置管理員 與 4.1 的關聯  */
+
+
+
+
+\section{腳本編輯器} % script editor
+\label{sec:scriptEditor}
+
+我們使用Java Scripting API來實作腳本編輯器。透過綁定功能將編輯器實體匯入腳本(script)的執行環境中，便可以腳本來控制編輯器實體的行為，並存取、修改其所包含的樂譜。
+
+\section{立體聲編輯器} % stereo editor
+% how was stereo field editor designed and implemented?
+
+% how do we locate sound?
+當手機響時，我們能僅憑鈴聲找到手機；有人叫我們的名字時，我們也能立刻找到呼喚者。聽到聲音時，我們不僅試著理解聲音的內容，也會自動推測聲源的位置。要定出聲源的位置，聽者需要知道聲源相對於他的方位(direction)和距離(distance)。
+
+我們主要以兩耳的聲音差異來判斷方位。我們的一對耳朵分別位於頭部兩側，相距約21.5 公分 \ref{wiki_sound_localization}，若聲源偏離我們的正前或正後方，由於聲源和左右耳的距離不一，加上頭部的遮掩(head shadow)，兩耳接收到聲音的時間和感受到的音量便會不同，造成兩耳時間差(interaural time difference, ITD)和兩耳音量差(interaural level difference , ILD) \ref(fig:ears)。此外，聲波通過環境(如地面、牆壁)或身體(如頭部、肩膀及外耳)等物體，其頻率也會因反射或干擾而變化。因此，即便只剩單耳的聽力，我們的大腦也會根據這些資料試著推測聲源的方位。
+
+\figurewithcaption
+{fig:ears}
+{img/ears.png}
+{2.0}
+{聲音由右方傳來時，由於聲源距聽者右耳較近，距左耳較遠，兩耳接收到聲音的時間和強度便不同。頭部的遮蔽則進一步影響左耳接收到的聲音強度和頻率}
+
+聲音的距離可由許多線索來推測。我們主要依賴音量、回聲、頻率和聲源的移動來輔助我們判斷聲源距離。由於距離和音量成反比，距離近音量大，距離遠音量小。音量對熟悉的聲源特別管用(如熟人的講話聲)，因為我們有過去的經驗可供參考。當我們處於室內時，聽到由聲源直接傳來的聲音後，我們還會聽到經由地板、天花板，和牆壁反射來的回聲。回聲的傳播路徑比起直接傳來的聲音遠，因此會有延遲；距離近，直線距離和反射距離的比(ratio)較高，延遲大；距離遠，直線距離和反射距離的比(ratio)較低，延遲小。另外，當聲音在空氣中轉播時，高頻音較容易衰減(我們較容易聽到遠方樂隊低頻的鼓聲而不是高頻的小喇叭)，此資訊也對熟悉的聲音較有用。最後，當聲源在近處移動時，其方位的改變會較在遠處移動的聲源來得快(如近處的腳踏車和遠方的噴射機)，此現象如同視差(parallax)\cite{wiki_sound_localization}，也可佐以判斷距離。雖然有這些線索，我們對聲音距離的判斷仍相當有限，經常需搭配雙眼才能定出聲音的距離。 
+
+% how can we create stereo sound?
+雖然我們對聲音的方位較敏感，但大腦有時也會誤判。將一對喇叭置於聽者前方，兩喇叭和聽者等距，喇叭和聽者會形成一個以兩喇叭連線為底邊的等腰三角形；若兩隻喇叭以一樣的音量播放一樣的音樂，由於聲音以同樣的強度同時傳進聽者的兩耳，聽者會以為音樂是由兩喇叭中間(稱為phantom center \cite{maxing_audio}{p185})傳來。我們利用這種錯覺來製造立體聲(stereo)的效果。當左喇叭的音量比右喇叭大時，我們會以為聲源偏向左邊；而當右喇叭的音量比左喇叭大時，聲源會偏向右邊。藉由改變左右喇叭的音量，我們甚至可以模擬聲源在聽者前方移動的效果。在一九三零年代，華特迪士尼的工程師便利用這個技術製作出第一部含有立體聲的電影「幻想曲」\cite{fantasia}，此技術後來稱為panning。
+
+\figurewithcaption
+{fig:panpot}
+{img/panpot.png}
+{0.5}
+{聲像調整鈕和聲像鐘，圖片來源：Mixing Audio, 2nd}
+
+今日，panning 可透過混音器上的聲像調整鈕(pan pot, panoramic potentiometer)來調整。聲像調整鈕是一個旋鈕，用來調整左右喇叭的出力(power)，其設定通常以時間表示，稱為聲像鐘(pan clock)；轉至七點鐘方向，出力移至左喇叭，聲音會完全從左喇叭的位置傳來(稱為hard left 或extreme left)；轉至五點鐘方向，出力移至右喇叭，聲音則會從右喇叭傳來(稱為hard right 或extreme right)，十二點鐘方向，兩喇叭出力相等，聲音則會從正前方傳來(稱為hard center 或dead center)，見圖 \ref{fig:panpot}。
+
+
+%[ design
+透過喇叭或耳機聆聽音樂時，我們會在腦海中建立一個音場(stereo image, stereo field)。音場是一個虛擬的舞台，各個聲部的樂器分別安放在舞台上的不同位置。 立體聲編輯器希望以圖像來呈現音場，讓作曲者在圖上以拖拉的方式，設計各樂器在舞台上的位置。
+
+\figurewithcaption
+{fig:stage}
+{img/stage.png}
+{1.0}
+{音場的俯視圖。在上圖中，L 代表左喇叭，R 代表右喇叭，聽者則位於兩喇叭前方。若聽者移近喇叭，音場會隨之變寬}
+
+要定出樂器在舞台上的位置，我們需要解決樂器相對於聽者的方位和距離兩個問題。樂器的方位可以Panning 來實作。要注意的是，各喇叭和聽者的相對位置，以及聽者面向的方向皆會影響方位，造成不同寬度和形狀的音場(見圖 \ref{fig:stage})。
+
+模擬樂器的距離會遇到更多問題。以音量而言，我們不但需要知道各樂器實際能產生多少能量，還需控制使用者作業系統的音量設定、擴大器的音量設定、喇叭和聽者的距離和喇叭的擺放方式才能重製出希望的音量。以頻率而言，高頻音的衰減在近距離的音樂聆聽環境並不明顯。而回聲由聽者所處的環境所決定。而各樂器通常也不像交通工具會處於持續移動的狀態。由於以上這些限制，我們難以藉由音量、頻率、回聲和移動來模擬音場中樂器和聽者的絕對距離。然而在日常生活中，我們也難以僅憑聽覺定出各聲源和我們的距離。在樂曲中，各樂器的音量才是更明顯的元素。因此，我們決定以音量而非距離來代表音場的深度。
+
+%] design
+
+%[ implementation
+
+% api
+在MIDI 中，panning 可透過Pan 訊息(CC#10)來控制。Pan 訊息以0 到127 的值代表聲像調整鈕的七點到五點。由於0 至127 的中心是63.5，無法在MIDI 訊息中表示，故其有效範圍定為1 至127，64 為hard center，0 和1 皆視為hard left \cite{http://www.midi.org/techspecs/rp36.php}。樂器的音量則以MIDI 中的Channel Volume 訊息(CC#7) 來控制。當音量最大時其值為127，音量最小時其值為0。
+
+% real-time
+另外，為了讓樂器位置的改動能即時反應到播放中的樂曲，我們直接將Pan 訊息或Channel Volume 訊息送給輸出裝置管理員(OutDeviceManager)，輸出裝置就會即時使用最新的設定。輸出裝置管理員本身也是一個MIDI 訊息的接收者，因此我們只要使用接收者的send() 方法，即可將改動即時送出。其pseudo code 如下：
+
+\begin{verbatim}
+   outDeviceManager.send(controlMessage);
+\end{verbatim}
+
+其中，outDeviceManager 即為輸出裝置管理員，在系統中有唯一實體(Singleton Pattern \cite{designPatterns})。controlMessage 則為Pan 或Channel Volume 訊息。
+
+%] implementation
+
+\section{MIDI 檔的匯入與匯出} % midi input/output
+\label{midiImportExport}
+
+Java Sound API 內的類別Sequence 用來表示樂曲，API 內建有讀取和寫出MIDI檔的方法。因此我們只需要實作Sequence 至Score的轉換，便可實作出MIDI 檔和樂譜的轉換。
+
+/******  移置到4.8  
+另外，為了使用Java Sound API提供的各項功能，我們實作了樂譜和Sequence的轉換函式。例如在播放樂譜時，我們先將樂譜「編譯」為Sequence，再利用Java Sound API播放出來；而在匯入MIDI檔時，則先使用Java Sound API讀進MIDI檔成為Sequence，再將其「反編譯」為樂譜，我們將在進一步解釋轉換的演算法。
+移置到4.8  *******/
+
+在Wire Protocol 中，MidiEvent 的時間戳記的值皆為0；在MIDI 檔中，MidiEvent的時間戳記則以樂曲開頭為起點，隨著時間遞增，其單位由Sequence的divisionType和resolution兩個欄位來決定。divisionType可為PPQ(purses/ticks per quarter note)或SMPTE (ticks per frame)。當divisionType為PPQ時，resolution的值代表每個四分音符含有的時間戳記，例如當resolution 為480，代表每個四分音符含有480 個tick，在以四分音符為一拍(beat)，每分鐘120 拍的樂譜中則為0.5 秒。SMPTE 可分為SMPTE\_24、SMPTE\_25、SMPTE\_30，及SMPTE\_30DROP，分別代表FPS(frames per second)值24、25、30，和29.97。當divisionType為SMPTE時，resolution則代表每個frame含有的時間戳記，例如當採用SMPTE\_30且resolution 為8時，因每秒有30 個frame，每個frame 有8個tick，每秒便有240 個tick。resolution值通常為2的倍數，值越高越精確。
+
+\subsection{匯入MIDI 檔} % midi input
+
+和MIDI檔一樣，Sequence僅記錄音而不是音符。每個音以Note On訊息開始，以Note Off訊息(或強度為零的Note On訊息)結束。然而，Note On和Note Off僅含音高(pitch)和強度(velocity)兩樣和音符有關的資訊，並不包含時值。我們僅能由兩個MidiEvent中時間戳記的差來得到音的長度。然而一個音尚可能由多個以連結線(tie)連結的音符所產生，故我們以多次的解析過程來找出音符的個數及各音符正確的時值，Sequence 至Score的轉換可分為以下九個主要步驟： 
+
+1. 讀入Sequence及各Track的基本屬性。 
+
+Sequence的基本屬性會以MetaMessage紀錄在時間戳記為零的地方，此包含標題(訊息開頭為0x3)、預設的調號(訊息開頭為0x59)、拍號(訊息開頭為0x58)及節拍(訊息開頭為0x51)。Track的基本屬性則以ShortMessage紀錄在時間戳記為零的地方，包含樂器(訊息開頭為0xC0)、音量(訊息開頭為0xB7)及平衡(訊息開頭為0xBA)。我們建立樂譜、節及聲部並將對應的欄位填入其中。
+
+2. 將NoteOn、NoteOff訊息轉換為音符(Note)。 
+
+由Track的開頭開始掃描，遇到NoteOn(訊息開頭為0x90)，便開始尋找對應的NoteOff(訊息開頭為0x80)，或強度(Velocity)為零的NoteOn訊息(兩者皆可做為音的結束)，找到後便依NoteOn訊息內的音高及兩則訊息時間戳記的差做為音長來建立音符。
+
+3. 在音符間插入休止符。 
+
+第二個步驟僅建立有聲音符，音符間尚可能含有停頓，我們從頭掃描第二個步驟所建立的音符，並在停頓處建立休止符。休止符的長度則為前一個有聲音符的結束至後一個有聲音符的開頭的差。
+
+4. 將互為和弦的音符串接起來。 
+
+此時有聲音符間可能彼此重疊，故重頭掃描有聲音符，將彼此重疊的音符串接為和弦音符。
+
+5. 將過長的音符拆開。 
+
+目前所建立的音符時值皆未經過驗證。重頭掃描音符，先將超過全音符時值的音符拆開為較短音符的集合，並以連接線連結。
+
+6. 將橫跨小節線的音符拆開。
+
+橫跨小節線的音符會造成錯誤的小節長度，故必須將其拆解。我們從頭掃描音符，並累計音符時值，若累計時值超過小節長度，便將最後掃描的音符拆為兩個音符，第一個音符填滿小節長度，剩餘的時值則納入第二個音符，再將兩個音符以連接線連結。
+
+7. 尋找並建立三連音。 
+
+嘗試以三連音解析剩餘的不合法音符。從頭掃描不合法音符，若其時值符合三連音的時值，便將其設為三連音。
+
+8. 尋找並建立附點音符。
+
+附點和連結線皆可延長音符的長度，但除了休止符外，附點音符皆可以連結線表示[]，為免轉出的樂譜不含附點，故先解析附點音符。從頭掃描不合法音符，將含有附點的音符建立附點。
+
+9. 拆解剩餘的不合法音符。
+
+將剩餘的不合法音符拆解為合法音符的集合，並以連接線連結。
+
+\subsection{匯出MIDI 檔} % midi output
+
+如同匯入MIDI 檔的演算法，我們只需要實作Score 至Sequence 的轉換，便可匯出MIDI 檔：
+
+1. 根據MIDI規格寫出樂譜及各聲部的基本屬性，包含樂譜名、拍號、調號、速度、音量，及平衡。 
+
+2. 將音符(Note)轉換為NoteOn及NoteOff訊息。 
+
+由各聲部開頭開始寫出音符，將每個音符寫為對應的NoteOn和NoteOff訊息。
+
+3. 為音符加上節奏資訊
+
+以強度值100(最高為127)為強拍，80為弱拍設定音符的節奏資訊。二拍為強、弱，三拍為強、弱、弱，四拍為強、弱、強、弱，五拍為強、弱、強、弱、弱，六拍為強、弱、弱、強、弱、弱，並為每小節的第一拍增加強度值10。
+
+
+
+\chapter{結論與展望}
+
+Dolphin除了有基本的樂譜編修能力，也具備許多其它同類型軟體普遍缺乏的自動化功能，如立體聲編輯器、哼唱輸入、五線譜與簡譜的即時轉換、MIDI檔與樂譜的轉換，以及腳本編輯器。
+
+然I create 而Dolphin仍有許多待改進之處，如加強哼唱輸入的效能和準確性、改善MIDI轉譜的正確性、擴充音樂符號、歌詞輸入及列印等，我們希望能繼續開發使其更為完善。
+
+Dolphin 為一開放源碼的自由軟體，以GPLv2 釋出。
+
+
+\appendix
+
+\chapter{使用說明書} user manual
 % WHAT in detail and HOW to use it
 \section{操作環境}
 \subsection{主視窗}
@@ -194,334 +522,7 @@ dp.perform(dp.undoAction);
 {音場圖和音場的對應，圖中灰色的扇形區域即為音場，灰色的矩形區域則為音場圖。以鋼琴三重奏(piano trio)為例，通常鋼琴置於舞台中央，高音的小提琴在左側，而低沉的大提琴則在右側}
 
 因此，我們統一以一個矩型的音場圖來代表音場。橫座標代表音場中樂器相對於聽者的方位，最左到最右的跨度取決於實際兩喇叭和聽者連線的夾角。縱座標可視為音場的深度，以樂器的音量表示。使用矩形的另一個好處是我們可以用比扇形大的視窗區域來表示較為擁擠的音場前方。音場圖和實際音場的對應如圖 \ref{fig:stage_mapping}所示。
-
-\chapter{設計與實作} 
-% How did you implement it?
-
-\section{系統架構}
-
-
-\figurewithcaption
-{fig:framework}
-{img/framework.png}
-{0.2}
-{Dolphin架構圖}
-
-圖\ref{fig:framework}為本系統的架構圖。Dolphin以Java語言實作，主要可分為Dolphin API和Dolphin GUI兩個部分。Dolphin API為系統的核心，包含樂譜模型、演算法及訊息傳遞機制，為一套獨立且可重複使用的音樂函式庫。Dolphin GUI為系統的圖形使用者介面，包含用來顯示和編輯樂譜的編輯窗以及各式面板和工具列。
-
-在底層方面，我們使用JPraat來處理哼唱輸入的聲音樣本。使用Java Sound API來處理聲音的擷取以及與MIDI相關的各項功能，如樂譜的播放及MIDI裝置的輸入等。Java Scripting API則用來實作腳本編輯器。
-
-
-/* 
-解說 Dolphin API 含有哪些主要類別, 各含哪些主要方法
-*/
-
-/* 
-解說 Dolphin GUI 含有哪些主要類別, 各含哪些主要方法
-*/
-
-\section{基礎程式庫}
-% What third-party librares did you use?
-
-本章介紹Dolphin所用到的函式庫，包含Java Sound API[]的MIDI子套件、Java Scripting API[]及JPraat。其中，Java Sound API和Java Scripting API已內建於Java SE[]中，而JPraat則包含於Dolphin中，使用者皆不需再安裝額外的函式庫。
-
-\subsection{Java Sound API MIDI子套件}
-
-Java SE 含有一套可處理聲音的低階函式庫Java Sound API，可處理採樣和MIDI兩種類型的聲音，本節介紹其MIDI子套件。
-
-\figurewithcaption
-{fig:mididevice}
-{img/mididevice.png}
-{0.15}
-{MidiDevice的類別圖}
-
-MIDI子套件可分為Wire Protocol 和MIDI 檔兩大部分。Wire Protocol 代表動態的MIDI 系統，其主要介面為MidiDevice。在此系統中，各MidiDevice互相連接以達成工作。MidiDevice 含有Transmitter 和Receiver，如圖~\ref{fig:mididevice}所示，Transmitter為MidiDevice的輸出端，而Receiver則為MidiDevice的輸入端，各MidiDevice 透過Transmitter 和Receiver 傳遞MidiEvent。MidiEvent 表示MIDI 事件，含有時間戳記記錄事件的發生時間，以及一個MidiMessage 記錄事件的內容。有些MidiDevice負責產生MidiEvent(如MIDI鍵盤)，有些MidiDevice負責接收MidiEvent(如產生聲音的合成器)。
-
-/*
-     解說你有用到的主要類別, 並各自解說你有用到的主要方法
-*/
-
-
-
-
-靜態的MIDI檔則以Sequence 來表示。圖~\ref{fig:sequence}為Sequence所定義的資料結構。其中，Sequence代表整首樂曲，其內含有零至多個Track，Track代表音軌，含有零至多個MidiEvent。每個MidiEvent 含有一個MidiMessage 和一個時間戳記(tick)，我們可將Sequence視為MidiEvent的集合。
-
-\figurewithcaption
-{fig:sequence}
-{img/sequence.png}
-{0.15}
-{Sequence 的類別圖}
-
-MidiMessage由一個status byte(或稱command byte) 後接零至多個data byte 所組成。最常見的MidiMessage 是以status byte 為0x9的Note On訊息和以status byte 為0x8的Note Off訊息。Note On 和Note Off分別用來模擬樂器聲音的「放」和「收」，一個Note On訊息和其後的一個Note Off訊息合起來便可形成一個音，例如按下MIDI 鍵盤的琴鍵，鍵盤會送出一個Note On訊息；放開琴鍵則再送出一個Note Off訊息。
-
-Dolphin 的樂譜播放器(\ref{scorePlayer}) 及MIDI 檔的匯入、匯出(\ref{midiImportExport})皆會使用到MIDI API。
-
-\subsection{Java Scripting API}
-
-Java Scripting API位於javax.script中，是一個通用的直譯器使用介面，可讓JVM 執行各種腳本語言。目前Java SE內建有JavaScript的直譯引擎(scripting engine)，使用者也可自行下載直譯引擎以執行Python、Ruby、AWK等多種語言\footnote{其它語言的直譯引擎可至下列網址下載：\url{http://java-source.net/open-source/scripting-languages}}。
-
-Java SE中的JavaScript直譯引擎具有LiveConnect功能，可在JavaScript中匯入Java的類別和套件來使用，另外如Ruby的直譯引擎JRuby、Python的直譯引擎Jython等多種直譯器也提供了類似的溝通機制。而Java Scripting API也提供綁定(bindings)的功能讓直譯引擎在執行期直接使用底層Java虛擬機器所含物件的公開介面，我們利用這兩樣功能讓腳本編輯器得以操作Dolphin及其內的樂譜。腳本編輯器的實作請參考\ref{sec:scriptEditor} 一節。
-
-\section{樂譜模型}
-
-Java Sound API中的Sequence僅記錄MIDI訊息而不是音符，是屬於低階的MIDI檔模型，並不適合所見即所得的樂譜編輯器。因此，我們為Dolphin定義了一套高階的模型，模型的結構如圖\ref{fig:model}所示。
-
-\figurewithcaption
-{fig:model}
-{img/model.eps}
-{0.5}
-{Dolphin的樂譜模型}
-
-其中，Score代表整首樂譜，具有標題、調號(key signature)、拍號(time signature)及節奏(tempo)等屬性，並含有零至多個Part。Part表示聲部，具有樂器、音量(volume)及平衡(pan)等屬性，其內包含零至多個Note。Note為音符，含有音高(pitch)、時值(time value)和附點(dot)等資訊。Score對應於Java Sound API中的Sequence，Part則對應於Track，而Note則對應於MidiEvent。相較於Sequence，Score的模型才合乎人類對樂譜的概念，不僅較易操作，且可以更自然的方式來表示樂譜。
-
-樂譜模型的各個類別皆具有存取其屬性的存取函式，而Score和Part還具有
-新增、刪除等用來操作模型結構的方法。 /*  
-仔細說明  
-*/
-
-關於樂譜的復原(undo)、重做(redo)，以及通知改動的機制，請參考\ref{sec:changes} 節。
-
-
-\section{樂譜介面}
-
-
-\figurewithcaption
-{fig:view}
-{img/view.eps}
-{0.4}
-{樂譜介面的類別圖}
-
-樂譜介面(ScoreView)負責顯示和操作樂譜(Score)，內含對應至節的節介面(ParagraphView)以及對應至聲部(Part)的聲部介面(PartView)。如圖~\ref{fig:view} 所示。為了讓各聲部皆可獨立以五線譜、簡譜或是鋼琴捲譜來呈現，我們為聲部介面設計了對應的子類別，包含以五線譜呈現聲部的五線譜聲部介面(StaffPartView)，以簡譜來呈現聲部的簡譜聲部介面(NumPartView)，以及以鋼琴捲譜來呈現聲部的鋼琴捲譜聲部介面(GridPartView)。三種譜的顯示可在執行期自由切換且不會改動到樂譜。
-
-\figurewithcaption
-{fig:model_view}
-{img/model_view.png}
-{0.1}
-{樂譜介面和樂譜模型的連接方式}
-
-多個樂譜介面可連接至同一個樂譜，然而樂譜並不直接連結至樂譜介面，而是透過樂譜改動傾聽者(ScoreChangeListener)與樂譜介面溝通\ref{fig:model_view}。當樂譜介面產生後，我們先對Score 呼叫addScoreChangeListener() 方法向樂譜註冊樂譜介面，而後當樂譜改動時，樂譜便會自動呼叫樂譜改動傾聽者的scoreChanged() 方法來通知各樂譜介面，各樂譜介面會收到一個ScoreChange 物件，並根據ScoreChange 的內容更新樂譜或游標的顯示。此設計基於觀察者模式(observer pattern)\cite{designPatterns}
-
-% impl. of ScoreChange
-
-\subsection{五線譜}
-五線譜樂譜介面(StaffPartView) 負責五線譜的顯示。
-\subsection{簡譜}
-簡譜樂譜介面(NumberedPartView) 負責簡譜的顯示。
-\subsection{鋼琴捲譜}
-鋼琴捲譜樂譜介面(GridPartView) 負責鋼琴捲譜的顯示。
-
-\section{樂譜改動}
-\label{sec:changes}
-
-\figurewithcaption
-{fig:changes}
-{img/changes.eps}
-{0.3}
-{樂譜改動的類別圖}
-
-除了後端的模型和前端的介面外，我們也為樂譜(Score)設計了各種樂譜改動(ScoreChange)，用來描述樂譜的修改動作並讓樂譜傳遞改動訊息。圖 \ref{fig:changes}為樂譜改動的類別圖，在Dolphin中，樂譜改動的基底類別(base class)為ScoreChange。各種樂譜改動記錄不同的修改資訊，本身可被執行(perform)和回復(revert)，也可以被傳遞、配發給感興趣的傾聽者。
-
-樂譜改動有八個子類別，分別為用來修改聲部的聲部改動(PartChange)、新增聲部的新增聲部改動(AddPartChange)，以及刪除聲部的刪除聲部改動(RemovePartChange)、修改標題的標題改動(TitleChange)、修改調號的調號改動(KeySignatureChange)、修改拍號的拍號改動(TimeSignatureChange)、修改節拍的節拍改動(TempoChange)，以及複合改動(ComboChange)。
-
-複合改動(ComboChange)用來代表多重的改動。複合改動內含一個樂譜改動的串列，其本身也是一個樂譜改動。複合改動的「執行」即為依序「執行」串列內的所有改動，而其「復原」即為倒序「復原」串列中的改動，此設計衍生自複合模式(composite pattern)\ref{designPattern}。複合改動可讓客戶在執行期自行組裝各種較複雜的動作，例如一個「刪除多個音符」的動作即可拆解為多個刪除音符改動(RemoveNoteChange)，而一個「改變音符」的動作則可拆解為一個刪除音符改動和一個新增音符改動(AddNoteChange)。複合改動也可包含其他的複合改動來組成樹狀結構以支援更複雜的動作，例如一個「取代多個音符為一個新音符」的動作即可以一個刪除多個音符的複合改動和一個新增音符改動所構成。
-
-聲部改動有六個子類別，分別為新增音符的新增音符改動(AddNoteChange)、刪除音符的刪除音符改動(RemoveNoteChange)、修改樂器的樂器改動(InstrumentChange)、修改音量的音量改動(VolumeChange)、修改聲像的聲像改動(PanChange)，以及修改是否靜音的靜音改動(MuteChange)。
-
-樂譜改動有三種不同的狀態。當改動剛被生成時，會處在未執行狀態(unperformed)；而當其perform()被呼叫後，會先儲存必要的資訊再執行編輯動作，執行完便進到已執行狀態(performed)；再呼叫revert()即會根據儲存的資訊回復先前執行的編輯動作，然後進到已回復狀態(reverted)。已回復的改動可再被執行，再執行後也可再回復。
-
-由於各樂譜改動皆可被執行和回復，我們便可以樂譜改動來實作樂譜的復原(undo)及重做(redo)功能。藉由將改動儲存起來，樂譜能復原已執行的改動，讓樂譜回復至改動發生之前的狀態。例如當樂譜的狀態為S1時，如圖~\ref{fig:undo_redo}所示，樂譜已依序發生了e1、e2和e3三個改動，三個改動皆處在改動串列中，且皆已被執行。此時若執行復原動作，Score會呼叫e3的revert()，然後將next左移一格，代表e3進到已回復狀態，使樂譜狀態成為S2。
-
-/*  
-解釋這些ScoreChange 有何方法? 如何使用?   
-*/ 
-
-
-\figurewithcaption
-{fig:undo_redo}
-{img/undo_redo.png}
-{0.1}
-{復原及重做的運作}
-
-\figurewithcaption
-{fig:undo_redo_cont}
-{img/undo_redo_cont.png}
-{0.1}
-{復原及重做的運作(續)}
-
-承接圖~\ref{fig:undo_redo}，當樂譜的狀態處於S2時，使用者可選擇繼續復原、重做或再執行一個新動作，如圖~\ref{fig:undo_redo_cont}。若繼續復原，樂譜會呼叫e2的revert()，左移next使樂譜進到S3。若重做，樂譜會呼叫e3的perform()並右移next，表示e3重回已執行的狀態，樂譜便進到S4。若執行新動作產生改動e4，樂譜則會先清空next及其右的所有改動(此時僅e3被移除)，將e4填入next的位置再將next右移，代表e4已執行，而樂譜則進到S5的狀態。
-
-我們用一個例子來解釋執行、復原、重做和訊息配發功能的運作過程。當使用者為樂譜新增一個聲部時，樂譜會將必要的資訊填入一個新產生的新增聲部改動(AddPartChange)，「執行」該改動，然後將該改動儲存起來，再將其配發給所有已註冊的樂譜改動傾聽者，此時可能是一個負責繪製該樂譜的樂譜介面。而樂譜介面得知一個新增聲部改動發生後，便會重新繪製畫面。如此一來，使用者便可看到更新的樂譜。若使用者反悔想復原樂譜，樂譜也可對該改動執行「回復」，「回復」會再產生一個刪除聲部改動(RemovePartChange)。樂譜「執行」此刪除聲部改動以將剛產生的聲部移除，再以此改動通知該樂譜所有的樂譜改動傾聽者。由於此刪除聲部改動不是由使用者直接產生，故此改動不會被儲存起來。
-
-\section{樂譜播放器}
-\label{sec:scorePlayer}
-
-樂譜播放器(撥放器，ScorePlayer)負責將樂譜撥放出來，讓使用者得以聆聽編輯中的樂譜。當使用者選擇「播放」後，播放器會先將編輯中的樂譜轉換為Sequence，再將該Sequence透過Sequencer播放出來。
-
-/*********  移到 2.1 
-
-\figurewithcaption
-{fig:play}
-{img/play.png}
-{0.12}
-{Java Sound API中Sequence的播放流程}
-
-如圖 \ref{fig:play}所示，Sequencer在播放Sequence時，會將Sequence內的MIDI訊號依時間戳記依序送出，音源器(Synthesizer)根據接收到的MIDI訊號自行產生或自音源庫中提取對應的音源，再傳送電子訊號給喇叭(speaker, loudspeaker)，喇叭則根據電子訊號產生聲音再由聽者所接收。
-移到 2.1    **********/ 
-
-
-樂譜播放器也可讓使用者在執行期選擇音源器。音源器有分軟體和硬體兩種，我們一般常用的作業系統皆內建有軟體音源器。在Windows作業系統下，除了Java平台內建的音源器Java Sound Synthesizer之外，使用者也可選擇系統內建的Microsoft MIDI Mapper和Microsoft GS Wavetable Synth兩種音源器。除了軟體音源器外，樂譜播放器也可將MIDI訊號送給外接的硬體音源器來產生聲音。不同的音源器會具有不同的音色，使用者可依其偏好自行選擇。 /* 內部如何與library 銜接 ?  */
-
-我們以輸出裝置管理員(OutDeviceManager)來管理系統可使用的音源器。所有要撥放的MIDI訊號皆會送給輸出裝置管理員， 使用者可呼叫其setOutDevice() 方法選擇音源器。 /* 內部如何與library 銜接 ?  */
-
-/*  漏解釋 樂譜播放器, 輸出裝置管理員 與 4.1 的關聯  */
-
-
-
-
-\section{腳本編輯器}
-\label{sec:scriptEditor}
-
-我們使用Java Scripting API來實作腳本編輯器。透過綁定功能將編輯器實體匯入腳本(script)的執行環境中，便可以腳本來控制編輯器實體的行為，並存取、修改其所包含的樂譜。
-
-\section{立體聲編輯器}
-% how did stereo field editor is designed and implemented?
-
-% how do we locate sound?
-當手機響時，我們能僅憑鈴聲找到手機；有人叫我們的名字時，我們也能立刻找到呼喚者。聽到聲音時，我們不僅試著理解聲音的內容，也會自動推測聲源的位置。要定出聲源的位置，聽者需要知道聲源相對於他的方位(direction)和距離(distance)。
-
-我們主要以兩耳的聲音差異來判斷方位。我們的一對耳朵分別位於頭部兩側，相距約21.5 公分 \ref{wiki_sound_localization}，若聲源偏離我們的正前或正後方，由於聲源和左右耳的距離不一，加上頭部的遮掩(head shadow)，兩耳接收到聲音的時間和感受到的音量便會不同，造成兩耳時間差(interaural time difference, ITD)和兩耳音量差(interaural level difference , ILD) \ref(fig:ears)。此外，聲波通過環境(如地面、牆壁)或身體(如頭部、肩膀及外耳)等物體，其頻率也會因反射或干擾而變化。因此，即便只剩單耳的聽力，我們的大腦也會根據這些資料試著推測聲源的方位。
-
-\figurewithcaption
-{fig:ears}
-{img/ears.png}
-{2.0}
-{聲音由右方傳來時，由於聲源距聽者右耳較近，距左耳較遠，兩耳接收到聲音的時間和強度便不同。頭部的遮蔽則進一步影響左耳接收到的聲音強度和頻率}
-
-聲音的距離可由許多線索來推測。我們主要依賴音量、回聲、頻率和聲源的移動來輔助我們判斷聲源距離。由於距離和音量成反比，距離近音量大，距離遠音量小。音量對熟悉的聲源特別管用(如熟人的講話聲)，因為我們有過去的經驗可供參考。當我們處於室內時，聽到由聲源直接傳來的聲音後，我們還會聽到經由地板、天花板，和牆壁反射來的回聲。回聲的傳播路徑比起直接傳來的聲音遠，因此會有延遲；距離近，直線距離和反射距離的比(ratio)較高，延遲大；距離遠，直線距離和反射距離的比(ratio)較低，延遲小。另外，當聲音在空氣中轉播時，高頻音較容易衰減(我們較容易聽到遠方樂隊低頻的鼓聲而不是高頻的小喇叭)，此資訊也對熟悉的聲音較有用。最後，當聲源在近處移動時，其方位的改變會較在遠處移動的聲源來得快(如近處的腳踏車和遠方的噴射機)，此現象如同視差(parallax)\cite{wiki_sound_localization}，也可佐以判斷距離。雖然有這些線索，我們對聲音距離的判斷仍相當有限，經常需搭配雙眼才能定出聲音的距離。 
-
-% how can we create stereo sound?
-雖然我們對聲音的方位較敏感，但大腦有時也會誤判。將一對喇叭置於聽者前方，兩喇叭和聽者等距，喇叭和聽者會形成一個以兩喇叭連線為底邊的等腰三角形；若兩隻喇叭以一樣的音量播放一樣的音樂，由於聲音以同樣的強度同時傳進聽者的兩耳，聽者會以為音樂是由兩喇叭中間(稱為phantom center \cite{maxing_audio}{p185})傳來。我們利用這種錯覺來製造立體聲(stereo)的效果。當左喇叭的音量比右喇叭大時，我們會以為聲源偏向左邊；而當右喇叭的音量比左喇叭大時，聲源會偏向右邊。藉由改變左右喇叭的音量，我們甚至可以模擬聲源在聽者前方移動的效果。在一九三零年代，華特迪士尼的工程師便利用這個技術製作出第一部含有立體聲的電影「幻想曲」\cite{fantasia}，此技術後來稱為panning。
-
-\figurewithcaption
-{fig:panpot}
-{img/panpot.png}
-{0.5}
-{聲像調整鈕和聲像鐘，圖片來源：Mixing Audio, 2nd}
-
-今日，panning 可透過混音器上的聲像調整鈕(pan pot, panoramic potentiometer)來調整。聲像調整鈕是一個旋鈕，用來調整左右喇叭的出力(power)，其設定通常以時間表示，稱為聲像鐘(pan clock)；轉至七點鐘方向，出力移至左喇叭，聲音會完全從左喇叭的位置傳來(稱為hard left 或extreme left)；轉至五點鐘方向，出力移至右喇叭，聲音則會從右喇叭傳來(稱為hard right 或extreme right)，十二點鐘方向，兩喇叭出力相等，聲音則會從正前方傳來(稱為hard center 或dead center)，見圖 \ref{fig:panpot}。
-
-
-%[ design
-透過喇叭或耳機聆聽音樂時，我們會在腦海中建立一個音場(stereo image, stereo field)。音場是一個虛擬的舞台，各個聲部的樂器分別安放在舞台上的不同位置。 立體聲編輯器希望以圖像來呈現音場，讓作曲者在圖上以拖拉的方式，設計各樂器在舞台上的位置。
-
-\figurewithcaption
-{fig:stage}
-{img/stage.png}
-{1.0}
-{音場的俯視圖。在上圖中，L 代表左喇叭，R 代表右喇叭，聽者則位於兩喇叭前方。若聽者移近喇叭，音場會隨之變寬}
-
-
-要定出樂器在舞台上的位置，我們需要解決樂器相對於聽者的方位和距離兩個問題。樂器的方位可以Panning 來實作。要注意的是，各喇叭和聽者的相對位置，以及聽者面向的方向皆會影響方位，造成不同寬度和形狀的音場(見圖 \ref{fig:stage})。
-
-模擬樂器的距離會遇到更多問題。以音量而言，我們不但需要知道各樂器實際能產生多少能量，還需控制使用者作業系統的音量設定、擴大器的音量設定、喇叭和聽者的距離和喇叭的擺放方式才能重製出希望的音量。以頻率而言，高頻音的衰減在近距離的音樂聆聽環境並不明顯。而回聲由聽者所處的環境所決定。而各樂器通常也不像交通工具會處於持續移動的狀態。由於以上這些限制，我們難以藉由音量、頻率、回聲和移動來模擬音場中樂器和聽者的絕對距離。然而在日常生活中，我們也難以僅憑聽覺定出各聲源和我們的距離。在樂曲中，各樂器的音量才是更明顯的元素。因此，我們決定以音量而非距離來代表音場的深度。
-
-%] design
-
-%[ implementation
-
-% api
-在MIDI 中，panning 可透過Pan 訊息(CC#10)來控制。Pan 訊息以0 到127 的值代表聲像調整鈕的七點到五點。由於0 至127 的中心是63.5，無法在MIDI 訊息中表示，故其有效範圍定為1 至127，64 為hard center，0 和1 皆視為hard left \cite{http://www.midi.org/techspecs/rp36.php}。樂器的音量則以MIDI 中的Channel Volume 訊息(CC#7) 來控制。當音量最大時其值為127，音量最小時其值為0。
-
-% real-time
-另外，為了讓樂器位置的改動能即時反應到播放中的樂曲，我們直接將Pan 訊息或Channel Volume 訊息送給輸出裝置管理員(OutDeviceManager)，輸出裝置就會即時使用最新的設定。輸出裝置管理員本身也是一個MIDI 訊息的接收者，因此我們只要使用接收者的send() 方法，即可將改動即時送出。其pseudo code 如下：
-
-\begin{verbatim}
-   outDeviceManager.send(controlMessage);
-\end{verbatim}
-
-其中，outDeviceManager 即為輸出裝置管理員，在系統中有唯一實體(Singleton Pattern \cite{designPatterns})。controlMessage 則為Pan 或Channel Volume 訊息。
-
-%] implementation
-
-\section{MIDI 檔的匯入與匯出}
-\label{midiImportExport}
-
-Java Sound API 內的類別Sequence 用來表示樂曲，API 內建有讀取和寫出MIDI檔的方法。因此我們只需要實作Sequence 至Score的轉換，便可實作出MIDI 檔和樂譜的轉換。
-
-/******  移置到4.8  
-另外，為了使用Java Sound API提供的各項功能，我們實作了樂譜和Sequence的轉換函式。例如在播放樂譜時，我們先將樂譜「編譯」為Sequence，再利用Java Sound API播放出來；而在匯入MIDI檔時，則先使用Java Sound API讀進MIDI檔成為Sequence，再將其「反編譯」為樂譜，我們將在進一步解釋轉換的演算法。
-移置到4.8  *******/
-
-在Wire Protocol 中，MidiEvent 的時間戳記的值皆為0；在MIDI 檔中，MidiEvent的時間戳記則以樂曲開頭為起點，隨著時間遞增，其單位由Sequence的divisionType和resolution兩個欄位來決定。divisionType可為PPQ(purses/ticks per quarter note)或SMPTE (ticks per frame)。當divisionType為PPQ時，resolution的值代表每個四分音符含有的時間戳記，例如當resolution 為480，代表每個四分音符含有480 個tick，在以四分音符為一拍(beat)，每分鐘120 拍的樂譜中則為0.5 秒。SMPTE 可分為SMPTE\_24、SMPTE\_25、SMPTE\_30，及SMPTE\_30DROP，分別代表FPS(frames per second)值24、25、30，和29.97。當divisionType為SMPTE時，resolution則代表每個frame含有的時間戳記，例如當採用SMPTE\_30且resolution 為8時，因每秒有30 個frame，每個frame 有8個tick，每秒便有240 個tick。resolution值通常為2的倍數，值越高越精確。
-
-\subsection{匯入MIDI 檔}
-
-和MIDI檔一樣，Sequence僅記錄音而不是音符。每個音以Note On訊息開始，以Note Off訊息(或強度為零的Note On訊息)結束。然而，Note On和Note Off僅含音高(pitch)和強度(velocity)兩樣和音符有關的資訊，並不包含時值。我們僅能由兩個MidiEvent中時間戳記的差來得到音的長度。然而一個音尚可能由多個以連結線(tie)連結的音符所產生，故我們以多次的解析過程來找出音符的個數及各音符正確的時值，Sequence 至Score的轉換可分為以下九個主要步驟： 
-
-1. 讀入Sequence及各Track的基本屬性。 
-
-Sequence的基本屬性會以MetaMessage紀錄在時間戳記為零的地方，此包含標題(訊息開頭為0x3)、預設的調號(訊息開頭為0x59)、拍號(訊息開頭為0x58)及節拍(訊息開頭為0x51)。Track的基本屬性則以ShortMessage紀錄在時間戳記為零的地方，包含樂器(訊息開頭為0xC0)、音量(訊息開頭為0xB7)及平衡(訊息開頭為0xBA)。我們建立樂譜、節及聲部並將對應的欄位填入其中。
-
-2. 將NoteOn、NoteOff訊息轉換為音符(Note)。 
-
-由Track的開頭開始掃描，遇到NoteOn(訊息開頭為0x90)，便開始尋找對應的NoteOff(訊息開頭為0x80)，或強度(Velocity)為零的NoteOn訊息(兩者皆可做為音的結束)，找到後便依NoteOn訊息內的音高及兩則訊息時間戳記的差做為音長來建立音符。
-
-3. 在音符間插入休止符。 
-
-第二個步驟僅建立有聲音符，音符間尚可能含有停頓，我們從頭掃描第二個步驟所建立的音符，並在停頓處建立休止符。休止符的長度則為前一個有聲音符的結束至後一個有聲音符的開頭的差。
-
-4. 將互為和弦的音符串接起來。 
-
-此時有聲音符間可能彼此重疊，故重頭掃描有聲音符，將彼此重疊的音符串接為和弦音符。
-
-5. 將過長的音符拆開。 
-
-目前所建立的音符時值皆未經過驗證。重頭掃描音符，先將超過全音符時值的音符拆開為較短音符的集合，並以連接線連結。
-
-6. 將橫跨小節線的音符拆開。
-
-橫跨小節線的音符會造成錯誤的小節長度，故必須將其拆解。我們從頭掃描音符，並累計音符時值，若累計時值超過小節長度，便將最後掃描的音符拆為兩個音符，第一個音符填滿小節長度，剩餘的時值則納入第二個音符，再將兩個音符以連接線連結。
-
-7. 尋找並建立三連音。 
-
-嘗試以三連音解析剩餘的不合法音符。從頭掃描不合法音符，若其時值符合三連音的時值，便將其設為三連音。
-
-8. 尋找並建立附點音符。
-
-附點和連結線皆可延長音符的長度，但除了休止符外，附點音符皆可以連結線表示[]，為免轉出的樂譜不含附點，故先解析附點音符。從頭掃描不合法音符，將含有附點的音符建立附點。
-
-9. 拆解剩餘的不合法音符。
-
-將剩餘的不合法音符拆解為合法音符的集合，並以連接線連結。
-
-\subsection{匯出MIDI 檔}
-
-如同匯入MIDI 檔的演算法，我們只需要實作Score 至Sequence 的轉換，便可匯出MIDI 檔：
-
-1. 根據MIDI規格寫出樂譜及各聲部的基本屬性，包含樂譜名、拍號、調號、速度、音量，及平衡。 
-
-2. 將音符(Note)轉換為NoteOn及NoteOff訊息。 
-
-由各聲部開頭開始寫出音符，將每個音符寫為對應的NoteOn和NoteOff訊息。
-
-3. 為音符加上節奏資訊
-
-以強度值100(最高為127)為強拍，80為弱拍設定音符的節奏資訊。二拍為強、弱，三拍為強、弱、弱，四拍為強、弱、強、弱，五拍為強、弱、強、弱、弱，六拍為強、弱、弱、強、弱、弱，並為每小節的第一拍增加強度值10。
-
-
-
-\chapter{結論與展望}
-
-Dolphin除了有基本的樂譜編修能力，也具備許多其它同類型軟體普遍缺乏的自動化功能，如立體聲編輯器、哼唱輸入、五線譜與簡譜的即時轉換、MIDI檔與樂譜的轉換，以及腳本編輯器。
-
-然I create 而Dolphin仍有許多待改進之處，如加強哼唱輸入的效能和準確性、改善MIDI轉譜的正確性、擴充音樂符號、歌詞輸入及列印等，我們希望能繼續開發使其更為完善。
-
-Dolphin 為一開放源碼的自由軟體，以GPLv2 釋出。
-
-
-\appendix
-
-\chapter{哼唱輸入}
+\chapter{哼唱輸入} % humming input
 
 Dolphin的哼唱輸入能將使用者對麥克風的哼唱轉換成對應的音符並立即在螢幕上顯示出來，其功能類似於語音輸入(speech-to-text)。但在輸入上，語音輸入使用的是各種語言的口語(spoken language)，而哼唱輸入則是接收使用者的哼唱，使用者可發出各種聲音，而不限於哼音名或唱名。在輸出上，語音輸入的輸出是文字，而哼唱輸入的輸出則是音符。而在操作方式上，一般語音輸入採逐字輸入，而哼唱輸入則模仿語音輸入，採「逐音輸入」的方式來輸入音符。當使用者哼出一個音，系統便即時地產生出一個音符。哼唱輸入也可視為以人聲為輸入的「自動旋律轉錄」(automatic melody transcription)。
 
