@@ -138,6 +138,12 @@ Dolphin的主要特色列舉如下：
 
 在底層方面，我們使用JPraat來處理哼唱輸入的聲音樣本。使用Java Sound API來處理聲音的擷取以及與MIDI相關的各項功能，如樂譜的播放及MIDI裝置的輸入等。Java Scripting API則用來實作腳本編輯器。
 
+\figurewithcaption
+{fig:landscape}
+{img/landscape.png}
+{0.6}
+{landspace}
+
 
 /* 
 解說 Dolphin API 含有哪些主要類別, 各含哪些主要方法
@@ -218,15 +224,37 @@ Java Sound API中的Sequence僅記錄MIDI訊息而不是音符，是屬於低階
 {0.4}
 {樂譜介面的類別圖}
 
-樂譜介面(ScoreView)負責顯示和操作樂譜(Score)，內含對應至節的節介面(ParagraphView)以及對應至聲部(Part)的聲部介面(PartView)。如圖~\ref{fig:view} 所示。為了讓各聲部皆可獨立以五線譜、簡譜或是鋼琴捲譜來呈現，我們為聲部介面設計了對應的子類別，包含以五線譜呈現聲部的五線譜聲部介面(StaffPartView)，以簡譜來呈現聲部的簡譜聲部介面(NumPartView)，以及以鋼琴捲譜來呈現聲部的鋼琴捲譜聲部介面(GridPartView)。三種譜的顯示可在執行期自由切換且不會改動到樂譜。
+樂譜介面(ScoreView)負責顯示和操作樂譜(Score)，內含對應至聲部(Part)的聲部介面(PartView)，如圖~\ref{fig:view} 所示。
+
+為了讓各聲部皆可獨立以五線譜、簡譜或是鋼琴捲譜來呈現，我們為聲部介面設計了對應的子類別，包含以五線譜呈現聲部的五線譜聲部介面(StaffPartView)，以簡譜來呈現聲部的簡譜聲部介面(NumPartView)，以及以鋼琴捲譜來呈現聲部的鋼琴捲譜聲部介面(GridPartView)。三種譜的顯示可在執行期自由切換且不會改動到樂譜。
+
 
 \figurewithcaption
-{fig:model_view}
-{img/model_view.png}
+{fig:modelview}
+{img/modelview.png}
 {0.1}
 {樂譜介面和樂譜模型的連接方式}
 
-多個樂譜介面可連接至同一個樂譜，然而樂譜並不直接連結至樂譜介面，而是透過樂譜改動傾聽者(ScoreChangeListener)與樂譜介面溝通\ref{fig:model_view}。當樂譜介面產生後，我們先對Score 呼叫addScoreChangeListener() 方法向樂譜註冊樂譜介面，而後當樂譜改動時，樂譜便會自動呼叫樂譜改動傾聽者的scoreChanged() 方法來通知各樂譜介面，各樂譜介面會收到一個ScoreChange 物件，並根據ScoreChange 的內容更新樂譜或游標的顯示。此設計基於觀察者模式(observer pattern)\cite{designPatterns}
+多個樂譜介面可連接至同一個樂譜，然而樂譜並不直接連結至樂譜介面，而是透過樂譜改動傾聽者(ScoreChangeListener)與樂譜介面溝通(圖 \ref{fig:modelview})。當樂譜介面產生後，我們先對Score 呼叫addScoreChangeListener() 方法向樂譜註冊樂譜介面，而後當樂譜改動時，樂譜便會自動呼叫樂譜改動傾聽者的scoreChanged() 方法來通知各樂譜介面，各樂譜介面會收到一個ScoreChange 物件，並根據ScoreChange 的內容更新樂譜或游標的顯示。此設計基於觀察者模式(observer pattern)\cite{designPatterns}
+
+我們可將音樂視為樂譜模型的聲音表示，而樂譜介面視為樂譜模型的圖形表示(representation)。因此，實作樂譜播放器便是實作樂譜模型至音樂的轉換，實作哼唱輸入便是反過來實作聲音至樂譜模型的轉換，而實作樂譜介面則是實作樂譜模型至圖形的轉換。以五線譜為例，模型中音符的順序會決定音符在圖上的x 軸位置，音符的音高決定其在圖上的y 軸位置，而音符的時值則會對應到不同的音符圖案(四分音符、八分音符...)。
+
+樂譜介面本身是一個JComponent，其paintComponent() 方法則依序呼叫各聲部介面的draw() 方法：
+
+\begin{verbatim}
+public void paintComponent(Graphics g) {
+   ...
+   // draw background
+   g.setColor(Color.white);
+   g.fillRect(x, y, width, height);
+
+   // draw parts
+   final Graphics2D g2d=(Graphics2D) g;
+   for(PartView s: partViews) {
+      s.draw(g2d);  
+   }
+}
+\end{verbatim}
 
 % impl. of ScoreChange
 
