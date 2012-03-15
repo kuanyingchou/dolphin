@@ -81,7 +81,7 @@ Music MasterWorks[]是一套特殊的樂譜編輯器，其voice-to-note功能可
 
 \section{論文大綱} % chapter structures
 
-在下一章我們介紹Dolphin的主要特色，第三章為使用說明書。第四章介紹編輯器的設計及實作，最末章為結論及展望。
+在下一章我們介紹Dolphin的主要特色，第三章介紹編輯器的設計及實作，最末章為結論及展望。
 
 \chapter{系統概觀} % introduction
 
@@ -168,7 +168,7 @@ Java SE 含有一套可處理聲音的低階函式庫Java Sound API，可處理�
 {0.15}
 {MidiDevice的類別圖}
 
-MIDI子套件可分為Wire Protocol 和MIDI 檔兩大部分。Wire Protocol 代表動態的MIDI 系統，其主要介面為MidiDevice。在此系統中，各MidiDevice互相連接以達成工作。MidiDevice 含有Transmitter 和Receiver，如圖~\ref{fig:mididevice}所示，Transmitter為MidiDevice的輸出端，而Receiver則為MidiDevice的輸入端，各MidiDevice 透過Transmitter 和Receiver 傳遞MidiEvent。MidiEvent 表示MIDI 事件，含有時間戳記記錄事件的發生時間，以及一個MidiMessage 記錄事件的內容。有些MidiDevice負責產生MidiEvent(如MIDI鍵盤)，有些MidiDevice負責接收MidiEvent(如產生聲音的合成器)。
+MIDI子套件可分為Wire Protocol 和MIDI 檔兩大部分。Wire Protocol 代表動態的MIDI 系統。在此系統中通常會有許多MIDI 裝置(MidiDevice)，各MIDI 裝置互相連接以達成工作。MIDI 裝置含有傳送器(Transmitter) 和接收器(Receiver)，如圖~\ref{fig:mididevice}所示，傳送器為MIDI裝置的輸出端，而接收器則為MIDI裝置的輸入端，各MIDI裝置透過傳送器和接收器傳遞MIDI 事件(MidiEvent)。MIDI 事件含有時間戳記記錄事件的發生時間，以及一個MIDI 訊息（MidiMessage） 記錄事件的內容。有些MIDI 裝置負責產生MIDI 事件(如MIDI鍵盤)，有些MIDI 裝置負責接收MIDI 事件(如產生聲音的合成器)。
 
 /*
      解說你有用到的主要類別, 並各自解說你有用到的主要方法
