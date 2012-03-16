@@ -184,20 +184,32 @@ MIDI子套件可分為Wire Protocol 和MIDI 檔兩大部分。Wire Protocol 代�
 {0.15}
 {Sequence 的類別圖}
 
-MidiMessage由一個status byte(或稱command byte) 後接零至多個data byte 所組成。最常見的MidiMessage 是以status byte 為0x9的Note On訊息和以status byte 為0x8的Note Off訊息。Note On 和Note Off分別用來模擬樂器聲音的「放」和「收」，一個Note On訊息和其後的一個Note Off訊息合起來便可形成一個音，例如按下MIDI 鍵盤的琴鍵，鍵盤會送出一個Note On訊息；放開琴鍵則再送出一個Note Off訊息。
+MidiMessage由一個status byte(或稱command byte) 後接零至多個data byte 所組成,，可分為ShortMessage、MetaMessage，和SysexMessage三種。ShortMessage代表一般的MIDI 訊息，含有至多兩個data bytes。例如以0x9為status byte的Note On訊息和以0x8 為status byte的Note Off訊息。MetaMessage儲存和合成器無關的訊息，status byte 為0xFF，data bytes 的長度不一。常見的有Lyrics訊息、Tempo訊息、copyrights 訊息、time signature訊息和key signatures訊息。SysexMessage(system exclusive message) 代表各個廠商的自訂訊息，status byte 為0xF0 或0xF7，其data bytes 和MetaMessage 一樣可為任意長度，用來傳遞標準格式之外的資訊。
 
-
-我們以一個簡單的例子來示範Java Sound MIDI API 的使用，我們使用API 來讀取儲存在電腦上的MIDI 檔，並將其播放出來。這個例子含括了靜態的MIDI 檔和動態的Wire Protocol。為了簡潔，此例不處理例外(Exception)：
+我們以一個例子來示範Java Sound MIDI API ，使用內建功能播放儲存在電腦上的MIDI 檔。這個例子含括靜態的MIDI 檔和動態的Wire Protocol。為了簡潔，在此不處理例外(Exception)：
 
 \lstinputlisting[caption=SimpleMidiPlayer.java, label=simpleMidiPlayer]{code/SimpleMidiPlayer.java}
 
-在表\ref{simpleMidiPlayer} 中，函式play() 接收一個MIDI 檔的檔案路徑(filename)並將該檔播放出來。13 行的MidiSystem.getSequence() 會根據MIDI 檔產生Sequence 物件(MidiSystem 為API 中的輔助類別，含有許多static 方法，用來存取系統的資源)。接著，我們在14行呼叫MidiSystem.getSequencer() 來得到系統預設的Sequencer，呼叫open() 完成初始化(15行)，再以setSequence() 方法將Sequence 餵給Sequencer(16行)。Sequencer 是一個MidiDevice，負責讀取Sequence，並能根據Sequence 的資料在適當的時間丟出MidiEvent。然而，若要產生聲音，我們還需要一個能將MidiEvent 轉換為聲音的MidiDevice。此工作由Synthesizer (合成器)負責。我們在17 行透過MidiSystem 取得預設的Synthesizer，將其初始化(18行)，然後在21行將其連接至Sequencer。sequencer為發送端，synthesizer為接收端。19至21 行也可簡化為:
+SimpleMidiPlayer 的play() 接收一個MIDI 檔的檔案路徑(filename)，讀取該檔並將其播放出來。15 行的MidiSystem.getSequence() 會根據MIDI 檔產生Sequence 物件(MidiSystem 為API 中的輔助類別，含有許多static 方法，用來存取系統的資源)。接著，我們在16行呼叫MidiSystem.getSequencer() 來得到系統預設的Sequencer，呼叫open() 完成初始化(17行)，再以setSequence() 方法將Sequence 餵給Sequencer(18行)。Sequencer 是一個MidiDevice，負責讀取Sequence，並能根據Sequence 的資料在適當的時間丟出MidiEvent。然而，若要產生聲音，我們還需要一個能將MidiEvent 轉換為聲音的MidiDevice。此工作由Synthesizer (合成器)負責。我們在19 行透過MidiSystem 取得預設的Synthesizer，將其初始化(20行)，然後在21至23行透過Transmitter 和Receiver 將其連接至Sequencer。sequencer為發送端，synthesizer為接收端。21至23 行也可簡化為:
 
 \begin{verbatim}
 sequencer.getTransmitter().setReceiver(synthesizer.getReceiver());
 \end{verbatim}
 
-最後，我們呼叫Sequencer 的start() 方法(22行)，Sequencer 便會開始對各Transmitter 丟出Sequence 中的MidiEvent，Synthesizer 透過Receiver 接收到MidiEvent 後產生聲音，達成「播放MIDI 檔」的目的。
+最後，我們呼叫Sequencer 的start() 方法(24行)，Sequencer 便會開始對各Transmitter 丟出Sequence 中的MidiEvent，Synthesizer 透過Receiver 接收到MidiEvent 後產生聲音，達成「播放MIDI 檔」的目的。
+
+值得注意的是我們呼叫完Sequencer 的start()後並沒有關閉Sequencer 和Synthesizer，這會讓其它人無法使用這兩個MidiDevice。但由於start() 是一個asynchronized method，不能直接在其後呼叫close()(因樂曲才剛開始播放)。為了解決這個問題，我們可以在呼叫start() 前向Sequencer 註冊一個MetaEventListener，當收到樂曲結束訊息(end of track)時，再將Sequencer 和Synthesizer 關閉：
+
+\begin{verbatim}
+sequencer.addMetaEventListener(new MetaEventListener() {
+   public void meta(MetaMessage msg) {
+      if (msg.getType()==24) { // end of track
+         sequencer.close();
+         synthesizer.close();
+      }
+   }
+});
+\end{verbatim}
 
 Dolphin 的樂譜播放器(\ref{sec:scorePlayer}) 及MIDI 檔的匯入、匯出(\ref{sec:midiImportExport})皆會使用到MIDI API。
 
@@ -420,6 +432,10 @@ Java Sound API 內的類別Sequence 用來表示樂曲，API 內建有讀取和�
 移置到4.8  *******/
 
 在Wire Protocol 中，MidiEvent 的時間戳記的值皆為0；在MIDI 檔中，MidiEvent的時間戳記則以樂曲開頭為起點，隨著時間遞增，其單位由Sequence的divisionType和resolution兩個欄位來決定。divisionType可為PPQ(purses/ticks per quarter note)或SMPTE (ticks per frame)。當divisionType為PPQ時，resolution的值代表每個四分音符含有的時間戳記，例如當resolution 為480，代表每個四分音符含有480 個tick，在以四分音符為一拍(beat)，每分鐘120 拍的樂譜中則為0.5 秒。SMPTE 可分為SMPTE\_24、SMPTE\_25、SMPTE\_30，及SMPTE\_30DROP，分別代表FPS(frames per second)值24、25、30，和29.97。當divisionType為SMPTE時，resolution則代表每個frame含有的時間戳記，例如當採用SMPTE\_30且resolution 為8時，因每秒有30 個frame，每個frame 有8個tick，每秒便有240 個tick。resolution值通常為2的倍數，值越高越精確。
+
+%>>>
+Note On 和Note Off分別用來模擬樂器聲音的「放」和「收」，一個Note On訊息和其後的一個Note Off訊息合起來便可形成一個音，例如按下MIDI 鍵盤的琴鍵，鍵盤會送出一個Note On訊息；放開琴鍵則再送出一個Note Off訊息。
+
 
 \subsection{匯入MIDI 檔} % midi input
 
