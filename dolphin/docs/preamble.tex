@@ -5,6 +5,18 @@
 \usepackage{url} % for \url
 \usepackage{graphicx} % for images
 \usepackage{chngcntr} % for fixing figure numbering, see http://www.tex.ac.uk/cgi-bin/texfaq2html?label=running-nos
+\usepackage{listings} % for source code, see http://texblog.org/2008/04/02/include-source-code-in-latex-with-listings/
+\renewcommand{\lstlistingname}{表}
+\lstset{
+   language=Java, 
+   basicstyle=\footnotesize\ttfamily, 
+   numberstyle=\footnotesize\ttfamily, 
+   numbers=left, 
+   frame=single, 
+   tabsize=3,
+   breaklines=true,
+   numberbychapter=false
+}
 
 %set chinese font
 %\setCJKmainfont{AR PL UMing TW} 

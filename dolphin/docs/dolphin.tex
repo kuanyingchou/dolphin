@@ -142,7 +142,7 @@ Dolphin的主要特色列舉如下：
 {fig:landscape}
 {img/landscape.png}
 {0.6}
-{landspace}
+{landscape}
 
 
 /* 
@@ -168,16 +168,15 @@ Java SE 含有一套可處理聲音的低階函式庫Java Sound API，可處理�
 {0.15}
 {MidiDevice的類別圖}
 
-MIDI子套件可分為Wire Protocol 和MIDI 檔兩大部分。Wire Protocol 代表動態的MIDI 系統。在此系統中通常會有許多MIDI 裝置(MidiDevice)，各MIDI 裝置互相連接以達成工作。MIDI 裝置含有傳送器(Transmitter) 和接收器(Receiver)，如圖~\ref{fig:mididevice}所示，傳送器為MIDI裝置的輸出端，而接收器則為MIDI裝置的輸入端，各MIDI裝置透過傳送器和接收器傳遞MIDI 事件(MidiEvent)。MIDI 事件含有時間戳記記錄事件的發生時間，以及一個MIDI 訊息（MidiMessage） 記錄事件的內容。有些MIDI 裝置負責產生MIDI 事件(如MIDI鍵盤)，有些MIDI 裝置負責接收MIDI 事件(如產生聲音的合成器)。
+MIDI子套件可分為Wire Protocol 和MIDI 檔兩大部分。Wire Protocol 代表動態的MIDI 系統。在此系統中通常會有許多MIDI 裝置(MidiDevice)。MIDI 裝置含有傳送器(Transmitter) 和接收器(Receiver)，如圖~\ref{fig:mididevice}所示，傳送器為MIDI裝置的輸出端，而接收器則為MIDI裝置的輸入端，各MIDI裝置透過傳送器和接收器傳遞MIDI 事件(MidiEvent)。MIDI 事件含有時間戳記記錄事件的發生時間，以及一個MIDI 訊息（MidiMessage） 記錄事件的內容。有些MIDI 裝置負責產生MIDI 事件(如MIDI鍵盤)，有些MIDI 裝置負責接收MIDI 事件(如產生聲音的合成器)。
 
 /*
      解說你有用到的主要類別, 並各自解說你有用到的主要方法
 */
 
 
-
-
 靜態的MIDI檔則以Sequence 來表示。圖~\ref{fig:sequence}為Sequence所定義的資料結構。其中，Sequence代表整首樂曲，其內含有零至多個Track，Track代表音軌，含有零至多個MidiEvent。每個MidiEvent 含有一個MidiMessage 和一個時間戳記(tick)，我們可將Sequence視為MidiEvent的集合。
+
 
 \figurewithcaption
 {fig:sequence}
@@ -186,6 +185,19 @@ MIDI子套件可分為Wire Protocol 和MIDI 檔兩大部分。Wire Protocol 代�
 {Sequence 的類別圖}
 
 MidiMessage由一個status byte(或稱command byte) 後接零至多個data byte 所組成。最常見的MidiMessage 是以status byte 為0x9的Note On訊息和以status byte 為0x8的Note Off訊息。Note On 和Note Off分別用來模擬樂器聲音的「放」和「收」，一個Note On訊息和其後的一個Note Off訊息合起來便可形成一個音，例如按下MIDI 鍵盤的琴鍵，鍵盤會送出一個Note On訊息；放開琴鍵則再送出一個Note Off訊息。
+
+
+我們以一個簡單的例子來示範Java Sound MIDI API 的使用，我們使用API 來讀取儲存在電腦上的MIDI 檔，並將其播放出來。這個例子含括了靜態的MIDI 檔和動態的Wire Protocol。為了簡潔，此例不處理例外(Exception)，此例如表\ref{simpleMidiPlayer} 所示。
+
+\lstinputlisting[caption=SimpleMidiPlayer.java, label=simpleMidiPlayer]{code/SimpleMidiPlayer.java}
+
+在表\ref{simpleMidiPlayer} 中，函式play() 接收一個MIDI 檔的檔案路徑(filename)並將該檔播放出來。13 行的MidiSystem.getSequence() 會根據MIDI 檔產生Sequence 物件(MidiSystem 為API 中的輔助類別，含有許多static 方法，用來存取系統的資源)。接著，我們在14行呼叫MidiSystem.getSequencer() 來得到系統預設的Sequencer，呼叫open() 完成初始化(15行)，再以setSequence() 方法將Sequence 餵給Sequencer(16行)。Sequencer 是一個MidiDevice，負責讀取Sequence，並能根據Sequence 的資料在適當的時間丟出MidiEvent。然而，若要產生聲音，我們還需要一個能將MidiEvent 轉換為聲音的MidiDevice。此工作由Synthesizer (合成器)負責。我們在17 行透過MidiSystem 取得預設的Synthesizer，將其初始化(18行)，然後在21行將其連接至Sequencer。sequencer為發送端，synthesizer為接收端。19至21 行也可簡化為:
+
+\begin{verbatim}
+sequencer.getTransmitter().setReceiver(synthesizer.getReceiver());
+\end{verbatim}
+
+最後，我們呼叫Sequencer 的start() 方法(22行)，Sequencer 便會開始對各Transmitter 丟出Sequence 中的MidiEvent，Synthesizer 透過Receiver 接收到MidiEvent 後產生聲音，達成「播放MIDI 檔」的目的。
 
 Dolphin 的樂譜播放器(\ref{scorePlayer}) 及MIDI 檔的匯入、匯出(\ref{midiImportExport})皆會使用到MIDI API。
 
@@ -241,7 +253,7 @@ Java Sound API中的Sequence僅記錄MIDI訊息而不是音符，是屬於低階
 
 樂譜介面本身是一個JComponent，其paintComponent() 方法則依序呼叫各聲部介面的draw() 方法：
 
-\begin{verbatim}
+\begin{lstlisting}
 public void paintComponent(Graphics g) {
    ...
    // draw background
@@ -254,7 +266,7 @@ public void paintComponent(Graphics g) {
       s.draw(g2d);  
    }
 }
-\end{verbatim}
+\end{lstlisting}
 
 % impl. of ScoreChange
 
@@ -320,13 +332,13 @@ public void paintComponent(Graphics g) {
 {0.12}
 {Java Sound API中Sequence的播放流程}
 
-如圖 \ref{fig:play}所示，Sequencer在播放Sequence時，會將Sequence內的MIDI訊號依時間戳記依序送出，音源器(Synthesizer)根據接收到的MIDI訊號自行產生或自音源庫中提取對應的音源，再傳送電子訊號給喇叭(speaker, loudspeaker)，喇叭則根據電子訊號產生聲音再由聽者所接收。
-移到 2.1    **********/ 
+如圖 \ref{fig:play}所示，Sequencer在播放Sequence時，會將Sequence內的MIDI訊號依時間戳記依序送出，合成器(Synthesizer)根據接收到的MIDI訊號自行產生或自音源庫中提取對應的音源，再傳送電子訊號給喇叭(speaker, loudspeaker)，喇叭則根據電子訊號產生聲音再由聽者所接收。
 
 
-樂譜播放器也可讓使用者在執行期選擇音源器。音源器有分軟體和硬體兩種，我們一般常用的作業系統皆內建有軟體音源器。在Windows作業系統下，除了Java平台內建的音源器Java Sound Synthesizer之外，使用者也可選擇系統內建的Microsoft MIDI Mapper和Microsoft GS Wavetable Synth兩種音源器。除了軟體音源器外，樂譜播放器也可將MIDI訊號送給外接的硬體音源器來產生聲音。不同的音源器會具有不同的音色，使用者可依其偏好自行選擇。 /* 內部如何與library 銜接 ?  */
 
-我們以輸出裝置管理員(OutDeviceManager)來管理系統可使用的音源器。所有要撥放的MIDI訊號皆會送給輸出裝置管理員， 使用者可呼叫其setOutDevice() 方法選擇音源器。 /* 內部如何與library 銜接 ?  */
+樂譜播放器也可讓使用者在執行期選擇合成器。合成器有分軟體和硬體兩種，我們一般常用的作業系統皆內建有軟體合成器。在Windows作業系統下，除了Java平台內建的合成器Java Sound Synthesizer之外，使用者也可選擇系統內建的Microsoft MIDI Mapper和Microsoft GS Wavetable Synth兩種合成器。除了軟體合成器外，樂譜播放器也可將MIDI訊號送給外接的硬體合成器來產生聲音。不同的合成器會具有不同的音色，使用者可依其偏好自行選擇。 /* 內部如何與library 銜接 ?  */
+
+我們以輸出裝置管理員(OutDeviceManager)來管理系統可使用的合成器。所有要撥放的MIDI訊號皆會送給輸出裝置管理員， 使用者可呼叫其setOutDevice() 方法選擇合成器。 /* 內部如何與library 銜接 ?  */
 
 /*  漏解釋 樂譜播放器, 輸出裝置管理員 與 4.1 的關聯  */
 
@@ -517,11 +529,11 @@ Dolphin 為一開放源碼的自由軟體，以GPLv2 釋出。
 
 例如，若要為樂譜加上一百個C4音符，使用者可以撰寫如下的腳本。/* user怎麼操作? */
 
-\begin{verbatim}
+\begin{lstlisting}
 for(i=0; i<100; i++) { 
    dp.getScore().getPart(0).add(new Note(60));
 }
-\end{verbatim}
+\end{lstlisting}
 
 其中，dp是一個系統已定義的全域變數，代表編輯器的實體。getScore()方法會傳回目前操作中的樂譜，getPart(0)則會傳回該樂譜的第一個聲部，add(new Note(60))則對該聲部加上一個音高值為60的C4音符。而若想控制編輯器，例如執行復原動作，可以執行如下面的腳本。
 
