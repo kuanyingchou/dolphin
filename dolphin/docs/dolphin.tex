@@ -159,7 +159,7 @@ Dolphin的主要特色列舉如下：
 
 \section{腳本編輯器}
 
-例如，若要為樂譜加上一百個C4音符，使用者可以撰寫如下的腳本。/* user怎麼操作? */
+若要為樂譜加上一百個C4音符，使用者可以撰寫如下的腳本。/* user怎麼操作? */
 
 \begin{verbatim}
 for(i=0; i<100; i++) { 
@@ -193,7 +193,7 @@ dp.perform(dp.undoAction);
 {0.8}
 {音場圖和音場的對應，圖中灰色的扇形區域即為音場，灰色的矩形區域則為音場圖。以鋼琴三重奏(piano trio)為例，通常鋼琴置於舞台中央，高音的小提琴在左側，而低沉的大提琴則在右側}
 
-因此，我們統一以一個矩型的音場圖來代表音場。橫座標代表音場中樂器相對於聽者的方位，最左到最右的跨度取決於實際兩喇叭和聽者連線的夾角。縱座標可視為音場的深度，以樂器的音量表示。使用矩形的另一個好處是我們可以用比扇形大的視窗區域來表示較為擁擠的音場前方。音場圖和實際音場的對應如圖 \ref{fig:stage_mapping}所示。
+我們統一以一個矩型的音場圖來代表音場。橫座標代表音場中樂器相對於聽者的方位，最左到最右的跨度取決於實際兩喇叭和聽者連線的夾角。縱座標可視為音場的深度，以樂器的音量表示。使用矩形的另一個好處是我們可以用比扇形大的視窗區域來表示較為擁擠的音場前方。音場圖和實際音場的對應如圖 \ref{fig:stage_mapping}所示。
 
 \chapter{設計與實作} 
 % How did you implement it?
@@ -254,7 +254,7 @@ MIDI子套件可分為Wire Protocol 和MIDI 檔兩大部分。Wire Protocol 代�
 
 MidiMessage由一個status byte(或稱command byte) 後接零至多個data byte 所組成。最常見的MidiMessage 是以status byte 為0x9的Note On訊息和以status byte 為0x8的Note Off訊息。Note On 和Note Off分別用來模擬樂器聲音的「放」和「收」，一個Note On訊息和其後的一個Note Off訊息合起來便可形成一個音，例如按下MIDI 鍵盤的琴鍵，鍵盤會送出一個Note On訊息；放開琴鍵則再送出一個Note Off訊息。
 
-Dolphin 的樂譜播放器(\ref{scorePlayer}) 及MIDI 檔的匯入、匯出(\ref{midiImportExport})皆會使用到MIDI API。
+Dolphin 的樂譜播放器(\ref{sec:scorePlayer}) 及MIDI 檔的匯入、匯出(\ref{sec:midiImportExport})皆會使用到MIDI API。
 
 \subsection{Java Scripting API}
 
@@ -303,12 +303,13 @@ Java Sound API中的Sequence僅記錄MIDI訊息而不是音符，是屬於低階
 
 % impl. of ScoreChange
 
-\subsection{五線譜}
-五線譜樂譜介面(StaffPartView) 負責五線譜的顯示。
-\subsection{簡譜}
-簡譜樂譜介面(NumberedPartView) 負責簡譜的顯示。
-\subsection{鋼琴捲譜}
-鋼琴捲譜樂譜介面(GridPartView) 負責鋼琴捲譜的顯示。
+%TODO:
+%\subsection{五線譜}
+%五線譜樂譜介面(StaffPartView) 負責五線譜的顯示。
+%\subsection{簡譜}
+%簡譜樂譜介面(NumberedPartView) 負責簡譜的顯示。
+%\subsection{鋼琴捲譜}
+%鋼琴捲譜樂譜介面(GridPartView) 負責鋼琴捲譜的顯示。
 
 \section{樂譜改動}
 \label{sec:changes}
@@ -444,7 +445,7 @@ Java Sound API中的Sequence僅記錄MIDI訊息而不是音符，是屬於低階
 %] implementation
 
 \section{MIDI 檔的匯入與匯出}
-\label{midiImportExport}
+\label{sec:midiImportExport}
 
 Java Sound API 內的類別Sequence 用來表示樂曲，API 內建有讀取和寫出MIDI檔的方法。因此我們只需要實作Sequence 至Score的轉換，便可實作出MIDI 檔和樂譜的轉換。
 
