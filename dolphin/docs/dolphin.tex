@@ -69,15 +69,15 @@ Dolphin 樂譜編輯器
 
 \section{相關研究} % background
 
-Sibelius[]是一套熱門的樂譜編輯器。除了具有編輯、排版及輸出樂譜的功能之外，也包含許多進階的功能。例如Flexi-time可即時地將MIDI鍵盤的彈奏轉錄為樂譜。PhotoScore則可將印刷樂譜掃描至編輯器。Scorch瀏覽器外掛可讓未安裝Sibelius的一般使用者透過瀏覽器線上觀看樂譜。然而，Sibelius並未提供腳本功能，也無法以麥克風來輸入樂譜。
+Sibelius\cite{sibelius}是一套熱門的樂譜編輯器。除了具有編輯、排版及輸出樂譜的功能之外，也包含許多進階的功能。例如Flexi-time可即時地將MIDI鍵盤的彈奏轉錄為樂譜。PhotoScore則可將印刷樂譜掃描至編輯器。Scorch瀏覽器外掛可讓未安裝Sibelius的一般使用者透過瀏覽器線上觀看樂譜。然而，Sibelius並未提供腳本功能，也無法以麥克風來輸入樂譜。
 
-Finale[]是另一套知名的樂譜編輯器，被視為Sibelius的主要競爭者。如同Sibelius，Finale中的SmartScore也可掃描樂譜，而其MicNotator不僅可辨認MIDI裝置，也能透過麥克風將銅管或木管樂器的彈奏轉錄為樂譜。FinaleScript為Finale專屬的腳本語言，使用者可利用該語言撰寫腳本。不過Finale的MicNotator並不適用於人聲，且其只能使用單一語言來撰寫腳本。
+Finale\cite{finale2009}是另一套知名的樂譜編輯器，被視為Sibelius的主要競爭者。如同Sibelius，Finale中的SmartScore也可掃描樂譜，而其MicNotator不僅可辨認MIDI裝置，也能透過麥克風將銅管或木管樂器的彈奏轉錄為樂譜。FinaleScript為Finale專屬的腳本語言，使用者可利用該語言撰寫腳本。不過Finale的MicNotator並不適用於人聲，且其只能使用單一語言來撰寫腳本。
 
-Denemo[]是一套開放原始碼的樂譜編輯器，可視為LilyPond[]的GUI介面。除了可使用鍵盤、滑鼠輸入音符之外，也可以MIDI裝置或以麥克風接收樂器的聲音來輸入。不過如同Finale，其麥克風的輸入仍不適用於人聲。
+Denemo\cite{denemo}是一套開放原始碼的樂譜編輯器，可視為LilyPond\cite{lilypond}的GUI介面。除了可使用鍵盤、滑鼠輸入音符之外，也可以MIDI裝置或以麥克風接收樂器的聲音來輸入。不過如同Finale，其麥克風的輸入仍不適用於人聲。
 
-Music MasterWorks[]是一套特殊的樂譜編輯器，其voice-to-note功能可將人的哼唱轉為樂譜，內含的singing analysis還可用來分析哼唱者的音準表現。但其voice-to-note得在錄音結束後才能看到樂譜，無法即時地對使用者的哼唱產生適當的回饋。
+Music MasterWorks\cite{musicMasterWorks}是一套特殊的樂譜編輯器，其voice-to-note功能可將人的哼唱轉為樂譜，內含的singing analysis還可用來分析哼唱者的音準表現。但其voice-to-note得在錄音結束後才能看到樂譜，無法即時地對使用者的哼唱產生適當的回饋。
 
-哼唱鈴i-Ring[]是一套可用哼唱方式製作手機鈴聲的音樂工具。然而如同Music MasterWorks，必須在錄音結束後才能看到轉換結果，三十秒的錄音時限及只適合接收「他-他-他」的音也限縮了不少自由度。
+哼唱鈴i-Ring\cite{iring}是一套可用哼唱方式製作手機鈴聲的音樂工具。然而如同Music MasterWorks，必須在錄音結束後才能看到轉換結果，三十秒的錄音時限及只適合接收「他-他-他」的音也限縮了不少自由度。
 
 \section{論文大綱} % chapter structures
 
@@ -156,7 +156,7 @@ Dolphin的主要特色列舉如下：
 \section{基礎程式庫} % 3rd party libraries
 % What third-party librares did you use?
 
-本章介紹Dolphin所用到的函式庫，包含Java Sound API[]的MIDI子套件、Java Scripting API[]及JPraat。其中，Java Sound API和Java Scripting API已內建於Java SE[]中，而JPraat則包含於Dolphin中，使用者皆不需再安裝額外的函式庫。
+本章介紹Dolphin所用到的函式庫，包含Java Sound API\cite{javaSound}的MIDI子套件、Java Scripting API\cite{javaScriptinAPI}及JPraat。其中，Java Sound API和Java Scripting API已內建於Java SE\cite{javaPlatform}中，而JPraat則包含於Dolphin中，使用者皆不需再安裝額外的函式庫。
 
 \subsection{Java Sound API MIDI子套件}
 
@@ -210,8 +210,6 @@ sequencer.addMetaEventListener(new MetaEventListener() {
    }
 });
 \end{verbatim}
-
-Dolphin 的樂譜播放器(\ref{sec:scorePlayer}) 及MIDI 檔的匯入、匯出(\ref{sec:midiImportExport})皆會使用到MIDI API。
 
 \subsection{Java Scripting API} % scripting api
 
@@ -303,7 +301,7 @@ public void paintComponent(Graphics g) {
 
 樂譜改動有八個子類別，分別為用來修改聲部的聲部改動(PartChange)、新增聲部的新增聲部改動(AddPartChange)，以及刪除聲部的刪除聲部改動(RemovePartChange)、修改標題的標題改動(TitleChange)、修改調號的調號改動(KeySignatureChange)、修改拍號的拍號改動(TimeSignatureChange)、修改節拍的節拍改動(TempoChange)，以及複合改動(ComboChange)。
 
-複合改動(ComboChange)用來代表多重的改動。複合改動內含一個樂譜改動的串列，其本身也是一個樂譜改動。複合改動的「執行」即為依序「執行」串列內的所有改動，而其「復原」即為倒序「復原」串列中的改動，此設計衍生自複合模式(composite pattern)\ref{designPattern}。複合改動可讓客戶在執行期自行組裝各種較複雜的動作，例如一個「刪除多個音符」的動作即可拆解為多個刪除音符改動(RemoveNoteChange)，而一個「改變音符」的動作則可拆解為一個刪除音符改動和一個新增音符改動(AddNoteChange)。複合改動也可包含其他的複合改動來組成樹狀結構以支援更複雜的動作，例如一個「取代多個音符為一個新音符」的動作即可以一個刪除多個音符的複合改動和一個新增音符改動所構成。
+複合改動(ComboChange)用來代表多重的改動。複合改動內含一個樂譜改動的串列，其本身也是一個樂譜改動。複合改動的「執行」即為依序「執行」串列內的所有改動，而其「復原」即為倒序「復原」串列中的改動，此設計衍生自複合模式(composite pattern)\cite{designPatterns}。複合改動可讓客戶在執行期自行組裝各種較複雜的動作，例如一個「刪除多個音符」的動作即可拆解為多個刪除音符改動(RemoveNoteChange)，而一個「改變音符」的動作則可拆解為一個刪除音符改動和一個新增音符改動(AddNoteChange)。複合改動也可包含其他的複合改動來組成樹狀結構以支援更複雜的動作，例如一個「取代多個音符為一個新音符」的動作即可以一個刪除多個音符的複合改動和一個新增音符改動所構成。
 
 聲部改動有六個子類別，分別為新增音符的新增音符改動(AddNoteChange)、刪除音符的刪除音符改動(RemoveNoteChange)、修改樂器的樂器改動(InstrumentChange)、修改音量的音量改動(VolumeChange)、修改聲像的聲像改動(PanChange)，以及修改是否靜音的靜音改動(MuteChange)。
 
@@ -369,7 +367,7 @@ public void paintComponent(Graphics g) {
 % how do we locate sound?
 當手機響時，我們能僅憑鈴聲找到手機；有人叫我們的名字時，我們也能立刻找到呼喚者。聽到聲音時，我們不僅試著理解聲音的內容，也會自動推測聲源的位置。要定出聲源的位置，聽者需要知道聲源相對於他的方位(direction)和距離(distance)。
 
-我們主要以兩耳的聲音差異來判斷方位。我們的一對耳朵分別位於頭部兩側，相距約21.5 公分 \ref{wiki_sound_localization}，若聲源偏離我們的正前或正後方，由於聲源和左右耳的距離不一，加上頭部的遮掩(head shadow)，兩耳接收到聲音的時間和感受到的音量便會不同，造成兩耳時間差(interaural time difference, ITD)和兩耳音量差(interaural level difference , ILD) \ref(fig:ears)。此外，聲波通過環境(如地面、牆壁)或身體(如頭部、肩膀及外耳)等物體，其頻率也會因反射或干擾而變化。因此，即便只剩單耳的聽力，我們的大腦也會根據這些資料試著推測聲源的方位。
+我們主要以兩耳的聲音差異來判斷方位。我們的一對耳朵分別位於頭部兩側，相距約21.5 公分 \cite{wikiSoundLocalization}，若聲源偏離我們的正前或正後方，由於聲源和左右耳的距離不一，加上頭部的遮掩(head shadow)，兩耳接收到聲音的時間和感受到的音量便會不同，造成兩耳時間差(interaural time difference, ITD)和兩耳音量差(interaural level difference , ILD) \ref{fig:ears}。此外，聲波通過環境(如地面、牆壁)或身體(如頭部、肩膀及外耳)等物體，其頻率也會因反射或干擾而變化。因此，即便只剩單耳的聽力，我們的大腦也會根據這些資料試著推測聲源的方位。
 
 \figurewithcaption
 {fig:ears}
@@ -377,10 +375,10 @@ public void paintComponent(Graphics g) {
 {2.0}
 {聲音由右方傳來時，由於聲源距聽者右耳較近，距左耳較遠，兩耳接收到聲音的時間和強度便不同。頭部的遮蔽則進一步影響左耳接收到的聲音強度和頻率}
 
-聲音的距離可由許多線索來推測。我們主要依賴音量、回聲、頻率和聲源的移動來輔助我們判斷聲源距離。由於距離和音量成反比，距離近音量大，距離遠音量小。音量對熟悉的聲源特別管用(如熟人的講話聲)，因為我們有過去的經驗可供參考。當我們處於室內時，聽到由聲源直接傳來的聲音後，我們還會聽到經由地板、天花板，和牆壁反射來的回聲。回聲的傳播路徑比起直接傳來的聲音遠，因此會有延遲；距離近，直線距離和反射距離的比(ratio)較高，延遲大；距離遠，直線距離和反射距離的比(ratio)較低，延遲小。另外，當聲音在空氣中轉播時，高頻音較容易衰減(我們較容易聽到遠方樂隊低頻的鼓聲而不是高頻的小喇叭)，此資訊也對熟悉的聲音較有用。最後，當聲源在近處移動時，其方位的改變會較在遠處移動的聲源來得快(如近處的腳踏車和遠方的噴射機)，此現象如同視差(parallax)\cite{wiki_sound_localization}，也可佐以判斷距離。雖然有這些線索，我們對聲音距離的判斷仍相當有限，經常需搭配雙眼才能定出聲音的距離。 
+聲音的距離可由許多線索來推測。我們主要依賴音量、回聲、頻率和聲源的移動來輔助我們判斷聲源距離。由於距離和音量成反比，距離近音量大，距離遠音量小。音量對熟悉的聲源特別管用(如熟人的講話聲)，因為我們有過去的經驗可供參考。當我們處於室內時，聽到由聲源直接傳來的聲音後，我們還會聽到經由地板、天花板，和牆壁反射來的回聲。回聲的傳播路徑比起直接傳來的聲音遠，因此會有延遲；距離近，直線距離和反射距離的比(ratio)較高，延遲大；距離遠，直線距離和反射距離的比(ratio)較低，延遲小。另外，當聲音在空氣中轉播時，高頻音較容易衰減(我們較容易聽到遠方樂隊低頻的鼓聲而不是高頻的小喇叭)，此資訊也對熟悉的聲音較有用。最後，當聲源在近處移動時，其方位的改變會較在遠處移動的聲源來得快(如近處的腳踏車和遠方的噴射機)，此現象如同視差(parallax)\cite{wikiSoundLocalization}，也可佐以判斷距離。雖然有這些線索，我們對聲音距離的判斷仍相當有限，經常需搭配雙眼才能定出聲音的距離。 
 
 % how can we create stereo sound?
-雖然我們對聲音的方位較敏感，但大腦有時也會誤判。將一對喇叭置於聽者前方，兩喇叭和聽者等距，喇叭和聽者會形成一個以兩喇叭連線為底邊的等腰三角形；若兩隻喇叭以一樣的音量播放一樣的音樂，由於聲音以同樣的強度同時傳進聽者的兩耳，聽者會以為音樂是由兩喇叭中間(稱為phantom center \cite{maxing_audio}{p185})傳來。我們利用這種錯覺來製造立體聲(stereo)的效果。當左喇叭的音量比右喇叭大時，我們會以為聲源偏向左邊；而當右喇叭的音量比左喇叭大時，聲源會偏向右邊。藉由改變左右喇叭的音量，我們甚至可以模擬聲源在聽者前方移動的效果。在一九三零年代，華特迪士尼的工程師便利用這個技術製作出第一部含有立體聲的電影「幻想曲」\cite{fantasia}，此技術後來稱為panning。
+雖然我們對聲音的方位較敏感，但大腦有時也會誤判。將一對喇叭置於聽者前方，兩喇叭和聽者等距，喇叭和聽者會形成一個以兩喇叭連線為底邊的等腰三角形；若兩隻喇叭以一樣的音量播放一樣的音樂，由於聲音以同樣的強度同時傳進聽者的兩耳，聽者會以為音樂是由兩喇叭中間(稱為phantom center \cite{mixingAudio})傳來。我們利用這種錯覺來製造立體聲(stereo)的效果。當左喇叭的音量比右喇叭大時，我們會以為聲源偏向左邊；而當右喇叭的音量比左喇叭大時，聲源會偏向右邊。藉由改變左右喇叭的音量，我們甚至可以模擬聲源在聽者前方移動的效果。在一九三零年代，華特迪士尼的工程師便利用這個技術製作出第一部含有立體聲的電影「幻想曲」\cite{wikiFantasia}，此技術後來稱為panning。
 
 \figurewithcaption
 {fig:panpot}
@@ -409,7 +407,7 @@ public void paintComponent(Graphics g) {
 %[ implementation
 
 % api
-在MIDI 中，panning 可透過Pan 訊息(CC#10)來控制。Pan 訊息以0 到127 的值代表聲像調整鈕的七點到五點。由於0 至127 的中心是63.5，無法在MIDI 訊息中表示，故其有效範圍定為1 至127，64 為hard center，0 和1 皆視為hard left \cite{http://www.midi.org/techspecs/rp36.php}。樂器的音量則以MIDI 中的Channel Volume 訊息(CC#7) 來控制。當音量最大時其值為127，音量最小時其值為0。
+在MIDI 中，panning 可透過Pan 訊息(CC#10)來控制。Pan 訊息以0 到127 的值代表聲像調整鈕的七點到五點。由於0 至127 的中心是63.5，無法在MIDI 訊息中表示，故其有效範圍定為1 至127，64 為hard center，0 和1 皆視為hard left \cite{midiSpec}。樂器的音量則以MIDI 中的Channel Volume 訊息(CC#7) 來控制。當音量最大時其值為127，音量最小時其值為0。
 
 % real-time
 另外，為了讓樂器位置的改動能即時反應到播放中的樂曲，我們直接將Pan 訊息或Channel Volume 訊息送給輸出裝置管理員(OutDeviceManager)，輸出裝置就會即時使用最新的設定。輸出裝置管理員本身也是一個MIDI 訊息的接收者，因此我們只要使用接收者的send() 方法，即可將改動即時送出。其pseudo code 如下：
@@ -439,7 +437,7 @@ Note On 和Note Off分別用來模擬樂器聲音的「放」和「收」，一�
 
 \subsection{匯入MIDI 檔} % midi input
 
-和MIDI檔一樣，Sequence僅記錄音而不是音符。每個音以Note On訊息開始，以Note Off訊息(或強度為零的Note On訊息)結束。然而，Note On和Note Off僅含音高(pitch)和強度(velocity)兩樣和音符有關的資訊，並不包含時值。我們僅能由兩個MidiEvent中時間戳記的差來得到音的長度。然而一個音尚可能由多個以連結線(tie)連結的音符所產生，故我們以多次的解析過程來找出音符的個數及各音符正確的時值，Sequence 至Score的轉換可分為以下九個主要步驟： 
+和MIDI檔一樣，Sequence僅記錄音而不是音符。每個音以Note On訊息開始，以Note Off訊息(或強度為零的Note On訊息)結束。然而，Note On和Note Off僅含音高(pitch)和強度(velocity)兩樣和音符有關的資訊，並不包含時值。我們僅能由兩個MidiEvent中時間戳記的差來得到音的長度。然而一個音尚可能由多個以連接線(tie)連結的音符所產生，故我們以多次的解析過程來找出音符的個數及各音符正確的時值，Sequence 至Score的轉換可分為以下九個主要步驟： 
 
 1. 讀入Sequence及各Track的基本屬性。 
 
@@ -471,7 +469,7 @@ Sequence的基本屬性會以MetaMessage紀錄在時間戳記為零的地方，�
 
 8. 尋找並建立附點音符。
 
-附點和連結線皆可延長音符的長度，但除了休止符外，附點音符皆可以連結線表示[]，為免轉出的樂譜不含附點，故先解析附點音符。從頭掃描不合法音符，將含有附點的音符建立附點。
+附點和連接線皆可延長音符的長度，但除了休止符外，附點音符皆可以連接線表示\cite{theABGuide}，為免轉出的樂譜不含附點，故先解析附點音符。從頭掃描不合法音符，將含有附點的音符建立附點。
 
 9. 拆解剩餘的不合法音符。
 
@@ -504,90 +502,17 @@ Dolphin 為一開放源碼的自由軟體，以GPLv2 釋出。
 
 \appendix
 
-\chapter{使用說明書} user manual
-% WHAT in detail and HOW to use it
-\section{操作環境}
-\subsection{主視窗}
-\subsection{工具列}
-/* 
-解說視窗各區域
-*/
+\input{manual}
 
-/* 
-解說menu bar及其使用
-*/
-\section{編輯樂譜}
-   \subsection{建立空白樂譜}
-   \subsection{匯入樂譜}
-\section{編輯聲部}
-   \subsection{聲部屬性}
-   \subsection{選擇譜式}
-\section{編輯音符}
-   \subsection{滑鼠輸入}
-   \subsection{鍵盤輸入}
-   \subsection{虛擬鍵盤輸入}
-   \subsection{MIDI 鍵盤輸入}
-   \subsection{哼唱輸入}
-   \subsection{修改音符}
-\section{匯出樂譜}
-\section{樂譜播放器}
-
-\figurewithcaption
-{fig:player_states}
-{img/player_states.png}
-{0.15}
-{樂譜撥放器的狀態圖}
-
-/****** 移到CH3  
-樂譜播放器具有三種不同的狀態，分別為停止狀態(stopped)、播放狀態(playing)及暫停狀態(paused)。在預設的情況下，播放器處於無聲的停止狀態。當使用者選擇「播放」後，播放器則會進到播放狀態並開始撥放樂曲，在播放狀態下，使用者可選擇「停止」回到停止狀態，或選擇「暫停」進到暫停狀態。在暫停狀態下，樂曲停止播放，若選擇「播放」可回到播放狀態，樂曲會從暫停的地方開始播放；若選擇「停止」，則讓播放器捨棄目前的撥放進度並回到停止狀態。
- 移到CH3  ************/  
-
-\section{腳本編輯器}
-
-例如，若要為樂譜加上一百個C4音符，使用者可以撰寫如下的腳本。/* user怎麼操作? */
-
-\begin{lstlisting}
-for(i=0; i<100; i++) { 
-   dp.getScore().getPart(0).add(new Note(60));
-}
-\end{lstlisting}
-
-其中，dp是一個系統已定義的全域變數，代表編輯器的實體。getScore()方法會傳回目前操作中的樂譜，getPart(0)則會傳回該樂譜的第一個聲部，add(new Note(60))則對該聲部加上一個音高值為60的C4音符。而若想控制編輯器，例如執行復原動作，可以執行如下面的腳本。
-
-\begin{verbatim}
-dp.perform(dp.undoAction);
-\end{verbatim}
-
-腳本編輯器的預設語言為JavaScript，使用者也可自行安裝直譯器，便可以其他語言來控制編輯器和樂譜。
-
-\section{立體聲編輯器}
-% what is streo field editor?
-立體聲編輯器讓使用者以圖像的方式編輯各個樂器在虛擬舞台上的位置，用來模擬立體聲的效果。使用者的修改不僅會反映在樂譜中，也會即時反應到目前播放的樂曲，方便使用者微調、比較各種不同的設定。
-
-\figurewithcaption
-{fig:stereo_editor}
-{img/stereo_editor.png}
-{0.3}
-{立體聲編輯器的執行畫面}
-
-在音場圖中，每個聲部的樂器(以X加上矩型框表示)會對應到舞台上的一個虛擬聲源，，如圖 \ref{fig:stereo_editor}。當虛擬聲源沿著音場的橫坐標移動便會改變虛擬聲源相對於聽者的方位，而當虛擬聲源沿著縱座標移動則會改變虛擬聲源的強度。
-
-\figurewithcaption
-{fig:stage_mapping}
-{img/stage_mapping.png}
-{0.8}
-{音場圖和音場的對應，圖中灰色的扇形區域即為音場，灰色的矩形區域則為音場圖。以鋼琴三重奏(piano trio)為例，通常鋼琴置於舞台中央，高音的小提琴在左側，而低沉的大提琴則在右側}
-
-因此，我們統一以一個矩型的音場圖來代表音場。橫座標代表音場中樂器相對於聽者的方位，最左到最右的跨度取決於實際兩喇叭和聽者連線的夾角。縱座標可視為音場的深度，以樂器的音量表示。使用矩形的另一個好處是我們可以用比扇形大的視窗區域來表示較為擁擠的音場前方。音場圖和實際音場的對應如圖 \ref{fig:stage_mapping}所示。
 \chapter{哼唱輸入} % humming input
 
 Dolphin的哼唱輸入能將使用者對麥克風的哼唱轉換成對應的音符並立即在螢幕上顯示出來，其功能類似於語音輸入(speech-to-text)。但在輸入上，語音輸入使用的是各種語言的口語(spoken language)，而哼唱輸入則是接收使用者的哼唱，使用者可發出各種聲音，而不限於哼音名或唱名。在輸出上，語音輸入的輸出是文字，而哼唱輸入的輸出則是音符。而在操作方式上，一般語音輸入採逐字輸入，而哼唱輸入則模仿語音輸入，採「逐音輸入」的方式來輸入音符。當使用者哼出一個音，系統便即時地產生出一個音符。哼唱輸入也可視為以人聲為輸入的「自動旋律轉錄」(automatic melody transcription)。
 
-要由哼唱得出旋律，我們必須先將哼唱的音與音分離出來。我們採用簡單的端點偵測(End-Point Detection)[]技巧，以「停頓」來做為音與音的分離標記。哼唱輸入啟動後便會開始擷取(capture)聲音，若發現聲音的強度(intensity)大於某臨界點，便開始錄製(record)，而若聲音的強度低於該臨界點，代表已經過一定的停頓，便停止錄製；每次錄到的聲音樣本便視為一個音。此法要求使用者在哼唱的音與音間留有一定的停頓以切出正確的音。
+要由哼唱得出旋律，我們必須先將哼唱的音與音分離出來。我們採用簡單的端點偵測(End-Point Detection)\cite{endPointDetection}技巧，以「停頓」來做為音與音的分離標記。哼唱輸入啟動後便會開始擷取(capture)聲音，若發現聲音的強度(intensity)大於某臨界點，便開始錄製(record)，而若聲音的強度低於該臨界點，代表已經過一定的停頓，便停止錄製；每次錄到的聲音樣本便視為一個音。此法要求使用者在哼唱的音與音間留有一定的停頓以切出正確的音。
 
 分隔音與音後，我們再求每個音的時值和音高。時值可由樣本的長度求得。樣本的開始至結束所經過的時間再搭配節奏的資訊便可決定音符的時值。
 
-我們利用JPraat的音高追蹤演算法實作從樣本計算出連續的基本頻率，再根據MIDI Tuning Standard[]將其平均帶入下式以將基本頻率映射至MIDI的音高值(pitch number)：
+我們利用JPraat的音高追蹤演算法實作從樣本計算出連續的基本頻率，再根據MIDI Tuning Standard\cite{midiTuningStrandard}將其平均帶入下式以將基本頻率映射至MIDI的音高值(pitch number)：
 
 %p=69+12*log2(f/440)
 \[
@@ -600,7 +525,7 @@ p=69+12\times\log_2{\left(\frac{f}{440}\right)}
 
 %\chapter{Praat及音高追蹤} % it feels not big enough to be a chapter
 
-Praat是一套由阿姆斯特丹大學的Paul Boersma和David Weenink所開發的開放原始碼語音分析軟體。
+Praat\cite{praat}是一套由阿姆斯特丹大學的Paul Boersma和David Weenink所開發的開放原始碼語音分析軟體。
 
 Praat可將聲音樣本利用快速傅立葉轉換(fast Fourier transform, FFT)轉換為頻譜圖(spectrogram)。頻譜圖通常以彩色的二維圖表示，圖 \ref{fig:spectrogram}即為一女聲的頻譜圖，其中橫座標為時間，縱座標為頻率，而顏色則代表強度。
 
@@ -623,7 +548,7 @@ Praat可由頻譜圖進一步計算出聲音的基本頻率。在音訊處理領
 {1.0}
 {Praat的音高追縱。上方為輸入聲音樣本的波型圖，下方為該樣本的頻譜圖及音高追縱後的結果。}
 
-為了使用Praat[]的音高追蹤演算法實作來判斷音高。我們翻譯了約三千行Praat的C 程式碼成為一套Java 程式庫JPraat，內含有計算聲音強度，音高追蹤及快速傅立葉轉換的實作。
+為了使用Praat的音高追蹤演算法實作來判斷音高。我們翻譯了約三千行Praat的C 程式碼成為一套Java 程式庫JPraat，內含有計算聲音強度，音高追蹤及快速傅立葉轉換的實作。
 
 % bibliography
 \input{bib}

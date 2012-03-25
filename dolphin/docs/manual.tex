@@ -1,0 +1,76 @@
+\chapter{使用說明書} %user manual
+% WHAT in detail and HOW to use it
+\section{操作環境}
+\subsection{主視窗}
+\subsection{工具列}
+/* 
+解說視窗各區域
+*/
+
+/* 
+解說menu bar及其使用
+*/
+\section{編輯樂譜}
+   \subsection{建立空白樂譜}
+   \subsection{匯入樂譜}
+\section{編輯聲部}
+   \subsection{聲部屬性}
+   \subsection{選擇譜式}
+\section{編輯音符}
+   \subsection{滑鼠輸入}
+   \subsection{鍵盤輸入}
+   \subsection{虛擬鍵盤輸入}
+   \subsection{MIDI 鍵盤輸入}
+   \subsection{哼唱輸入}
+   \subsection{修改音符}
+\section{匯出樂譜}
+\section{樂譜播放器}
+
+\figurewithcaption
+{fig:player_states}
+{img/player_states.png}
+{0.15}
+{樂譜撥放器的狀態圖}
+
+/****** 移到CH3  
+樂譜播放器具有三種不同的狀態，分別為停止狀態(stopped)、播放狀態(playing)及暫停狀態(paused)。在預設的情況下，播放器處於無聲的停止狀態。當使用者選擇「播放」後，播放器則會進到播放狀態並開始撥放樂曲，在播放狀態下，使用者可選擇「停止」回到停止狀態，或選擇「暫停」進到暫停狀態。在暫停狀態下，樂曲停止播放，若選擇「播放」可回到播放狀態，樂曲會從暫停的地方開始播放；若選擇「停止」，則讓播放器捨棄目前的撥放進度並回到停止狀態。
+ 移到CH3  ************/  
+
+\section{腳本編輯器}
+
+例如，若要為樂譜加上一百個C4音符，使用者可以撰寫如下的腳本。/* user怎麼操作? */
+
+\begin{lstlisting}
+for(i=0; i<100; i++) { 
+   dp.getScore().getPart(0).add(new Note(60));
+}
+\end{lstlisting}
+
+其中，dp是一個系統已定義的全域變數，代表編輯器的實體。getScore()方法會傳回目前操作中的樂譜，getPart(0)則會傳回該樂譜的第一個聲部，add(new Note(60))則對該聲部加上一個音高值為60的C4音符。而若想控制編輯器，例如執行復原動作，可以執行如下面的腳本。
+
+\begin{verbatim}
+dp.perform(dp.undoAction);
+\end{verbatim}
+
+腳本編輯器的預設語言為JavaScript，使用者也可自行安裝直譯器，便可以其他語言來控制編輯器和樂譜。
+
+\section{立體聲編輯器}
+% what is streo field editor?
+立體聲編輯器讓使用者以圖像的方式編輯各個樂器在虛擬舞台上的位置，用來模擬立體聲的效果。使用者的修改不僅會反映在樂譜中，也會即時反應到目前播放的樂曲，方便使用者微調、比較各種不同的設定。
+
+\figurewithcaption
+{fig:stereo_editor}
+{img/stereo_editor.png}
+{0.3}
+{立體聲編輯器的執行畫面}
+
+在音場圖中，每個聲部的樂器(以X加上矩型框表示)會對應到舞台上的一個虛擬聲源，，如圖 \ref{fig:stereo_editor}。當虛擬聲源沿著音場的橫坐標移動便會改變虛擬聲源相對於聽者的方位，而當虛擬聲源沿著縱座標移動則會改變虛擬聲源的強度。
+
+\figurewithcaption
+{fig:stage_mapping}
+{img/stage_mapping.png}
+{0.8}
+{音場圖和音場的對應，圖中灰色的扇形區域即為音場，灰色的矩形區域則為音場圖。以鋼琴三重奏(piano trio)為例，通常鋼琴置於舞台中央，高音的小提琴在左側，而低沉的大提琴則在右側}
+
+因此，我們統一以一個矩型的音場圖來代表音場。橫座標代表音場中樂器相對於聽者的方位，最左到最右的跨度取決於實際兩喇叭和聽者連線的夾角。縱座標可視為音場的深度，以樂器的音量表示。使用矩形的另一個好處是我們可以用比扇形大的視窗區域來表示較為擁擠的音場前方。音場圖和實際音場的對應如圖 \ref{fig:stage_mapping}所示。
+
