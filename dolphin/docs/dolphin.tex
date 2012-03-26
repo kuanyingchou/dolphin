@@ -69,6 +69,14 @@ Dolphin 樂譜編輯器
 
 \section{相關研究} % background
 
+歌或曲子有許多表現方式。當我們聽到一首曲子，該曲便正以聲音(sound)的形式呈現。聲音可由電腦所產生，或來自於演奏者的演奏。演奏時，演奏者使用樂器將曲子的概念(concept) 表現出來，這概念可來自演奏者本身(如即興演奏)，或來自其眼前的樂譜。樂譜是曲子的圖形表示(graphics)，如五線譜、簡譜、鋼琴捲譜等。該譜可為手寫，或由電腦上的樂譜編輯器所產生。一般的樂譜編輯器會以一套資料結構或模型(model) 來表達曲子。編輯器除了可以將模型轉換為樂譜，也應該可以將模型轉換為人和電腦皆可理解的文字(text)，如XML、TEX 或JSON 等。通常樂譜編輯器也可以將模型儲存為MIDI 檔(MIDI File)，或用即時MIDI(Real-time MIDI)將模型播放出來，再經由合成器合成出聲音。概念可以各種方式表現(聲音、圖形、文字、模型、即時MIDI、MIDI 檔)，各表現方式也可在一定程度上互相轉換。樂譜編輯器則可用來輔助人們轉換樂曲的各種表現方式，或將腦海中的曲子以各種方式記錄下來。
+
+\figurewithcaption
+{fig:landscape}
+{img/landscape.png}
+{0.5}
+{landscape}
+
 Sibelius\cite{sibelius}是一套熱門的樂譜編輯器。除了具有編輯、排版及輸出樂譜的功能之外，也包含許多進階的功能。例如Flexi-time可即時地將MIDI鍵盤的彈奏轉錄為樂譜。PhotoScore則可將印刷樂譜掃描至編輯器。Scorch瀏覽器外掛可讓未安裝Sibelius的一般使用者透過瀏覽器線上觀看樂譜。然而，Sibelius並未提供腳本功能，也無法以麥克風來輸入樂譜。
 
 Finale\cite{finale2009}是另一套知名的樂譜編輯器，被視為Sibelius的主要競爭者。如同Sibelius，Finale中的SmartScore也可掃描樂譜，而其MicNotator不僅可辨認MIDI裝置，也能透過麥克風將銅管或木管樂器的彈奏轉錄為樂譜。FinaleScript為Finale專屬的腳本語言，使用者可利用該語言撰寫腳本。不過Finale的MicNotator並不適用於人聲，且其只能使用單一語言來撰寫腳本。
@@ -86,6 +94,7 @@ Music MasterWorks\cite{musicMasterWorks}是一套特殊的樂譜編輯器，其v
 \chapter{系統概觀} % introduction
 
 % What is Dolphin? What does it has?
+
 
 \figurewithcaption
 {fig:screenshot}
@@ -121,45 +130,12 @@ Dolphin的主要特色列舉如下：
       可外接實體MIDI裝置如MIDI鍵盤來輸入音符。 
 \end{enumerate}
 
-
-\chapter{設計與實作} % design and implementation
-% How did you implement it?
-
-\section{系統架構} % system architecture
-
-
-\figurewithcaption
-{fig:framework}
-{img/framework.png}
-{0.2}
-{Dolphin架構圖}
-
-圖\ref{fig:framework}為本系統的架構圖。Dolphin以Java語言實作，主要可分為Dolphin API和Dolphin GUI兩個部分。Dolphin API為系統的核心，包含樂譜模型、演算法及訊息傳遞機制，為一套獨立且可重複使用的音樂函式庫。Dolphin GUI為系統的圖形使用者介面，包含用來顯示和編輯樂譜的編輯窗以及各式面板和工具列。
-
-在底層方面，我們使用JPraat來處理哼唱輸入的聲音樣本。使用Java Sound API來處理聲音的擷取以及與MIDI相關的各項功能，如樂譜的播放及MIDI裝置的輸入等。Java Scripting API則用來實作腳本編輯器。
-
-\figurewithcaption
-{fig:landscape}
-{img/landscape.png}
-{0.5}
-{landscape}
-
-歌或曲子有許多表現方式。當我們聽到一首曲子，該曲便正以聲音(sound)的形式呈現。聲音可由電腦所產生，或來自於演奏者的演奏。演奏時，演奏者使用樂器將曲子的概念(concept) 表現出來，這概念可來自演奏者本身(如即興演奏)，或來自其眼前的樂譜。樂譜是曲子的圖形表示(graphics)，如五線譜、簡譜、鋼琴捲譜等。該譜可為手寫，或由電腦上的樂譜編輯器所產生。一般的樂譜編輯器會以一套資料結構或模型(model) 來表達曲子。編輯器除了可以將模型轉換為樂譜，也應該可以將模型轉換為人和電腦皆可理解的文字(text)，如XML、TEX 或JSON 等。通常樂譜編輯器也可以將模型儲存為MIDI 檔(MIDI File)，或用即時MIDI(Real-time MIDI)將模型播放出來，再經由合成器合成出聲音。概念可以各種方式表現(聲音、圖形、文字、模型、即時MIDI、MIDI 檔)，各表現方式也可在一定程度上互相轉換。樂譜編輯器則可用來輔助人們轉換各種樂曲的表現方式，或將腦海中的曲子以各種方式記錄下來。
-
-%/* 
-%解說 Dolphin API 含有哪些主要類別, 各含哪些主要方法
-%*/
-
-%/* 
-%解說 Dolphin GUI 含有哪些主要類別, 各含哪些主要方法
-%*/
-
-\section{基礎程式庫} % 3rd party libraries
+\chapter{基礎程式庫} % 3rd party libraries
 % What third-party librares did you use?
 
 本章介紹Dolphin所用到的函式庫，包含Java Sound API\cite{javaSound}的MIDI子套件、Java Scripting API\cite{javaScriptinAPI}及JPraat。其中，Java Sound API和Java Scripting API已內建於Java SE\cite{javaPlatform}中，而JPraat則包含於Dolphin中，使用者皆不需再安裝額外的函式庫。
 
-\subsection{Java Sound API MIDI子套件}
+\section{Java Sound API MIDI子套件}
 
 Java SE 含有一套可處理聲音的低階函式庫Java Sound API，可處理採樣和MIDI兩種類型的聲音，本節介紹其MIDI子套件。
 
@@ -212,11 +188,37 @@ sequencer.addMetaEventListener(new MetaEventListener() {
 });
 \end{verbatim}
 
-\subsection{Java Scripting API} % scripting api
+\section{Java Scripting API} % scripting api
 
 Java Scripting API位於javax.script中，是一個通用的直譯器使用介面，可讓JVM 執行各種腳本語言。目前Java SE內建有JavaScript的直譯引擎(scripting engine)，使用者也可自行下載直譯引擎以執行Python、Ruby、AWK等多種語言\footnote{其它語言的直譯引擎可至下列網址下載：\url{http://java-source.net/open-source/scripting-languages}}。
 
 Java SE中的JavaScript直譯引擎具有LiveConnect功能，可在JavaScript中匯入Java的類別和套件來使用，另外如Ruby的直譯引擎JRuby、Python的直譯引擎Jython等多種直譯器也提供了類似的溝通機制。而Java Scripting API也提供綁定(bindings)的功能讓直譯引擎在執行期直接使用底層Java虛擬機器所含物件的公開介面，我們利用這兩樣功能讓腳本編輯器得以操作Dolphin及其內的樂譜。腳本編輯器的實作請參考\ref{sec:scriptEditor} 一節。
+
+\chapter{設計與實作} % design and implementation
+% How did you implement it?
+
+\section{系統架構} % system architecture
+
+
+\figurewithcaption
+{fig:framework}
+{img/framework.png}
+{0.2}
+{Dolphin架構圖}
+
+圖\ref{fig:framework}為本系統的架構圖。Dolphin以Java語言實作，主要可分為Dolphin API和Dolphin GUI兩個部分。Dolphin API為系統的核心，包含樂譜模型、演算法及訊息傳遞機制，為一套獨立且可重複使用的音樂函式庫。Dolphin GUI為系統的圖形使用者介面，包含用來顯示和編輯樂譜的編輯窗以及各式面板和工具列。
+
+在底層方面，我們使用JPraat來處理哼唱輸入的聲音樣本。使用Java Sound API來處理聲音的擷取以及與MIDI相關的各項功能，如樂譜的播放及MIDI裝置的輸入等。Java Scripting API則用來實作腳本編輯器。
+
+
+%/* 
+%解說 Dolphin API 含有哪些主要類別, 各含哪些主要方法
+%*/
+
+%/* 
+%解說 Dolphin GUI 含有哪些主要類別, 各含哪些主要方法
+%*/
+
 
 \section{樂譜模型}
 
@@ -336,8 +338,6 @@ public void paintComponent(Graphics g) {
 
 樂譜播放器(撥放器，ScorePlayer)負責將樂譜撥放出來，讓使用者得以聆聽編輯中的樂譜。當使用者選擇「播放」後，播放器會先將編輯中的樂譜轉換為Sequence，再將該Sequence透過Sequencer播放出來。
 
-/*********  移到 2.1 
-
 \figurewithcaption
 {fig:play}
 {img/play.png}
@@ -346,16 +346,15 @@ public void paintComponent(Graphics g) {
 
 如圖 \ref{fig:play}所示，Sequencer在播放Sequence時，會將Sequence內的MIDI訊號依時間戳記依序送出，合成器(Synthesizer)根據接收到的MIDI訊號自行產生或自音源庫中提取對應的音源，再傳送電子訊號給喇叭(speaker, loudspeaker)，喇叭則根據電子訊號產生聲音再由聽者所接收。
 
+樂譜播放器也可讓使用者在執行期選擇合成器。合成器有分軟體和硬體兩種，我們一般常用的作業系統皆內建有軟體合成器。在Windows作業系統下，除了Java平台內建的合成器Java Sound Synthesizer之外，使用者也可選擇系統內建的Microsoft MIDI Mapper和Microsoft GS Wavetable Synth兩種合成器。除了軟體合成器外，樂譜播放器也可將MIDI訊號送給外接的硬體合成器來產生聲音。不同的合成器會具有不同的音色，使用者可依其偏好自行選擇。 
 
+%/* 內部如何與library 銜接 ?  */
 
-樂譜播放器也可讓使用者在執行期選擇合成器。合成器有分軟體和硬體兩種，我們一般常用的作業系統皆內建有軟體合成器。在Windows作業系統下，除了Java平台內建的合成器Java Sound Synthesizer之外，使用者也可選擇系統內建的Microsoft MIDI Mapper和Microsoft GS Wavetable Synth兩種合成器。除了軟體合成器外，樂譜播放器也可將MIDI訊號送給外接的硬體合成器來產生聲音。不同的合成器會具有不同的音色，使用者可依其偏好自行選擇。 /* 內部如何與library 銜接 ?  */
+我們以輸出裝置管理員(OutDeviceManager)來管理系統可使用的合成器。所有要撥放的MIDI訊號皆會送給輸出裝置管理員， 使用者可呼叫其setOutDevice() 方法選擇合成器。 
 
-我們以輸出裝置管理員(OutDeviceManager)來管理系統可使用的合成器。所有要撥放的MIDI訊號皆會送給輸出裝置管理員， 使用者可呼叫其setOutDevice() 方法選擇合成器。 /* 內部如何與library 銜接 ?  */
+%/* 內部如何與library 銜接 ?  */
 
-/*  漏解釋 樂譜播放器, 輸出裝置管理員 與 4.1 的關聯  */
-
-
-
+%/*  漏解釋 樂譜播放器, 輸出裝置管理員 與 4.1 的關聯  */
 
 \section{腳本編輯器} % script editor
 \label{sec:scriptEditor}
