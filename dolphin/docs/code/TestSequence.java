@@ -1,6 +1,5 @@
 import java.io.File;
 import java.io.IOException;
-
 import javax.sound.midi.Sequence;
 import javax.sound.midi.MidiEvent;
 import javax.sound.midi.MidiMessage;
@@ -17,7 +16,7 @@ public class TestSequence {
                 InvalidMidiDataException, 
                 IOException {
       final Sequence sequence=createSequence(); 
-      MidiSystem.write(sequence, 0, new File("test.mid"));
+      MidiSystem.write(sequence, 0, new File("do.mid"));
    }
 
    public static Sequence createSequence() throws InvalidMidiDataException {
