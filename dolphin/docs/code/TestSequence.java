@@ -13,12 +13,14 @@ import javax.sound.midi.InvalidMidiDataException;
 public class TestSequence {
 
    public static void main(String[] args) 
-         throws MidiUnavailableException, InvalidMidiDataException {
-      final Sequence sequence=create(); 
-      SimpleSequencePlayer.play(sequence);
+         throws MidiUnavailableException, 
+                InvalidMidiDataException, 
+                IOException {
+      final Sequence sequence=createSequence(); 
+      MidiSystem.write(sequence, 0, new File("test.mid"));
    }
 
-   public static Sequence create() throws InvalidMidiDataException {
+   public static Sequence createSequence() throws InvalidMidiDataException {
       final Sequence sequence=new Sequence(Sequence.PPQ, 1);
       final Track track = sequence.createTrack();
       track.add(createNoteEvent(0, ShortMessage.NOTE_ON, 0, 60, 64));
